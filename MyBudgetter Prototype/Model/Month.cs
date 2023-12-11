@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace MyBudgetter_Prototype
+namespace MyBudgetter_Prototype.Model
 {
     public class Month
     {
@@ -34,7 +34,7 @@ namespace MyBudgetter_Prototype
                 {
                     currentDate = currentDate.AddDays(-1);
                 }
-            } 
+            }
             else if (currentDate.DayOfWeek != DayOfWeek.Sunday)
             {
                 while (currentDate.DayOfWeek != DayOfWeek.Sunday)

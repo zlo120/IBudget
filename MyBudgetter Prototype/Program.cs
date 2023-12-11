@@ -1,20 +1,12 @@
-﻿using MyBudgetter_Prototype;
+﻿using MyBudgetter_Prototype.Model;
 
-int yearNum;
-Console.Write("Please enter the year: ");
-int.TryParse(Console.ReadLine(), out yearNum);
-
-var months = new List<Month>();
-var year = new Year(yearNum);
-
-for (int i = 1; i <= 12; i++)
+// Create the SQLite db if it doesn't exist
+if (!Directory.Exists("IBudgetterDB"))
 {
-    months.Add(new Month(i, year));
+    Directory.CreateDirectory("IBudgetterDB");
 }
 
-foreach(var month in months)
+if (!File.Exists("IBudgetterDB/IBudgetter.db"))
 {
-    Console.WriteLine($"{month.MonthName}: ");
-    month.PrintAllWeeks();
-    Console.WriteLine();
+    File.Create("IBudgetterDB/IBudgetter.db");
 }
