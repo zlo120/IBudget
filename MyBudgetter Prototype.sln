@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyBudgetter Prototype", "MyBudgetter Prototype\MyBudgetter Prototype.csproj", "{FE3EFAE3-8D26-4A77-A1BA-B4480718F632}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FE3EFAE3-8D26-4A77-A1BA-B4480718F632}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE3EFAE3-8D26-4A77-A1BA-B4480718F632}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE3EFAE3-8D26-4A77-A1BA-B4480718F632}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE3EFAE3-8D26-4A77-A1BA-B4480718F632}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BE04A171-E47C-4985-B113-E1C1E57704FA}
+	EndGlobalSection
+EndGlobal
