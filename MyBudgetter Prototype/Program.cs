@@ -1,6 +1,4 @@
-﻿using MyBudgetter_Prototype.Model;
-
-// Create the SQLite db if it doesn't exist
+﻿// Create the SQLite db if it doesn't exist
 if (!Directory.Exists("IBudgetterDB"))
 {
     Directory.CreateDirectory("IBudgetterDB");
