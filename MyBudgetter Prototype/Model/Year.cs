@@ -7,6 +7,7 @@
         public Year(int year)
         {
             YearNumber = year;
+            Months = new List<Month>();
         }
     }
 }

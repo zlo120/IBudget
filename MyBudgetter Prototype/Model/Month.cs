@@ -52,7 +52,7 @@ namespace MyBudgetter_Prototype.Model
                 }
 
                 var label = $"{currentDate.ToShortDateString()} - {currentDate.AddDays(6).ToShortDateString()}";
-                Weeks.Add(new Week(counter, this, label));
+                Weeks.Add(new Week(this, label));
 
                 counter++;
                 currentDate = currentDate.AddDays(7);
