@@ -6,7 +6,6 @@ namespace MyBudgetter_Prototype.Model
     {
         public string MonthName { get; }
         public int MonthNum { get; set; }
-        public Year Year { get; }
         public List<Week> Weeks { get; private set; }
         public Month(int month, Year year)
         {

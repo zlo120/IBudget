@@ -2,7 +2,6 @@
 {
     public class Week
     {
-        public Month Month { get; }
         public string Label { get; }
         public List<Expense> Expenses { get; set; }
         public List<Income> Income { get; set; }
