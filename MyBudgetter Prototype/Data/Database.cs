@@ -1,6 +1,5 @@
 ﻿using MyBudgetter_Prototype.Model;
 using System.Data.SQLite;
-using System.Globalization;
 
 namespace MyBudgetter_Prototype.Data
 {
@@ -36,8 +35,28 @@ namespace MyBudgetter_Prototype.Data
                                          "Date DATETIME NOT NULL," +
                                          "Amount DOUBLE NOT NULL," +
                                          "Frequency TEXT," +
-                                         "Recurring INTEGER," +
                                          "Notes TEXT);";
+
+                using (SQLiteCommand createTableCommand = new SQLiteCommand(createTableQuery, connection))
+                {
+                    createTableCommand.ExecuteNonQuery();
+                }
+
+                createTableQuery = "CREATE TABLE IF NOT EXISTS Tags (" +
+                                         "ID INTEGER PRIMARY KEY AUTOINCREMENT," +
+                                         "Name TEXT UNIQUE);";
+
+                using (SQLiteCommand createTableCommand = new SQLiteCommand(createTableQuery, connection))
+                {
+                    createTableCommand.ExecuteNonQuery();
+                }
+
+                createTableQuery = "CREATE TABLE IF NOT EXISTS ExpenseTags (" +
+                                         "ExpenseID INTEGER," +
+                                         "TagID INTEGER," +
+                                         "PRIMARY KEY (ExpenseID, TagID)," +
+                                         "FOREIGN KEY (ExpenseID) REFERENCES ExpenseRecord (ID)," +
+                                         "FOREIGN KEY (TagID) REFERENCES Tags (ID));";
 
                 using (SQLiteCommand createTableCommand = new SQLiteCommand(createTableQuery, connection))
                 {
@@ -53,20 +72,55 @@ namespace MyBudgetter_Prototype.Data
                 connection.Open();
 
                 // Insert data into the IncomeRecord table
-                string insertDataQuery = $"INSERT INTO IncomeRecord (Category, Date, Amount, Frequency, Source) VALUES (@Category, @Day, @Money, @Frequency, @Source);";
+                string insertDataQuery = $"INSERT INTO IncomeRecord (Category, Date, Amount, Frequency, Source) VALUES (@Category, @Date, @Amount, @Frequency, @Source);";
 
                 using (SQLiteCommand insertDataCommand = new SQLiteCommand(insertDataQuery, connection))
                 {
                     // Set parameters for the insert query
                     insertDataCommand.Parameters.AddWithValue("@Category", data.Category);
-                    insertDataCommand.Parameters.AddWithValue("@Day", data.Date); // Use specific date
-                    insertDataCommand.Parameters.AddWithValue("@Money", data.Amount);
+                    insertDataCommand.Parameters.AddWithValue("@Date", data.Date); // Use specific date
+                    insertDataCommand.Parameters.AddWithValue("@Amount", data.Amount);
                     insertDataCommand.Parameters.AddWithValue("@Source", data.Source);
 
                     // Convert frequency enum to string
                     if (data.Frequency is not null)
                     {
-                        var frequency = FrequencyMethods.ConvertToString((Frequency) data.Frequency);
+                        var frequency = FrequencyMethods.ConvertToString((Frequency)data.Frequency);
+                        insertDataCommand.Parameters.AddWithValue("@Frequency", frequency);
+                    }
+                    else
+                    {
+                        insertDataCommand.Parameters.AddWithValue("@Frequency", null);
+                    }
+
+                    // Execute the insert query
+                    insertDataCommand.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public static void InsertExpense(Expense data)
+        {
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            {
+                // Open the connection
+                connection.Open();
+
+                // Insert data into the IncomeRecord table
+                string insertDataQuery = $"INSERT INTO ExpenseRecord (Category, Date, Amount, Frequency, Notes) VALUES (@Category, @Date, @Amount, @Frequency, @Notes);";
+
+                using (SQLiteCommand insertDataCommand = new SQLiteCommand(insertDataQuery, connection))
+                {
+                    // Set parameters for the insert query
+                    insertDataCommand.Parameters.AddWithValue("@Category", data.Category);
+                    insertDataCommand.Parameters.AddWithValue("@Date", data.Date); // Use specific date
+                    insertDataCommand.Parameters.AddWithValue("@Amount", data.Amount);
+                    insertDataCommand.Parameters.AddWithValue("@Notes", data.Notes);
+
+                    // Converting frequency enum to string
+                    if (data.Frequency is not null)
+                    {
+                        var frequency = FrequencyMethods.ConvertToString((Frequency)data.Frequency);
                         insertDataCommand.Parameters.AddWithValue("@Frequency", frequency);
                     }
                     else

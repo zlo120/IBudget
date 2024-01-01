@@ -19,6 +19,9 @@ namespace MyBudgetter_Prototype.UserInterface
                 DateTime? dateTime;
                 string category;
                 double amount;
+                string frequencyInput;
+                int frequency;
+                string source;
                 Week week;
                 Month month;
                 Year year;
@@ -37,12 +40,11 @@ namespace MyBudgetter_Prototype.UserInterface
                         double.TryParse(Console.ReadLine(), out amount);
 
                         Console.Write("Frequency:\n  1. Daily\n  2. Weekly\n  3. BiWeekly\n  4. Monthly\n  5. Yearly\n(Optional, you may leave this blank): ");
-                        var frequencyInput = Console.ReadLine();
-                        int frequency;
+                        frequencyInput = Console.ReadLine();
                         int.TryParse(frequencyInput, out frequency);
 
                         Console.Write("Source (optional): ");
-                        var source = Console.ReadLine();
+                        source = Console.ReadLine();
                         if (source == "")
                         {
                             source = null;
@@ -77,15 +79,33 @@ namespace MyBudgetter_Prototype.UserInterface
                         Console.Write("Amount: $");
                         double.TryParse(Console.ReadLine(), out amount);
 
+                        Console.Write("Frequency:\n  1. Daily\n  2. Weekly\n  3. BiWeekly\n  4. Monthly\n  5. Yearly\n(Optional, you may leave this blank): ");
+                        frequencyInput = Console.ReadLine();
+                        int.TryParse(frequencyInput, out frequency);
+
+                        // Notes
+                        Console.Write("Notes (optional): ");
+                        var notes = Console.ReadLine();
+
+                        // Tags
+                        var tags = GetTags();
+
                         var expense = new Expense()
                         {
                             Category = category,
                             Date = dateTime.Value,
-                            Amount = amount
+                            Amount = amount,
+                            Notes = notes,
+                            Tags = tags
                         };
 
-                        //Database.Insert(expense, "ExpenseRecord");
+                        if (frequency > 0 && frequency < 6)
+                        {
+                            frequency = frequency - 1;
+                            expense.Frequency = (Frequency) frequency;
+                        } 
 
+                        Database.InsertExpense(expense);
                         break;
 
                     case 3:
@@ -163,6 +183,26 @@ namespace MyBudgetter_Prototype.UserInterface
                 Console.WriteLine($"Date: {income.Date,-10} Category: {income.Category,-10:C} Amount: {income.Amount,-10:C}");
             }
             Console.WriteLine();
+        }
+    
+        public static List<string> GetTags()
+        {
+            var tags = new List<string>();
+            Console.WriteLine("Enter a tag associated with this expense (optional, enter nothing to continue): ");
+            while (true)
+            {
+
+                Console.Write(" > ");
+                var tag = Console.ReadLine();
+                if (tag == "")
+                {
+                    break;
+                }
+
+                tags.Add(tag);
+            }
+
+            return tags;
         }
     }
 }
