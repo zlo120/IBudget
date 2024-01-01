@@ -1,5 +1,6 @@
 ﻿using MyBudgetter_Prototype.Model;
 using System.Data.SQLite;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MyBudgetter_Prototype.Data
 {
@@ -106,7 +107,7 @@ namespace MyBudgetter_Prototype.Data
                 // Open the connection
                 connection.Open();
 
-                // Insert data into the IncomeRecord table
+                // Insert data into the ExpenseRecord table
                 string insertDataQuery = $"INSERT INTO ExpenseRecord (Category, Date, Amount, Frequency, Notes) VALUES (@Category, @Date, @Amount, @Frequency, @Notes);";
 
                 using (SQLiteCommand insertDataCommand = new SQLiteCommand(insertDataQuery, connection))
@@ -130,6 +131,72 @@ namespace MyBudgetter_Prototype.Data
 
                     // Execute the insert query
                     insertDataCommand.ExecuteNonQuery();
+                    int expenseRecordID = (int) connection.LastInsertRowId;
+
+                    // Insert associated tags
+                    InsertTags(expenseRecordID, data.Tags);
+                }
+            }
+        }
+        public static void InsertTags(int expenseRecordID, List<string> tags)
+        {
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            {
+                // Open the connection
+                connection.Open();
+
+                // Search if tag exists
+                foreach(var tag in tags)
+                {
+                    string selectTagQuery = "SELECT * FROM Tags WHERE LOWER(Name) = @TagName COLLATE NOCASE;";
+
+                    bool tagExists = false;
+                    int tagID = -1;
+
+                    using (SQLiteCommand selectTagCommand = new SQLiteCommand(selectTagQuery, connection))
+                    {
+                        // Set parameter for the select query
+                        selectTagCommand.Parameters.AddWithValue("@TagName", tag);
+
+                        // Execute the select query
+                        using (SQLiteDataReader reader = selectTagCommand.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                // Process each row of the result set
+                                tagID = reader.GetInt32(0);
+                                tagExists = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!tagExists)
+                    {
+                        // Create tag
+                        string insertTagQuery = $"INSERT INTO Tags (Name) VALUES (@Name);";
+                        using (SQLiteCommand insertDataCommand = new SQLiteCommand(insertTagQuery, connection))
+                        {
+                            // Set parameters for the insert query
+                            insertDataCommand.Parameters.AddWithValue("@Name", tag);
+
+                            // Execute the insert query
+                            insertDataCommand.ExecuteNonQuery();
+                            tagID = (int) connection.LastInsertRowId;
+                        }
+                    }
+
+                    // Create a relationship between tag and expense
+                    string insertExpenseTagQuery = $"INSERT INTO ExpenseTags (ExpenseID, TagID) VALUES (@ExpenseID, @TagID);";
+                    using (SQLiteCommand insertDataCommand = new SQLiteCommand(insertExpenseTagQuery, connection))
+                    {
+                        // Set parameters for the insert query
+                        insertDataCommand.Parameters.AddWithValue("@ExpenseID", expenseRecordID);
+                        insertDataCommand.Parameters.AddWithValue("@TagID", tagID);
+
+                        // Execute the insert query
+                        insertDataCommand.ExecuteNonQuery();
+                    }
                 }
             }
         }
