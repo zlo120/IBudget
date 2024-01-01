@@ -19,9 +19,11 @@ namespace MyBudgetter_Prototype.Data
                 // Create the IncomeRecord table
                 string createTableQuery = "CREATE TABLE IF NOT EXISTS IncomeRecord (" +
                                          "ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-                                         "Category TEXT," +
-                                         "Date DATETIME," +
-                                         "Amount DOUBLE);";
+                                         "Category TEXT NOT NULL," +
+                                         "Date DATETIME NOT NULL," +
+                                         "Amount DOUBLE NOT NULL," +
+                                         "Frequency TEXT," +
+                                         "Source TEXT);";
 
                 using (SQLiteCommand createTableCommand = new SQLiteCommand(createTableQuery, connection))
                 {
@@ -30,9 +32,12 @@ namespace MyBudgetter_Prototype.Data
 
                 createTableQuery = "CREATE TABLE IF NOT EXISTS ExpenseRecord (" +
                                          "ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-                                         "Category TEXT," +
-                                         "Date DATETIME," +
-                                         "Amount DOUBLE);";
+                                         "Category TEXT NOT NULL," +
+                                         "Date DATETIME NOT NULL," +
+                                         "Amount DOUBLE NOT NULL," +
+                                         "Frequency TEXT," +
+                                         "Recurring INTEGER," +
+                                         "Notes TEXT);";
 
                 using (SQLiteCommand createTableCommand = new SQLiteCommand(createTableQuery, connection))
                 {
@@ -40,7 +45,7 @@ namespace MyBudgetter_Prototype.Data
                 }
             }
         }
-        public static void Insert(DataEntry data, string table)
+        public static void InsertIncome(Income data)
         {
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
@@ -48,7 +53,7 @@ namespace MyBudgetter_Prototype.Data
                 connection.Open();
 
                 // Insert data into the IncomeRecord table
-                string insertDataQuery = $"INSERT INTO {table} (Category, Day, Money) VALUES (@Category, @Day, @Money);";
+                string insertDataQuery = $"INSERT INTO IncomeRecord (Category, Date, Amount, Frequency, Source) VALUES (@Category, @Day, @Money, @Frequency, @Source);";
 
                 using (SQLiteCommand insertDataCommand = new SQLiteCommand(insertDataQuery, connection))
                 {
@@ -56,106 +61,23 @@ namespace MyBudgetter_Prototype.Data
                     insertDataCommand.Parameters.AddWithValue("@Category", data.Category);
                     insertDataCommand.Parameters.AddWithValue("@Day", data.Date); // Use specific date
                     insertDataCommand.Parameters.AddWithValue("@Money", data.Amount);
+                    insertDataCommand.Parameters.AddWithValue("@Source", data.Source);
+
+                    // Convert frequency enum to string
+                    if (data.Frequency is not null)
+                    {
+                        var frequency = FrequencyMethods.ConvertToString((Frequency) data.Frequency);
+                        insertDataCommand.Parameters.AddWithValue("@Frequency", frequency);
+                    }
+                    else
+                    {
+                        insertDataCommand.Parameters.AddWithValue("@Frequency", null);
+                    }
 
                     // Execute the insert query
                     insertDataCommand.ExecuteNonQuery();
                 }
             }
-        }
-        public static Week GetWeek(DateTime date, Week week)
-        {
-
-            CultureInfo ci = CultureInfo.InvariantCulture;
-
-            var targetWeek = ci.Calendar.GetWeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
-
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-            {
-                connection.Open();
-                string selectDataQuery = "SELECT * FROM IncomeRecord WHERE strftime('%W', Day) = @TargetWeek;";
-
-                using (SQLiteCommand selectDataCommand = new SQLiteCommand(selectDataQuery, connection))
-                {
-                    // Set parameter for the select query
-                    selectDataCommand.Parameters.AddWithValue("@TargetWeek", targetWeek);
-
-                    // Execute the select query
-                    using (SQLiteDataReader reader = selectDataCommand.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            // Process each row of the result set
-                            int id = reader.GetInt32(0);
-                            string category = reader.GetString(1);
-                            DateTime day = reader.GetDateTime(2);
-                            double money = reader.GetDouble(3);
-
-                            var incomeRecord = new Income
-                            {
-                                Category = category,
-                                Date = day,
-                                Amount = money
-                            };
-
-                            week.Income.Add(incomeRecord);
-                        }
-                    }
-                }
-
-                selectDataQuery = "SELECT * FROM ExpenseRecord WHERE strftime('%W', Day) = @TargetWeek;";
-                using (SQLiteCommand selectDataCommand = new SQLiteCommand(selectDataQuery, connection))
-                {
-                    // Set parameter for the select query
-                    selectDataCommand.Parameters.AddWithValue("@TargetWeek", targetWeek);
-
-                    // Execute the select query
-                    using (SQLiteDataReader reader = selectDataCommand.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            // Process each row of the result set
-                            int id = reader.GetInt32(0);
-                            string category = reader.GetString(1);
-                            DateTime day = reader.GetDateTime(2);
-                            double money = reader.GetDouble(3);
-
-                            var expenseRecord = new Expense
-                            {
-                                Category = category,
-                                Date = day,
-                                Amount = money
-                            };
-
-                            week.Expenses.Add(expenseRecord);
-                        }
-                    }
-                }
-            }
-
-            return week;
-        }
-        public static Month GetMonth(Month month)
-        {
-            var weeks = Calendar.GetAllWeeks(month.MonthNum, month.Year.YearNumber);
-
-            foreach (var weekDateTime in weeks)
-            {
-                var label = $"{weekDateTime.ToShortDateString()} - {weekDateTime.AddDays(6).ToShortDateString()}";
-                var week = new Week(month, label);
-                month.Weeks.Add(GetWeek(weekDateTime, week));
-            }
-
-            return month;
-        }
-        public static Year GetYear(Year year)
-        {
-            for (int i = 1; i <= 12; i++)
-            {
-                var month = new Month(i, year);
-                year.Months.Add(GetMonth(month));
-            }
-
-            return year;
         }
         public static void Delete(int ID, string table)
         {

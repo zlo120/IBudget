@@ -1,5 +1,6 @@
 ﻿// Create the SQLite db if it doesn't exist
 using MyBudgetter_Prototype.UserInterface;
+using MyBudgetter_Prototype.Data;
 
 if (!Directory.Exists("IBudgetterDB"))
 {
@@ -8,7 +9,9 @@ if (!Directory.Exists("IBudgetterDB"))
 
 if (!File.Exists("IBudgetterDB/IBudgetter.db"))
 {
-    File.Create("IBudgetterDB/IBudgetter.db");
+    var dbFile = File.Create("IBudgetterDB/IBudgetter.db");
+    dbFile.Close();
+    Database.InitiateDatabase();
 }
 
 var UI = new MainUI();

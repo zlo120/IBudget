@@ -25,6 +25,7 @@ namespace MyBudgetter_Prototype.UserInterface
 
                 switch (decision)
                 {
+                    // Add income
                     case 1:
                         dateTime = GetDate();
                         if (!dateTime.HasValue) break;
@@ -35,17 +36,37 @@ namespace MyBudgetter_Prototype.UserInterface
                         Console.Write("Amount: $");
                         double.TryParse(Console.ReadLine(), out amount);
 
+                        Console.Write("Frequency:\n  1. Daily\n  2. Weekly\n  3. BiWeekly\n  4. Monthly\n  5. Yearly\n(Optional, you may leave this blank): ");
+                        var frequencyInput = Console.ReadLine();
+                        int frequency;
+                        int.TryParse(frequencyInput, out frequency);
+
+                        Console.Write("Source (optional): ");
+                        var source = Console.ReadLine();
+                        if (source == "")
+                        {
+                            source = null;
+                        }
+
                         var income = new Income()
                         {
                             Category = category,
                             Date = dateTime.Value,
-                            Amount = amount
+                            Amount = amount,
+                            Source = source
                         };
 
-                        Database.Insert(income, "IncomeRecord");
+                        if (frequency > 0 && frequency < 6)
+                        {
+                            frequency = frequency - 1;
+                            income.Frequency = (Frequency) frequency;
+                        }
+
+                        Database.InsertIncome(income);
 
                         break;
-
+                        
+                    // Add expense
                     case 2:
                         dateTime = GetDate();
                         if (!dateTime.HasValue) break;
@@ -63,22 +84,11 @@ namespace MyBudgetter_Prototype.UserInterface
                             Amount = amount
                         };
 
-                        Database.Insert(expense, "ExpenseRecord");
+                        //Database.Insert(expense, "ExpenseRecord");
 
                         break;
 
                     case 3:
-                        dateTime = GetDate();
-                        if (!dateTime.HasValue) break;
-
-                        year = new Year(yearNum);
-                        month = new Month(dateTime.Value.Month, year);
-                        week = new Week(month, GetWeekLabel(dateTime.Value));
-
-                        week = Database.GetWeek(dateTime.Value, week);
-
-                        DisplayWeek(week);
-
                         break;
 
                     case 4:
