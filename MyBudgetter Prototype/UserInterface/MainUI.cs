@@ -148,7 +148,7 @@ namespace MyBudgetter_Prototype.UserInterface
 
                     // Update record
                     case 5:
-                        Console.Write("Would you like to update:\n 1. Income Record\n 2. Expense Record\n");
+                        Console.Write("Would you like to update:\n 1. Income Record\n 2. Expense Record\n\n > ");
                         var inputDecision = Console.ReadLine();
                         int inputDecisionInt;
 
@@ -222,6 +222,141 @@ namespace MyBudgetter_Prototype.UserInterface
                                 break;
 
                             case 2:
+                                Console.Write("Enter the ID: ");
+                                inputDecision = Console.ReadLine();
+
+                                int.TryParse(inputDecision, out ID);
+
+                                expense = Database.GetExpenseRecord(ID);
+
+                                if (expense is null)
+                                {
+                                    Console.WriteLine("\nThat record does not exist...\n\n");
+                                    break;
+                                }
+
+                                Console.Write($"This is the data associated:\n" +
+                                    $" Category: {expense.Category}\n" +
+                                    $" Date: {expense.Date}\n" +
+                                    $" Amount: ${expense.Amount}\n" +
+                                    $" Frequency: {expense.Frequency}\n" +
+                                    $" Notes: {expense.Notes}\n" +
+                                    $" Tags: ");
+
+                                if (expense.Tags is not null)
+                                    foreach(var tag in expense.Tags)
+                                    {
+                                        if (tag == expense.Tags[expense.Tags.Count - 1])
+                                        {
+                                            Console.Write(tag + "\n");
+                                            continue;
+                                        }
+                                        Console.Write($"{tag}, ");
+                                    }
+                                Console.WriteLine();
+
+                                Console.WriteLine("Please update this record, if you don't want to change something just leave the field blank:");
+
+                                Console.Write("Category (leave blank to not change): ");
+                                category = Console.ReadLine();
+
+                                if (category != "")
+                                {
+                                    expense.Category = category;
+                                }
+
+                                Console.Write("Amount (leave blank to not change): $");
+                                amountInput = Console.ReadLine();
+
+                                if (amountInput != "")
+                                {
+                                    double.TryParse(amountInput, out amount);
+                                    expense.Amount = amount;
+                                }
+
+                                Console.Write("Frequency:\n  1. Daily\n  2. Weekly\n  3. BiWeekly\n  4. Monthly\n  5. Yearly\n (leave blank to not change): ");
+                                frequencyInput = Console.ReadLine();
+                                if (frequencyInput != "")
+                                {
+                                    int.TryParse(frequencyInput, out frequency);
+                                    if (frequency > 0 && frequency < 6)
+                                    {
+                                        frequency = frequency - 1;
+                                        expense.Frequency = (Frequency)frequency;
+                                    }
+                                }
+
+                                Console.Write("Notes (optional): ");
+                                notes = Console.ReadLine();
+
+                                if (notes != "")
+                                {
+                                    expense.Notes = notes;
+                                }
+
+                                if (expense.Tags is null) expense.Tags = new List<string>();
+                                Console.Write("Here are all the tags:");
+                                foreach (var tag in expense.Tags)
+                                {
+                                    if (tag == expense.Tags[expense.Tags.Count - 1])
+                                    {
+                                        Console.Write(tag + "\n");
+                                        continue;
+                                    }
+                                    Console.Write($"{tag}, ");
+                                }
+
+                                Console.WriteLine("\nType \"remove [tag_name]\" to remove a tag, or just write a tag name to add a tag (enter nothing to exit)\n");
+                                while (true)
+                                {
+                                    Console.Write(" > ");
+                                    var userInput = Console.ReadLine();
+
+                                    if (userInput == "") break;
+
+                                    string[] inputs = userInput.Split(" ");
+
+                                    if (inputs.Length == 1)
+                                    {
+                                        // create tag
+                                        bool tagExistsAlready = false;
+                                        // check if it exists
+                                        foreach (var tag in expense.Tags)
+                                        {
+                                            if (tag.ToLower() == inputs[0].ToLower())
+                                            {
+                                                tagExistsAlready = true;
+                                                break;
+                                            }
+                                        }
+
+                                        if (!tagExistsAlready)
+                                        {
+                                            expense.Tags.Add(inputs[0]);
+                                        }
+                                    }
+                                    
+                                    if (inputs.Length == 2 && inputs[0].ToLower() == "remove")
+                                    {
+                                        var tagToRemove = inputs[1];
+                                        var tagsToRemove = new List<string>();
+                                        foreach(var tag in expense.Tags)
+                                        {
+                                            if (tag.ToLower() == tagToRemove.ToLower())
+                                            {
+                                                tagsToRemove.Add(tag);
+                                            }
+                                        }
+
+                                        foreach(var tag in tagsToRemove)
+                                        {
+                                            expense.Tags.Remove(tag);
+                                        }
+                                    }
+                                }
+
+                                Database.UpdateExpenseRecord(expense);
+
                                 break;
                         }
 

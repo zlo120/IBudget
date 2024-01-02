@@ -476,14 +476,14 @@ namespace MyBudgetter_Prototype.Data
             }
         }
 
-        public static void UpdateExpenseRecord(Income updatedRecord)
+        public static void UpdateExpenseRecord(Expense updatedRecord)
         {
             // Check if the record exists first
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
 
-                string selectIncomeQuery = "SELECT * FROM IncomeRecord WHERE ID = @RecordID;";
+                string selectIncomeQuery = "SELECT * FROM ExpenseRecord WHERE ID = @RecordID;";
 
                 using (SQLiteCommand selectIncomeCommand = new SQLiteCommand(selectIncomeQuery, connection))
                 {
@@ -498,15 +498,25 @@ namespace MyBudgetter_Prototype.Data
                     }
                 }
 
-                string updateQuery = "UPDATE IncomeRecord SET Category = @Category, Date = @Date, Amount = @Amount, Frequency = @Frequency, Source = @Source WHERE ID = @ID;";
+                string updateQuery = "UPDATE ExpenseRecord SET Category = @Category, Date = @Date, Amount = @Amount, Frequency = @Frequency, Notes = @Notes WHERE ID = @ID;";
 
                 using (SQLiteCommand command = new SQLiteCommand(updateQuery, connection))
                 {
+                    if (updatedRecord.Frequency is not null)
+                    {
+                        var frequency = FrequencyMethods.ConvertToString(updatedRecord.Frequency.Value);
+                        command.Parameters.AddWithValue("@Frequency", frequency);
+                    }
+                    else
+                    {
+                        command.Parameters.AddWithValue("@Frequency", null);
+                    }
+
+                    command.Parameters.AddWithValue("@ID", updatedRecord.ID);
                     command.Parameters.AddWithValue("@Category", updatedRecord.Category);
                     command.Parameters.AddWithValue("@Date", updatedRecord.Date);
                     command.Parameters.AddWithValue("@Amount", updatedRecord.Amount);
-                    command.Parameters.AddWithValue("@Frequency", updatedRecord.Frequency);
-                    command.Parameters.AddWithValue("@Source", updatedRecord.Source);
+                    command.Parameters.AddWithValue("@Notes", updatedRecord.Notes);
 
                     command.ExecuteNonQuery();
                 }
