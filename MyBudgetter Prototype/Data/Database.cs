@@ -56,8 +56,8 @@ namespace MyBudgetter_Prototype.Data
                                          "ExpenseID INTEGER," +
                                          "TagID INTEGER," +
                                          "PRIMARY KEY (ExpenseID, TagID)," +
-                                         "FOREIGN KEY (ExpenseID) REFERENCES ExpenseRecord (ID)," +
-                                         "FOREIGN KEY (TagID) REFERENCES Tags (ID));";
+                                         "FOREIGN KEY (ExpenseID) REFERENCES ExpenseRecord (ID)  ON DELETE CASCADE," +
+                                         "FOREIGN KEY (TagID) REFERENCES Tags (ID) ON DELETE CASCADE);";
 
                 using (SQLiteCommand createTableCommand = new SQLiteCommand(createTableQuery, connection))
                 {
@@ -520,13 +520,129 @@ namespace MyBudgetter_Prototype.Data
 
                     command.ExecuteNonQuery();
                 }
+
+                UpdateTags(updatedRecord.ID.Value, updatedRecord.Tags);
+            }
+        }
+
+        public static void UpdateTags(int ID, List<string> newTagsList)
+        {
+            // We start with deleting tags
+            // get old tags list
+
+            var oldTagsIDList = new List<int>();
+            var oldTagsList = new List<string>();
+
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+
+                string selectTagsQuery = "SELECT * FROM ExpenseTags WHERE ExpenseID = @RecordID;";
+
+                using (SQLiteCommand selectTagsCommand = new SQLiteCommand(selectTagsQuery, connection))
+                {
+                    selectTagsCommand.Parameters.AddWithValue("@RecordID", ID);
+
+                    // Execute the select query
+                    var result = selectTagsCommand.ExecuteScalar();
+
+                    using (SQLiteDataReader reader = selectTagsCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            // Process each row of the result set
+                            oldTagsIDList.Add(reader.GetInt32(1));
+                        }
+                    }
+                }
+
+                foreach(var tagID in oldTagsIDList)
+                {
+                    selectTagsQuery = "SELECT * FROM Tags WHERE ID = @ID;";
+
+                    using (SQLiteCommand selectTagsCommand = new SQLiteCommand(selectTagsQuery, connection))
+                    {
+                        selectTagsCommand.Parameters.AddWithValue("@ID", tagID);
+
+                        // Execute the select query
+                        var result = selectTagsCommand.ExecuteScalar();
+
+                        using (SQLiteDataReader reader = selectTagsCommand.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                // Process each row of the result set
+                                oldTagsList.Add(reader.GetString(1));
+                            }
+                        }
+                    }
+                }
+
+                // Removing tags
+                foreach (var tag in oldTagsList)
+                {
+                    int tagID = -1;
+
+                    if (!newTagsList.Contains(tag))
+                    {
+                        // remove tag from ExpenseTags table 
+                        // get Tag ID
+                        var selectTagQuery = "SELECT ID FROM Tags WHERE Name = @Name;";
+
+                        using (SQLiteCommand selectTagCommand = new SQLiteCommand(selectTagQuery, connection))
+                        {
+                            selectTagCommand.Parameters.AddWithValue("@Name", tag);
+
+                            // Execute the select query
+                            var result = selectTagCommand.ExecuteScalar();
+
+                            using (SQLiteDataReader reader = selectTagCommand.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    // Process each row of the result set
+                                    tagID = reader.GetInt32(0);
+                                }
+                            }
+                        }
+
+                        if (tagID != -1)
+                        {
+                            string deleteDataQuery = "DELETE FROM ExpenseTags WHERE ExpenseID = @ExpenseID AND TagID = @TagID;";
+                            using (SQLiteCommand deleteDataCommand = new SQLiteCommand(deleteDataQuery, connection))
+                            {
+                                // Set parameter for the delete query
+                                deleteDataCommand.Parameters.AddWithValue("@ExpenseID", ID); // Specify the condition to delete
+                                deleteDataCommand.Parameters.AddWithValue("@TagID", tagID); // Specify the condition to delete
+
+                                // Execute the delete query
+                                int rowsAffected = deleteDataCommand.ExecuteNonQuery();
+                            }
+                        }
+                    }
+                }
+
+                // Adding tags
+                var tagsToInsert = new List<string>();
+
+                foreach (var tag in newTagsList)
+                {
+                    if (!oldTagsList.Contains(tag))
+                    {
+                        tagsToInsert.Add(tag);
+                    }
+                }
+
+                InsertTags(ID, tagsToInsert);
             }
         }
         public static void Delete(int ID, string table)
         {
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
-                string deleteDataQuery = "DELETE FROM IncomeRecord WHERE ID = @ID;";
+                connection.Open();
+
+                string deleteDataQuery = $"DELETE FROM {table} WHERE ID = @ID;";
 
                 using (SQLiteCommand deleteDataCommand = new SQLiteCommand(deleteDataQuery, connection))
                 {

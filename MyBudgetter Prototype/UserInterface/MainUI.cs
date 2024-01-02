@@ -362,7 +362,21 @@ namespace MyBudgetter_Prototype.UserInterface
 
                         break;
 
+                    // Delete record
                     case 6:
+                        Console.Write("Which would you like to delete from:\n 1. Income Record\n 2. Expense Record\n\n > ");
+                        inputDecision = Console.ReadLine();
+
+                        int.TryParse(inputDecision, out inputDecisionInt);
+
+                        Console.Write("Enter the ID: ");
+                        inputDecision = Console.ReadLine();
+
+                        int.TryParse(inputDecision, out ID);
+
+                        if (inputDecisionInt == 1) Database.Delete(ID, "IncomeRecord");
+                        if (inputDecisionInt == 2) Database.Delete(ID, "ExpenseRecord");
+
                         break;
 
                     case 7:
