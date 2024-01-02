@@ -22,7 +22,7 @@
                     return "Yearly";
 
                 default:
-                    throw new Exception("Incorrect method paramter");
+                    throw new Exception("Incorrect method parameter");
             }
         }
 

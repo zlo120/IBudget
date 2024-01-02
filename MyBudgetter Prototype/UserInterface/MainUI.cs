@@ -146,7 +146,85 @@ namespace MyBudgetter_Prototype.UserInterface
 
                         break;
 
+                    // Update record
                     case 5:
+                        Console.Write("Would you like to update:\n 1. Income Record\n 2. Expense Record\n");
+                        var inputDecision = Console.ReadLine();
+                        int inputDecisionInt;
+
+                        int.TryParse(inputDecision, out inputDecisionInt);
+                        int ID;
+
+                        switch (inputDecisionInt)
+                        {
+                            case 1:
+                                Console.Write("Enter the ID: ");
+                                inputDecision = Console.ReadLine();
+                                
+                                int.TryParse(inputDecision, out ID);
+
+                                income = Database.GetIncomeRecord(ID);
+
+                                if (income is null)
+                                {
+                                    Console.WriteLine("\nThat record does not exist...\n\n");
+                                    break;
+                                }
+
+                                Console.WriteLine($"This is the data associated:\n" +
+                                    $" Category: {income.Category}\n" +
+                                    $" Date: {income.Date}\n" +
+                                    $" Amount: ${income.Amount}\n" +
+                                    $" Frequency: {income.Frequency}\n" +
+                                    $" Source: {income.Source}\n");
+
+                                Console.WriteLine("Please update this record, if you don't want to change something just leave the field blank:");
+
+                                Console.Write("Category (leave blank to not change): ");
+                                category = Console.ReadLine();
+
+                                if (category != "")
+                                {
+                                    income.Category = category;
+                                }
+
+                                Console.Write("Amount (leave blank to not change): $");
+                                var amountInput = Console.ReadLine();
+
+                                if (amountInput != "")
+                                {
+                                    double.TryParse(amountInput, out amount);
+                                    income.Amount = amount;
+                                }
+
+                                Console.Write("Frequency:\n  1. Daily\n  2. Weekly\n  3. BiWeekly\n  4. Monthly\n  5. Yearly\n (leave blank to not change): ");
+                                frequencyInput = Console.ReadLine();
+                                if (frequencyInput != "")
+                                {
+                                    int.TryParse(frequencyInput, out frequency);
+                                    if (frequency > 0 && frequency < 6)
+                                    {
+                                        frequency = frequency - 1;
+                                        income.Frequency = (Frequency)frequency;
+                                    }
+                                }
+
+                                Console.Write("Source (leave blank to not change): ");
+                                source = Console.ReadLine();
+                                
+                                if (source != "")
+                                {
+                                    income.Source = source;
+                                }
+
+                                Database.UpdateIncomeRecord(income);
+
+                                break;
+
+                            case 2:
+                                break;
+                        }
+
                         break;
 
                     case 6:

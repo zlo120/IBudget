@@ -131,7 +131,7 @@ namespace MyBudgetter_Prototype.Data
 
                     // Execute the insert query
                     insertDataCommand.ExecuteNonQuery();
-                    int expenseRecordID = (int) connection.LastInsertRowId;
+                    int expenseRecordID = (int)connection.LastInsertRowId;
 
                     // Insert associated tags
                     InsertTags(expenseRecordID, data.Tags);
@@ -146,7 +146,7 @@ namespace MyBudgetter_Prototype.Data
                 connection.Open();
 
                 // Search if tag exists
-                foreach(var tag in tags)
+                foreach (var tag in tags)
                 {
                     string selectTagQuery = "SELECT * FROM Tags WHERE LOWER(Name) = @TagName COLLATE NOCASE;";
 
@@ -182,7 +182,7 @@ namespace MyBudgetter_Prototype.Data
 
                             // Execute the insert query
                             insertDataCommand.ExecuteNonQuery();
-                            tagID = (int) connection.LastInsertRowId;
+                            tagID = (int)connection.LastInsertRowId;
                         }
                     }
 
@@ -199,6 +199,99 @@ namespace MyBudgetter_Prototype.Data
                     }
                 }
             }
+        }
+        public static Expense GetExpenseRecord(int ID)
+        {
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+
+                Expense expense = null;
+
+                string selectExpenseQuery = $"SELECT * FROM ExpenseRecord WHERE ID = @RecordID;";
+
+                using (SQLiteCommand selectCommand = new SQLiteCommand(selectExpenseQuery, connection))
+                {
+                    selectCommand.Parameters.AddWithValue("@RecordID", ID);
+
+                    using (SQLiteDataReader reader = selectCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Frequency? frequency;
+                            if (!reader.IsDBNull(4))
+                            {
+                                frequency = FrequencyMethods.ConvertToFrequency(reader.GetString(4));
+                            }
+                            else
+                            {
+                                frequency = null;
+                            }
+
+                            expense = new Expense()
+                            {
+                                ID = reader.GetInt32(0),
+                                Category = reader.GetString(1),
+                                Date = reader.GetDateTime(2),
+                                Amount = reader.GetDouble(3),
+                                Frequency = frequency,
+                                Notes = reader.GetString(5),
+                            };
+                        }
+                    }
+                }
+
+                if (expense == null) return null;
+
+                // get all the tags
+                if (expense.Tags == null) expense.Tags = new List<string>();
+
+                expense.Tags = GetTags(expense.ID.Value);
+
+                return expense;
+            }
+        }
+        public static Income GetIncomeRecord(int ID)
+        {
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+
+                string selectIncomeQuery = $"SELECT * FROM IncomeRecord WHERE ID = @RecordID;";
+
+                using (SQLiteCommand selectCommand = new SQLiteCommand(selectIncomeQuery, connection))
+                {
+                    selectCommand.Parameters.AddWithValue("@RecordID", ID);
+
+                    using (SQLiteDataReader reader = selectCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Frequency? frequency;
+                            if (!reader.IsDBNull(4))
+                            {
+                                frequency = FrequencyMethods.ConvertToFrequency(reader.GetString(4));
+                            }
+                            else
+                            {
+                                frequency = null;
+                            }
+
+                            return new Income()
+                            {
+                                ID = reader.GetInt32(0),
+                                Category = reader.GetString(1),
+                                Date = reader.GetDateTime(2),
+                                Amount = reader.GetDouble(3),
+                                Frequency = frequency,
+                                Source = reader.GetString(5),
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
         }
         public static Week GetWeek(DateTime[] weekRange)
         {
@@ -284,29 +377,10 @@ namespace MyBudgetter_Prototype.Data
                     }
                 }
 
-                foreach(var expense in expenses)
+                foreach (var expense in expenses)
                 {
-                    if (expense.Tags is null) expense.Tags = new List<string>();                       
-
-
-                    string selectTagQuery = "SELECT Tags.Name FROM Tags " +
-                                     "INNER JOIN ExpenseTags ON Tags.ID = ExpenseTags.TagID " +
-                                     "WHERE ExpenseTags.ExpenseID = @ExpenseRecordID;";
-
-                    using (SQLiteCommand selectTagCommand = new SQLiteCommand(selectTagQuery, connection))
-                    {
-                        selectTagCommand.Parameters.AddWithValue("@ExpenseRecordID", expense.ID);
-
-                        using (SQLiteDataReader reader = selectTagCommand.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                // Process each row of the result set
-                                expense.Tags.Add(reader.GetString(0));
-                            }
-                        }
-                    }
-
+                    if (expense.Tags is null) expense.Tags = new List<string>();
+                    expense.Tags = GetTags(expense.ID.Value);
                     week.Expenses.Add(expense);
                 }
 
@@ -314,17 +388,129 @@ namespace MyBudgetter_Prototype.Data
 
             return week;
         }
+        public static List<string> GetTags(int expenseID)
+        {
+            var tags = new List<string>();
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+                string selectTagQuery = "SELECT Tags.Name FROM Tags " +
+                             "INNER JOIN ExpenseTags ON Tags.ID = ExpenseTags.TagID " +
+                             "WHERE ExpenseTags.ExpenseID = @ExpenseRecordID;";
+
+                using (SQLiteCommand selectTagCommand = new SQLiteCommand(selectTagQuery, connection))
+                {
+                    selectTagCommand.Parameters.AddWithValue("@ExpenseRecordID", expenseID);
+
+                    using (SQLiteDataReader reader = selectTagCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            // Process each row of the result set
+                            tags.Add(reader.GetString(0));
+                        }
+                    }
+                }
+            }
+
+            return tags;
+        }
         public static Month GetMonth(int monthNum)
         {
             var month = new Month(monthNum);
 
-            foreach(var weekRange in month.WeekRanges)
+            foreach (var weekRange in month.WeekRanges)
             {
                 var week = GetWeek(weekRange);
                 month.Weeks.Add(week);
             }
 
             return month;
+        }
+        public static void UpdateIncomeRecord(Income updatedRecord)
+        {
+            // Check if the record exists first
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+
+                string selectIncomeQuery = "SELECT * FROM IncomeRecord WHERE ID = @RecordID;";
+
+                using (SQLiteCommand selectIncomeCommand = new SQLiteCommand(selectIncomeQuery, connection))
+                {
+                    selectIncomeCommand.Parameters.AddWithValue("@RecordID", updatedRecord.ID);
+
+                    // Execute the select query
+                    var result = selectIncomeCommand.ExecuteScalar();
+
+                    if (result == null)
+                    {
+                        return;
+                    }
+                }
+
+                string updateQuery = "UPDATE IncomeRecord SET Category = @Category, Date = @Date, Amount = @Amount, Frequency = @Frequency, Source = @Source WHERE ID = @ID;";
+
+                using (SQLiteCommand command = new SQLiteCommand(updateQuery, connection))
+                {
+
+                    command.Parameters.AddWithValue("@ID", updatedRecord.ID);
+
+                    if (updatedRecord.Frequency is not null)
+                    {
+                        var frequency = FrequencyMethods.ConvertToString(updatedRecord.Frequency.Value);
+                        command.Parameters.AddWithValue("@Frequency", frequency);
+                    }
+                    else
+                    {
+                        command.Parameters.AddWithValue("@Frequency", null);
+                    }
+
+                    command.Parameters.AddWithValue("@Category", updatedRecord.Category);
+                    command.Parameters.AddWithValue("@Date", updatedRecord.Date);
+                    command.Parameters.AddWithValue("@Amount", updatedRecord.Amount);
+                    command.Parameters.AddWithValue("@Source", updatedRecord.Source);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public static void UpdateExpenseRecord(Income updatedRecord)
+        {
+            // Check if the record exists first
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+
+                string selectIncomeQuery = "SELECT * FROM IncomeRecord WHERE ID = @RecordID;";
+
+                using (SQLiteCommand selectIncomeCommand = new SQLiteCommand(selectIncomeQuery, connection))
+                {
+                    selectIncomeCommand.Parameters.AddWithValue("@RecordID", updatedRecord.ID);
+
+                    // Execute the select query
+                    var result = selectIncomeCommand.ExecuteScalar();
+
+                    if (result == null)
+                    {
+                        return;
+                    }
+                }
+
+                string updateQuery = "UPDATE IncomeRecord SET Category = @Category, Date = @Date, Amount = @Amount, Frequency = @Frequency, Source = @Source WHERE ID = @ID;";
+
+                using (SQLiteCommand command = new SQLiteCommand(updateQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@Category", updatedRecord.Category);
+                    command.Parameters.AddWithValue("@Date", updatedRecord.Date);
+                    command.Parameters.AddWithValue("@Amount", updatedRecord.Amount);
+                    command.Parameters.AddWithValue("@Frequency", updatedRecord.Frequency);
+                    command.Parameters.AddWithValue("@Source", updatedRecord.Source);
+
+                    command.ExecuteNonQuery();
+                }
+            }
         }
         public static void Delete(int ID, string table)
         {

@@ -118,14 +118,14 @@ namespace MyBudgetter_Prototype
 
             foreach (var expense in week.Expenses)
             {
-                Console.WriteLine($"Date: {expense.Date.ToString("dd/MM/yyyy"),-15} Category: {expense.Category,-10} Amount: {expense.Amount.ToString("C", CultureInfo.GetCultureInfo("en-US")),-10}", "en-AU");
+                Console.WriteLine($"ID: {expense.ID,-5} Date: {expense.Date.ToString("dd/MM/yyyy"),-15} Category: {expense.Category,-10} Amount: {expense.Amount.ToString("C", CultureInfo.GetCultureInfo("en-US")),-10}", "en-AU");
             }
             Console.WriteLine();
 
             Console.WriteLine("Income:");
             foreach (var income in week.Income)
             {
-                Console.WriteLine($"Date: {income.Date.ToString("dd/MM/yyyy"),-15} Category: {income.Category,-10} Amount: {income.Amount.ToString("C", CultureInfo.GetCultureInfo("en-US")),-10}");
+                Console.WriteLine($"ID: {income.ID,-5} Date: {income.Date.ToString("dd/MM/yyyy"),-15} Category: {income.Category,-10} Amount: {income.Amount.ToString("C", CultureInfo.GetCultureInfo("en-US")),-10}");
             }
             Console.WriteLine();
         }
