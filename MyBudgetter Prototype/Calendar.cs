@@ -1,4 +1,5 @@
 ﻿using MyBudgetter_Prototype.Model;
+using System.Globalization;
 
 namespace MyBudgetter_Prototype
 {
@@ -15,14 +16,13 @@ namespace MyBudgetter_Prototype
 
             for (int i = 1; i <= 12; i++)
             {
-                months.Add(new Month(i, year));
+                months.Add(new Month(i));
             }
 
             year.Months = months;
 
             return year;
         }
-
         public static DateTime[] GetAllWeeks(int year, int month)
         {
             DateTime[] weeks = new DateTime[5];
@@ -65,6 +65,54 @@ namespace MyBudgetter_Prototype
             }
 
             return weeks;
+        }
+        public static DateTime[] GetWeekRange(DateTime date)
+        {
+            DateTime[] range = new DateTime[2];
+
+            if (date.DayOfWeek != DayOfWeek.Sunday)
+            {
+                while (date.DayOfWeek != DayOfWeek.Sunday)
+                {
+                    date = date.AddDays(-1);
+                }
+            }
+
+            range[0] = date;
+            range[1] = date.AddDays(6);
+
+            return range;
+        }
+        public static string GetWeekLabel(DateTime date)
+        {
+            if (date.DayOfWeek != DayOfWeek.Sunday)
+            {
+                while (date.DayOfWeek != DayOfWeek.Sunday)
+                {
+                    date = date.AddDays(-1);
+                }
+            }
+
+            return $"{date.ToShortDateString()} - {date.AddDays(6).ToShortDateString()}";
+        }
+        public static void DisplayWeek(Week week)
+        {
+            Console.WriteLine();
+            Console.WriteLine(week.Label);
+            Console.WriteLine("Expenses:");
+
+            foreach (var expense in week.Expenses)
+            {
+                Console.WriteLine($"Date: {expense.Date.ToString("dd/MM/yyyy"),-15} Category: {expense.Category,-10} Amount: {expense.Amount.ToString("C", CultureInfo.GetCultureInfo("en-US")),-10}", "en-AU");
+            }
+            Console.WriteLine();
+
+            Console.WriteLine("Income:");
+            foreach (var income in week.Income)
+            {
+                Console.WriteLine($"Date: {income.Date.ToString("dd/MM/yyyy"),-15} Category: {income.Category,-10} Amount: {income.Amount.ToString("C", CultureInfo.GetCultureInfo("en-US")),-10}");
+            }
+            Console.WriteLine();
         }
     }
 }

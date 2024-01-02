@@ -1,5 +1,5 @@
-﻿using MyBudgetter_Prototype.Model;
-using MyBudgetter_Prototype.Data;
+﻿using MyBudgetter_Prototype.Data;
+using MyBudgetter_Prototype.Model;
 
 namespace MyBudgetter_Prototype.UserInterface
 {
@@ -7,9 +7,9 @@ namespace MyBudgetter_Prototype.UserInterface
     {
         public MainUI()
         {
-            var yearNum = 2023;           
+            var yearNum = 2023;
 
-            while(true)
+            while (true)
             {
                 Console.Write("1. Add Income\n2. Add Expense\n3. Read week\n4. Read month\n5. Read year\n6. Update record\n7. Delete record\n8. Exit\nPlease select one: ");
 
@@ -61,13 +61,13 @@ namespace MyBudgetter_Prototype.UserInterface
                         if (frequency > 0 && frequency < 6)
                         {
                             frequency = frequency - 1;
-                            income.Frequency = (Frequency) frequency;
+                            income.Frequency = (Frequency)frequency;
                         }
 
                         Database.InsertIncome(income);
 
                         break;
-                        
+
                     // Add expense
                     case 2:
                         dateTime = GetDate();
@@ -102,13 +102,19 @@ namespace MyBudgetter_Prototype.UserInterface
                         if (frequency > 0 && frequency < 6)
                         {
                             frequency = frequency - 1;
-                            expense.Frequency = (Frequency) frequency;
-                        } 
+                            expense.Frequency = (Frequency)frequency;
+                        }
 
                         Database.InsertExpense(expense);
                         break;
 
                     case 3:
+                        dateTime = GetDate();
+                        if (!dateTime.HasValue) break;
+
+                        week = Database.GetWeek(Calendar.GetWeekRange(dateTime.Value));
+
+                        Calendar.DisplayWeek(week);
                         break;
 
                     case 4:
@@ -134,7 +140,7 @@ namespace MyBudgetter_Prototype.UserInterface
                 Console.WriteLine();
             }
         }
-    
+
         public static DateTime? GetDate()
         {
             Console.Write("Please insert the date (format: dd/MM/yyyy): ");
@@ -144,7 +150,6 @@ namespace MyBudgetter_Prototype.UserInterface
             if (DateTime.TryParseExact(userInput, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime userDate))
             {
                 // Successfully parsed
-                Console.WriteLine($"You entered: {userDate.ToShortDateString()}");
                 return userDate;
             }
             else
@@ -154,37 +159,6 @@ namespace MyBudgetter_Prototype.UserInterface
                 return null;
             }
         }
-        public static string GetWeekLabel(DateTime date)
-        {
-            if (date.DayOfWeek != DayOfWeek.Sunday)
-            {
-                while (date.DayOfWeek != DayOfWeek.Sunday)
-                {
-                    date = date.AddDays(-1);
-                }
-            }
-
-            return $"{date.ToShortDateString()} - {date.AddDays(6).ToShortDateString()}";
-        }
-        public static void DisplayWeek(Week week)
-        {
-            Console.WriteLine(week.Label);
-            Console.WriteLine("Expenses:");
-
-            foreach(var expense in week.Expenses)
-            {
-                Console.WriteLine($"Date: {expense.Date,-10} Category: {expense.Category,-10:C} Amount: {expense.Amount,-10:C}");
-            }
-            Console.WriteLine();
-
-            Console.WriteLine("Income:");
-            foreach (var income in week.Income)
-            {
-                Console.WriteLine($"Date: {income.Date,-10} Category: {income.Category,-10:C} Amount: {income.Amount,-10:C}");
-            }
-            Console.WriteLine();
-        }
-    
         public static List<string> GetTags()
         {
             var tags = new List<string>();

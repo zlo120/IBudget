@@ -86,7 +86,7 @@ namespace MyBudgetter_Prototype.Data
                     // Convert frequency enum to string
                     if (data.Frequency is not null)
                     {
-                        var frequency = FrequencyMethods.ConvertToString((Frequency)data.Frequency);
+                        var frequency = FrequencyMethods.ConvertToString(data.Frequency.Value);
                         insertDataCommand.Parameters.AddWithValue("@Frequency", frequency);
                     }
                     else
@@ -121,7 +121,7 @@ namespace MyBudgetter_Prototype.Data
                     // Converting frequency enum to string
                     if (data.Frequency is not null)
                     {
-                        var frequency = FrequencyMethods.ConvertToString((Frequency)data.Frequency);
+                        var frequency = FrequencyMethods.ConvertToString(data.Frequency.Value);
                         insertDataCommand.Parameters.AddWithValue("@Frequency", frequency);
                     }
                     else
@@ -199,6 +199,120 @@ namespace MyBudgetter_Prototype.Data
                     }
                 }
             }
+        }
+        public static Week GetWeek(DateTime[] weekRange)
+        {
+            var weekLabel = Calendar.GetWeekLabel(weekRange[0]);
+            var week = new Week(weekLabel);
+
+            Frequency? frequency;
+
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+
+                string selectIncomeQuery = "SELECT * FROM IncomeRecord WHERE Date BETWEEN @StartDate AND @EndDate;";
+
+                using (SQLiteCommand selectIncomeCommand = new SQLiteCommand(selectIncomeQuery, connection))
+                {
+                    // Set parameters for the select query
+                    selectIncomeCommand.Parameters.AddWithValue("@StartDate", weekRange[0].ToString("yyyy-MM-dd"));
+                    selectIncomeCommand.Parameters.AddWithValue("@EndDate", weekRange[1].ToString("yyyy-MM-dd"));
+
+                    // Execute the select query
+                    using (SQLiteDataReader reader = selectIncomeCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (!reader.IsDBNull(4))
+                            {
+                                frequency = FrequencyMethods.ConvertToFrequency(reader.GetString(4));
+                            }
+                            else
+                            {
+                                frequency = null;
+                            }
+
+                            week.Income.Add(new Income()
+                            {
+                                ID = reader.GetInt32(0),
+                                Category = reader.GetString(1),
+                                Date = reader.GetDateTime(2),
+                                Amount = reader.GetDouble(3),
+                                Frequency = frequency,
+                                Source = reader.GetString(5)
+                            });
+                        }
+                    }
+                }
+
+                var expenses = new List<Expense>();
+
+                string selectExpenseQuery = "SELECT * FROM ExpenseRecord WHERE Date BETWEEN @StartDate AND @EndDate;";
+
+                using (SQLiteCommand selectExpenseCommand = new SQLiteCommand(selectExpenseQuery, connection))
+                {
+                    // Set parameters for the select query
+                    selectExpenseCommand.Parameters.AddWithValue("@StartDate", weekRange[0].ToString("yyyy-MM-dd"));
+                    selectExpenseCommand.Parameters.AddWithValue("@EndDate", weekRange[1].ToString("yyyy-MM-dd"));
+
+                    // Execute the select query
+                    using (SQLiteDataReader reader = selectExpenseCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (!reader.IsDBNull(4))
+                            {
+                                frequency = FrequencyMethods.ConvertToFrequency(reader.GetString(4));
+                            }
+                            else
+                            {
+                                frequency = null;
+                            }
+                            var expense = new Expense()
+                            {
+                                ID = reader.GetInt32(0),
+                                Category = reader.GetString(1),
+                                Date = reader.GetDateTime(2),
+                                Amount = reader.GetDouble(3),
+                                Frequency = frequency,
+                                Notes = reader.GetString(5)
+                            };
+
+                            expenses.Add(expense);
+                        }
+                    }
+                }
+
+                foreach(var expense in expenses)
+                {
+                    if (expense.Tags is null) expense.Tags = new List<string>();                       
+
+
+                    string selectTagQuery = "SELECT Tags.Name FROM Tags " +
+                                     "INNER JOIN ExpenseTags ON Tags.ID = ExpenseTags.TagID " +
+                                     "WHERE ExpenseTags.ExpenseID = @ExpenseRecordID;";
+
+                    using (SQLiteCommand selectTagCommand = new SQLiteCommand(selectTagQuery, connection))
+                    {
+                        selectTagCommand.Parameters.AddWithValue("@ExpenseRecordID", expense.ID);
+
+                        using (SQLiteDataReader reader = selectTagCommand.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                // Process each row of the result set
+                                expense.Tags.Add(reader.GetString(0));
+                            }
+                        }
+                    }
+
+                    week.Expenses.Add(expense);
+                }
+
+            }
+
+            return week;
         }
         public static void Delete(int ID, string table)
         {
