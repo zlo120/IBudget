@@ -314,6 +314,18 @@ namespace MyBudgetter_Prototype.Data
 
             return week;
         }
+        public static Month GetMonth(int monthNum)
+        {
+            var month = new Month(monthNum);
+
+            foreach(var weekRange in month.WeekRanges)
+            {
+                var week = GetWeek(weekRange);
+                month.Weeks.Add(week);
+            }
+
+            return month;
+        }
         public static void Delete(int ID, string table)
         {
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))

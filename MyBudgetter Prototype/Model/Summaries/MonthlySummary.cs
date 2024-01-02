@@ -10,22 +10,7 @@
 
         public override double CalculateBalance()
         {
-            double balance = 0;
-            foreach (var week in Month.Weeks)
-            {
-                foreach (var income in week.Income)
-                {
-                    balance += income.Amount;
-                }
-
-                foreach (var expense in week.Expenses)
-                {
-                    balance -= expense.Amount;
-                }
-            }
-
-            base.Balance = balance;
-            return balance;
+            throw new NotImplementedException();
         }
 
         public override double CalculateEquity()

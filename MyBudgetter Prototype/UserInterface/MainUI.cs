@@ -11,7 +11,7 @@ namespace MyBudgetter_Prototype.UserInterface
 
             while (true)
             {
-                Console.Write("1. Add Income\n2. Add Expense\n3. Read week\n4. Read month\n5. Read year\n6. Update record\n7. Delete record\n8. Exit\nPlease select one: ");
+                Console.Write("1. Add Income\n2. Add Expense\n3. Read week\n4. Read month\n5. Update record\n6. Delete record\n7. Exit\nPlease select one: ");
 
                 int decision;
                 int.TryParse(Console.ReadLine(), out decision);
@@ -108,6 +108,7 @@ namespace MyBudgetter_Prototype.UserInterface
                         Database.InsertExpense(expense);
                         break;
 
+                    // Read week
                     case 3:
                         dateTime = GetDate();
                         if (!dateTime.HasValue) break;
@@ -116,8 +117,33 @@ namespace MyBudgetter_Prototype.UserInterface
 
                         Calendar.DisplayWeek(week);
                         break;
-
+                       
+                    // Read month
                     case 4:
+                        Console.Write("Which month would you like to view:\n 1. January\n 2. February\n 3. March\n 4. April\n 5. May\n 6. June\n 7. July \n 8. August\n 9. September\n 10. October\n 11. November\n 12. December\nPlease select: ");
+                        string monthValue = Console.ReadLine();
+
+                        int monthInt;
+
+                        int.TryParse(monthValue, out monthInt);
+
+                        if (monthInt < 0 || monthInt > 13)
+                        {
+                            Console.WriteLine("\nInvalid month\n");
+                            break;
+                        }
+
+                        month = Database.GetMonth(monthInt);
+
+                        monthInt -= 1;
+                        Console.WriteLine($"\nFor the month of {(CalendarEnum) monthInt}\n");
+
+                        foreach(var _week in month.Weeks)
+                        {
+                            if (_week.Income.Count == 0 && _week.Expenses.Count == 0) continue;
+                            Calendar.DisplayWeek(_week);
+                        }
+
                         break;
 
                     case 5:
@@ -127,9 +153,6 @@ namespace MyBudgetter_Prototype.UserInterface
                         break;
 
                     case 7:
-                        break;
-
-                    case 8:
                         System.Environment.Exit(0);
                         break;
 

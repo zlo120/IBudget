@@ -6,11 +6,13 @@ namespace MyBudgetter_Prototype.Model
     {
         public string MonthName { get; }
         public int MonthNum { get; set; }
-        public List<Week> Weeks { get; private set; }
+        public List<DateTime[]> WeekRanges { get; private set; }
+        public List<Week> Weeks { get; set; }
         public Month(int month)
         {
             MonthName = DateTimeFormatInfo.CurrentInfo.GetMonthName(month);
             MonthNum = month;
+            WeekRanges = new List<DateTime[]>();
             Weeks = new List<Week>();
 
             GenerateAllWeeks();
@@ -18,7 +20,7 @@ namespace MyBudgetter_Prototype.Model
 
         private void GenerateAllWeeks()
         {
-            DateTime currentDate = new DateTime(DateTime.Now.Year, MonthNum, 1);
+            DateTime currentDate = new DateTime(2023, MonthNum, 1);
 
             string[] acceptableDays = ["Monday", "Tuesday", "Wednesday"];
 
@@ -49,19 +51,10 @@ namespace MyBudgetter_Prototype.Model
                     break;
                 }
 
-                var label = $"{currentDate.ToShortDateString()} - {currentDate.AddDays(6).ToShortDateString()}";
-                Weeks.Add(new Week(label));
+                WeekRanges.Add(new DateTime[] { currentDate, currentDate.AddDays(6) });
 
                 counter++;
                 currentDate = currentDate.AddDays(7);
-            }
-        }
-
-        public void PrintAllWeeks()
-        {
-            foreach (var week in Weeks)
-            {
-                Console.WriteLine(week.Label);
             }
         }
     }

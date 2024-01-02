@@ -3,6 +3,21 @@ using System.Globalization;
 
 namespace MyBudgetter_Prototype
 {
+    public enum CalendarEnum
+    {
+        January,
+        February,
+        March,
+        April,
+        May,
+        June,
+        July,
+        August,
+        September,
+        October,
+        November,
+        December
+    }
     public static class Calendar
     {
         public static Year InitiateCalendar()
