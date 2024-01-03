@@ -14,4 +14,11 @@ if (!File.Exists("IBudgetterDB/IBudgetter.db"))
     Database.InitiateDatabase();
 }
 
+if (!Directory.Exists("Chunks"))
+{
+    Directory.CreateDirectory("Chunks");
+    Directory.CreateDirectory("Chunks/Input");
+    Directory.CreateDirectory("Chunks/Outputs");
+}
+
 var UI = new MainUI();

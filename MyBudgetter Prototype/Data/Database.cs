@@ -7,7 +7,6 @@ namespace MyBudgetter_Prototype.Data
     public class Database
     {
         public static string connectionString = "Data Source=IBudgetterDB/IBudgetter.db;Version=3;";
-
         public static void InitiateDatabase()
         {
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
@@ -99,7 +98,6 @@ namespace MyBudgetter_Prototype.Data
                 }
             }
         }
-
         public static void InsertExpense(Expense data)
         {
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
@@ -475,7 +473,6 @@ namespace MyBudgetter_Prototype.Data
                 }
             }
         }
-
         public static void UpdateExpenseRecord(Expense updatedRecord)
         {
             // Check if the record exists first
@@ -524,7 +521,6 @@ namespace MyBudgetter_Prototype.Data
                 UpdateTags(updatedRecord.ID.Value, updatedRecord.Tags);
             }
         }
-
         public static void UpdateTags(int ID, List<string> newTagsList)
         {
             // We start with deleting tags
@@ -662,6 +658,10 @@ namespace MyBudgetter_Prototype.Data
                     }
                 }
             }
+
+        }
+        public static void LoadInData()
+        {
 
         }
     }
