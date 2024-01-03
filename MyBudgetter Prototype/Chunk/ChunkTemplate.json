@@ -1,8 +1,9 @@
 {
+  "DateRange" :  ["DateTime", "DateTime"],
   "Tags": [
     {
       "ID": 1,
-      "Name" :  "string"
+      "Name": "string"
     }
   ],
   "incomeRecords": [
@@ -24,7 +25,9 @@
       "Frequency": "string",
       "Notes": "string",
       "Tags_IDs": [
-        1, 2, 3
+        1,
+        2,
+        3
       ]
     }
   ]

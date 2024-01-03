@@ -1,4 +1,5 @@
 ﻿using MyBudgetter_Prototype.Model;
+using System.Data.Entity.ModelConfiguration.Configuration;
 using System.Data.SQLite;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -660,9 +661,102 @@ namespace MyBudgetter_Prototype.Data
             }
 
         }
-        public static void LoadInData()
+        public static List<DataEntry> GetAllRecordsWithinRange(DateTime[] dateRange)
         {
+            var startDate = dateRange[0];
+            var endDate = dateRange[1];
 
+            var records = new List<DataEntry>();
+
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+
+                string selectQuery;
+                Frequency? frequency;
+
+                // Income records
+                selectQuery = "SELECT * FROM IncomeRecord WHERE Date BETWEEN @StartDate AND @EndDate;";
+
+                using (SQLiteCommand selectIncomeCommand = new SQLiteCommand(selectQuery, connection))
+                {
+                    selectIncomeCommand.Parameters.AddWithValue("@StartDate", startDate.ToString("yyyy-MM-dd"));
+                    selectIncomeCommand.Parameters.AddWithValue("@EndDate", endDate.ToString("yyyy-MM-dd"));
+
+                    // Execute the select query
+                    using (SQLiteDataReader reader = selectIncomeCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (!reader.IsDBNull(4))
+                            {
+                                frequency = FrequencyMethods.ConvertToFrequency(reader.GetString(4));
+                            }
+                            else
+                            {
+                                frequency = null;
+                            }
+
+                            records.Add(new Income()
+                            {
+                                ID = reader.GetInt32(0),
+                                Category = reader.GetString(1),
+                                Date = reader.GetDateTime(2),
+                                Amount = reader.GetDouble(3),
+                                Frequency = frequency,
+                                Source = reader.GetString(5),
+                            });
+                        }
+                    }
+                }
+
+                // Expense records
+                selectQuery = "SELECT * FROM ExpenseRecord WHERE Date BETWEEN @StartDate AND @EndDate;";
+
+                var expenses = new List<Expense>();
+
+                using (SQLiteCommand selectExpenseCommand = new SQLiteCommand(selectQuery, connection))
+                {
+                    selectExpenseCommand.Parameters.AddWithValue("@StartDate", startDate.ToString("yyyy-MM-dd"));
+                    selectExpenseCommand.Parameters.AddWithValue("@EndDate", endDate.ToString("yyyy-MM-dd"));
+
+                    // Execute the select query
+                    using (SQLiteDataReader reader = selectExpenseCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (!reader.IsDBNull(4))
+                            {
+                                frequency = FrequencyMethods.ConvertToFrequency(reader.GetString(4));
+                            }
+                            else
+                            {
+                                frequency = null;
+                            }
+                            var expense = new Expense()
+                            {
+                                ID = reader.GetInt32(0),
+                                Category = reader.GetString(1),
+                                Date = reader.GetDateTime(2),
+                                Amount = reader.GetDouble(3),
+                                Frequency = frequency,
+                                Notes = reader.GetString(5)
+                            };
+
+                            expenses.Add(expense);
+                        }
+                    }
+                }
+
+                foreach (var expense in expenses)
+                {
+                    if (expense.Tags is null) expense.Tags = new List<string>();
+                    expense.Tags = GetTags(expense.ID.Value);
+                    records.Add(expense);
+                }
+            }
+            
+            return records;
         }
     }
 }
