@@ -1,4 +1,5 @@
-﻿using MyBudgetter_Prototype.Model;
+﻿using MyBudgetter_Prototype.Chunk;
+using MyBudgetter_Prototype.Model;
 using System.Data.SQLite;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -423,6 +424,37 @@ namespace MyBudgetter_Prototype.Data
 
             return tags;
         }
+        public static List<Tag> GetTagObjects(int expenseID)
+        {
+            var tags = new List<Tag>();
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+                string selectTagQuery = "SELECT * FROM Tags " +
+                             "INNER JOIN ExpenseTags ON Tags.ID = ExpenseTags.TagID " +
+                             "WHERE ExpenseTags.ExpenseID = @ExpenseRecordID;";
+
+                using (SQLiteCommand selectTagCommand = new SQLiteCommand(selectTagQuery, connection))
+                {
+                    selectTagCommand.Parameters.AddWithValue("@ExpenseRecordID", expenseID);
+
+                    using (SQLiteDataReader reader = selectTagCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            // Process each row of the result set
+                            tags.Add(new Tag()
+                            {
+                                ID = reader.GetInt32(0),
+                                Name = reader.GetString(1)
+                            });
+                        }
+                    }
+                }
+            }
+
+            return tags;
+        }
         public static Month GetMonth(int monthNum)
         {
             var month = new Month(monthNum);
@@ -832,6 +864,109 @@ namespace MyBudgetter_Prototype.Data
                 }
             }
             return null;
+        }
+        public static RootObject GetChunkDataByDateRange(DateTime startDate, DateTime endDate)
+        {
+            var chunkData = new RootObject();
+
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+
+                string selectIncomeQuery = "SELECT * FROM IncomeRecord WHERE Date BETWEEN @StartDate AND @EndDate;";
+                Frequency? frequency;
+                using (SQLiteCommand selectIncomeCommand = new SQLiteCommand(selectIncomeQuery, connection))
+                {
+                    // Set parameters for the select query
+                    selectIncomeCommand.Parameters.AddWithValue("@StartDate", startDate.ToString("yyyy-MM-dd"));
+                    selectIncomeCommand.Parameters.AddWithValue("@EndDate", endDate.ToString("yyyy-MM-dd"));
+
+                    // Execute the select query
+                    using (SQLiteDataReader reader = selectIncomeCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (!reader.IsDBNull(4))
+                            {
+                                frequency = FrequencyMethods.ConvertToFrequency(reader.GetString(4));
+                            }
+                            else
+                            {
+                                frequency = null;
+                            }
+
+                            chunkData.IncomeRecords.Add(new Income()
+                            {
+                                ID = reader.GetInt32(0),
+                                Category = reader.GetString(1),
+                                Date = reader.GetDateTime(2),
+                                Amount = reader.GetDouble(3),
+                                Frequency = frequency,
+                                Source = reader.GetString(5)
+                            });
+                        }
+                    }
+                }
+
+                var expenses = new List<Expense>();
+
+                string selectExpenseQuery = "SELECT * FROM ExpenseRecord WHERE Date BETWEEN @StartDate AND @EndDate;";
+
+                using (SQLiteCommand selectExpenseCommand = new SQLiteCommand(selectExpenseQuery, connection))
+                {
+                    // Set parameters for the select query
+                    selectExpenseCommand.Parameters.AddWithValue("@StartDate", startDate.ToString("yyyy-MM-dd"));
+                    selectExpenseCommand.Parameters.AddWithValue("@EndDate", endDate.ToString("yyyy-MM-dd"));
+
+                    // Execute the select query
+                    using (SQLiteDataReader reader = selectExpenseCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (!reader.IsDBNull(4))
+                            {
+                                frequency = FrequencyMethods.ConvertToFrequency(reader.GetString(4));
+                            }
+                            else
+                            {
+                                frequency = null;
+                            }
+                            var expense = new Expense()
+                            {
+                                ID = reader.GetInt32(0),
+                                Category = reader.GetString(1),
+                                Date = reader.GetDateTime(2),
+                                Amount = reader.GetDouble(3),
+                                Frequency = frequency,
+                                Notes = reader.GetString(5)
+                            };
+
+                            expenses.Add(expense);
+                        }
+                    }
+                }
+
+                foreach (var expense in expenses)
+                {
+                    var tags = GetTagObjects(expense.ID.Value);
+                    var tagIDs = new List<int>();
+                    foreach (var tag in tags)
+                    {
+                        tagIDs.Add(tag.ID);
+
+                        // add non existing tags to chunkData
+                        if (!chunkData.Tags.Contains(tag))
+                        {
+                            chunkData.Tags.Add(tag);
+                        }
+                    }
+
+                    expense.TagIDs = tagIDs;
+                    chunkData.ExpenseRecords.Add(expense);
+                }
+            }
+
+            return chunkData;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using MyBudgetter_Prototype.Data;
+﻿using MyBudgetter_Prototype.Chunk;
+using MyBudgetter_Prototype.Data;
 using MyBudgetter_Prototype.Model;
 
 namespace MyBudgetter_Prototype.UserInterface
@@ -11,17 +12,15 @@ namespace MyBudgetter_Prototype.UserInterface
 
             while (true)
             {
-                Console.Write("1. Add Income\n2. Add Expense\n3. Read week\n4. Read month\n5. Update record\n6. Delete record\n7. Exit\nPlease select one: ");
+                Console.Write("1. Add Income\n2. Add Expense\n3. Read week\n4. Read month\n5. Update record\n6. Delete record\n7. Output data chunk\n8. Exit\nPlease select one: ");
 
                 int decision;
                 int.TryParse(Console.ReadLine(), out decision);
 
                 DateTime? dateTime;
-                string category;
+                string category, source, userInput, frequencyInput;
                 double amount;
-                string frequencyInput;
                 int frequency;
-                string source;
                 Week week;
                 Month month;
                 Year year;
@@ -310,7 +309,7 @@ namespace MyBudgetter_Prototype.UserInterface
                                 while (true)
                                 {
                                     Console.Write(" > ");
-                                    var userInput = Console.ReadLine();
+                                    userInput = Console.ReadLine();
 
                                     if (userInput == "") break;
 
@@ -379,7 +378,47 @@ namespace MyBudgetter_Prototype.UserInterface
 
                         break;
 
+                    // Output data chunk
                     case 7:
+                        DateTime startDate, endDate;
+
+                        Console.Write("Please insert the start date (format: dd/MM/yyyy): ");
+                        userInput = Console.ReadLine();
+
+                        // Try to parse the user input into a DateTime
+                        if (DateTime.TryParseExact(userInput, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime userDate))
+                        {
+                            // Successfully parsed
+                            startDate = userDate;
+                        }
+                        else
+                        {
+                            // Parsing failed
+                            Console.WriteLine("Invalid date format. Please enter a valid date.");
+                            break;
+                        }
+
+                        Console.Write("Please insert the end date (format: dd/MM/yyyy): ");
+                        userInput = Console.ReadLine();
+
+                        // Try to parse the user input into a DateTime
+                        if (DateTime.TryParseExact(userInput, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out userDate))
+                        {
+                            // Successfully parsed
+                            endDate = userDate;
+                        }
+                        else
+                        {
+                            // Parsing failed
+                            Console.WriteLine("Invalid date format. Please enter a valid date.");
+                            break;
+                        }
+
+                        ChunkWriter.WriteToJSON(startDate, endDate);
+
+                        break;
+
+                    case 8:
                         System.Environment.Exit(0);
                         break;
 
