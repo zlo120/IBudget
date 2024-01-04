@@ -1,5 +1,4 @@
 ﻿using MyBudgetter_Prototype.Model;
-using System.Data.Entity.ModelConfiguration.Configuration;
 using System.Data.SQLite;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -133,7 +132,17 @@ namespace MyBudgetter_Prototype.Data
                     int expenseRecordID = (int)connection.LastInsertRowId;
 
                     // Insert associated tags
-                    InsertTags(expenseRecordID, data.Tags);
+                    if (data.TagIDs is not null && data.TagIDs.Count > 0)
+                    {
+                        var tagNames = new List<string>();
+
+                        // Get all the tags' names
+                        foreach(var id in data.TagIDs)
+                            tagNames.Add(GetTagNameFromID(id));
+                        InsertTags(expenseRecordID, tagNames);
+                    }                        
+                    else 
+                        InsertTags(expenseRecordID, data.Tags);
                 }
             }
         }
@@ -553,7 +562,7 @@ namespace MyBudgetter_Prototype.Data
                     }
                 }
 
-                foreach(var tagID in oldTagsIDList)
+                foreach (var tagID in oldTagsIDList)
                 {
                     selectTagsQuery = "SELECT * FROM Tags WHERE ID = @ID;";
 
@@ -755,8 +764,74 @@ namespace MyBudgetter_Prototype.Data
                     records.Add(expense);
                 }
             }
-            
+
             return records;
+        }
+        public static bool TagExistsInDB(Tag tag)
+        {
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+
+                string selectIncomeQuery = "SELECT * FROM Tags WHERE LOWER(Name) = @Name;";
+
+                using (SQLiteCommand selectTagCommand = new SQLiteCommand(selectIncomeQuery, connection))
+                {
+                    // Set parameters for the select query
+                    selectTagCommand.Parameters.AddWithValue("@Name", tag.Name.ToLower());
+
+                    var tagCount = Convert.ToInt32(selectTagCommand.ExecuteScalar());
+
+                    if (tagCount > 0) return true;
+                }
+            }
+
+            return false;
+        }
+        public static int? CreateSingularTag(string tagName)
+        {
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            {
+                // Open the connection
+                connection.Open();
+
+                // Insert data into the IncomeRecord table
+                string insertDataQuery = $"INSERT INTO Tags (Name) VALUES (@Name);";
+
+                using (SQLiteCommand insertDataCommand = new SQLiteCommand(insertDataQuery, connection))
+                {
+                    // Set parameters for the insert query
+                    insertDataCommand.Parameters.AddWithValue("@Name", tagName);
+                    insertDataCommand.ExecuteNonQuery();
+
+                    return (int)connection.LastInsertRowId;
+                }
+            }
+
+            return null;
+        }
+        public static string GetTagNameFromID(int id)
+        {
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+
+                string selectTagQuery = $"SELECT * FROM Tags WHERE ID = @id;";
+
+                using (SQLiteCommand selectCommand = new SQLiteCommand(selectTagQuery, connection))
+                {
+                    selectCommand.Parameters.AddWithValue("@id", id);
+
+                    using (SQLiteDataReader reader = selectCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            return reader.GetString(1);
+                        }
+                    }
+                }
+            }
+            return null;
         }
     }
 }

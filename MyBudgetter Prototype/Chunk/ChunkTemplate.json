@@ -24,7 +24,7 @@
       "Amount": 1.0,
       "Frequency": "string",
       "Notes": "string",
-      "Tags_IDs": [
+      "TagIDs": [
         1,
         2,
         3

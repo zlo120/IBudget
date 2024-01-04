@@ -2,6 +2,7 @@
 using MyBudgetter_Prototype.UserInterface;
 using MyBudgetter_Prototype.Data;
 using MyBudgetter_Prototype.Chunk;
+using Newtonsoft.Json;
 
 if (!Directory.Exists("IBudgetterDB"))
 {
@@ -22,10 +23,10 @@ if (!Directory.Exists("Chunks"))
     Directory.CreateDirectory("Chunks/Outputs");
 }
 
-string[] fileNames = Directory.GetFiles("Chunks/Input");
+string[] fileNames = Directory.GetFiles("Chunks\\Input");
 foreach (var file in fileNames)
 {
-    ChunkParser.ReadFile("Chunks/Input/" + file);
+    ChunkParser.ReadFile(file);
 }
 
 var UI = new MainUI();
