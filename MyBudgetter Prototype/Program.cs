@@ -1,6 +1,6 @@
 ﻿// Create the SQLite db if it doesn't exist
-using MyBudgetter_Prototype.Chunk;
-using MyBudgetter_Prototype.Data;
+using Core.Chunk;
+using Core.Data;
 using MyBudgetter_Prototype.UserInterface;
 
 if (!Directory.Exists("IBudgetterDB"))

@@ -1,6 +1,7 @@
-﻿using MyBudgetter_Prototype.Chunk;
-using MyBudgetter_Prototype.Data;
-using MyBudgetter_Prototype.Model;
+﻿using Core;
+using Core.Chunk;
+using Core.Data;
+using Core.Model;
 
 namespace MyBudgetter_Prototype.UserInterface
 {

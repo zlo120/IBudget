@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace MyBudgetter_Prototype.Model
+namespace Core.Model
 {
     public class Month
     {

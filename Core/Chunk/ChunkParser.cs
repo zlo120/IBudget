@@ -1,8 +1,8 @@
-﻿using MyBudgetter_Prototype.Data;
-using MyBudgetter_Prototype.Model;
+﻿using Core.Data;
+using Core.Model;
 using Newtonsoft.Json;
 
-namespace MyBudgetter_Prototype.Chunk
+namespace Core.Chunk
 {
     public static class ChunkParser
     {

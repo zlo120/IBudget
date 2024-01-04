@@ -1,6 +1,6 @@
-﻿using MyBudgetter_Prototype.Model;
+﻿using Core.Model;
 
-namespace MyBudgetter_Prototype.Chunk
+namespace Core.Chunk
 {
     public class RootObject
     {

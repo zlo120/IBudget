@@ -1,4 +1,4 @@
-﻿namespace MyBudgetter_Prototype.Model
+﻿namespace Core.Model
 {
     public static class FrequencyMethods
     {

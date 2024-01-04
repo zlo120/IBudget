@@ -1,7 +1,7 @@
-﻿using MyBudgetter_Prototype.Data;
+﻿using Core.Data;
 using Newtonsoft.Json;
 
-namespace MyBudgetter_Prototype.Chunk
+namespace Core.Chunk
 {
     public static class ChunkWriter
     {

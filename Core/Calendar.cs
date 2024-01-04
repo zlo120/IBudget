@@ -1,7 +1,7 @@
-﻿using MyBudgetter_Prototype.Model;
+﻿using Core.Model;
 using System.Globalization;
 
-namespace MyBudgetter_Prototype
+namespace Core
 {
     public enum CalendarEnum
     {

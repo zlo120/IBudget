@@ -1,9 +1,8 @@
-﻿using MyBudgetter_Prototype.Chunk;
-using MyBudgetter_Prototype.Model;
+﻿using Core.Chunk;
+using Core.Model;
 using System.Data.SQLite;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace MyBudgetter_Prototype.Data
+namespace Core.Data
 {
     public class Database
     {
@@ -138,11 +137,11 @@ namespace MyBudgetter_Prototype.Data
                         var tagNames = new List<string>();
 
                         // Get all the tags' names
-                        foreach(var id in data.TagIDs)
+                        foreach (var id in data.TagIDs)
                             tagNames.Add(GetTagNameFromID(id));
                         InsertTags(expenseRecordID, tagNames);
-                    }                        
-                    else 
+                    }
+                    else
                         InsertTags(expenseRecordID, data.Tags);
                 }
             }
