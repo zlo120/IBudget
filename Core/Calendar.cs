@@ -107,9 +107,13 @@ namespace Core
                     date = date.AddDays(-1);
                 }
             }
+            // start variable date.ToShortDateString() but replace '/' with '-'
+            var start = date.ToShortDateString().Replace("/", "-");
+            var end = date.AddDays(6).ToShortDateString().Replace("/", "-");
 
-            return $"{date.ToShortDateString()} - {date.AddDays(6).ToShortDateString()}";
+            return $"{start} to {end}";
         }
+
         public static void DisplayWeek(Week week)
         {
             Console.WriteLine();

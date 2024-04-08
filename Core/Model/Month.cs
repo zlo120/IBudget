@@ -56,6 +56,11 @@ namespace Core.Model
                 counter++;
                 currentDate = currentDate.AddDays(7);
             }
+
+            foreach (var range in WeekRanges)
+            {
+                Weeks.Add(new Week(Calendar.GetWeekLabel(range[0])));
+            }
         }
     }
 }

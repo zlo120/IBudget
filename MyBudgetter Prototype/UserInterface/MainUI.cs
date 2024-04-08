@@ -2,6 +2,8 @@
 using Core.Chunk;
 using Core.Data;
 using Core.Model;
+using Spreadsheet;
+using System.CodeDom.Compiler;
 
 namespace MyBudgetter_Prototype.UserInterface
 {
@@ -13,7 +15,7 @@ namespace MyBudgetter_Prototype.UserInterface
 
             while (true)
             {
-                Console.Write("1. Add Income\n2. Add Expense\n3. Read week\n4. Read month\n5. Update record\n6. Delete record\n7. Output data chunk\n8. Exit\nPlease select one: ");
+                Console.Write("1. Add Income\n2. Add Expense\n3. Read week\n4. Read month\n5. Update record\n6. Delete record\n7. Output data chunk\n8. Generate excel spreadsheet\n9. Exit\nPlease select one: ");
 
                 int decision;
                 int.TryParse(Console.ReadLine(), out decision);
@@ -419,7 +421,12 @@ namespace MyBudgetter_Prototype.UserInterface
 
                         break;
 
+                    // generate excel spreadsheet
                     case 8:
+                        Generator.GenerateSpreadsheet();
+                        break;
+
+                    case 9:
                         System.Environment.Exit(0);
                         break;
 
