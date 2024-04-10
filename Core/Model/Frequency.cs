@@ -2,7 +2,7 @@
 {
     public enum Frequency
     {
-        Daily,
+        Daily = 1,
         Weekly,
         BiWeekly,
         Monthy,

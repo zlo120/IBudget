@@ -1,5 +1,5 @@
 ﻿using ClosedXML.Excel;
-using Core;
+using Core.Utils;
 
 namespace Spreadsheet
 {

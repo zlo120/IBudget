@@ -1,8 +1,9 @@
 ﻿namespace Core.Model
 {
-    public class Tag
+    public class Tag : BaseModel
     {
-        public int ID { get; set; }
         public string Name { get; set; }
+        public virtual List<Income>? Incomes { get; set; }
+        public virtual List<Expense>? Expenses { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Core.Model;
 using System.Globalization;
 
-namespace Core
+namespace Core.Utils
 {
     public enum CalendarEnum
     {
@@ -114,23 +114,49 @@ namespace Core
             return $"{start} to {end}";
         }
 
+        public static bool DatesAreInTheSameWeek(DateTime date1, DateTime date2)
+        {
+            var cal = DateTimeFormatInfo.CurrentInfo.Calendar;
+            var d1 = date1.Date.AddDays(-1 * (int)cal.GetDayOfWeek(date1));
+            var d2 = date2.Date.AddDays(-1 * (int)cal.GetDayOfWeek(date2));
+            return d1 == d2;
+        }
         public static void DisplayWeek(Week week)
         {
-            Console.WriteLine();
+            var border = new String('=', week.Label.Length);
+            Console.WriteLine(border);
             Console.WriteLine(week.Label);
-            Console.WriteLine("Expenses:");
+            Console.WriteLine(border);
 
-            foreach (var expense in week.Expenses)
+            if (week.Expenses.Count == 0)
             {
-                Console.WriteLine($"ID: {expense.ID,-5} Date: {expense.Date.ToString("dd/MM/yyyy"),-15} Category: {expense.Category,-10} Amount: {expense.Amount.ToString("C", CultureInfo.GetCultureInfo("en-US")),-10}", "en-AU");
+                Console.WriteLine("No expenses for this week.");
             }
-            Console.WriteLine();
+            else
+            {
+                Console.WriteLine("Expenses:");
+                foreach (var expense in week.Expenses)
+                {
+                    Console.WriteLine(expense);
+                }
+                Console.WriteLine();
+            }
 
-            Console.WriteLine("Income:");
-            foreach (var income in week.Income)
+
+            if (week.Income.Count == 0)
             {
-                Console.WriteLine($"ID: {income.ID,-5} Date: {income.Date.ToString("dd/MM/yyyy"),-15} Category: {income.Category,-10} Amount: {income.Amount.ToString("C", CultureInfo.GetCultureInfo("en-US")),-10}");
+                Console.WriteLine("No income for this week.");
             }
+            else
+            {
+                Console.WriteLine("Income:");
+                foreach (var income in week.Income)
+                {
+                    Console.WriteLine(income);
+                }
+                Console.WriteLine();
+            }
+
             Console.WriteLine();
         }
     }
