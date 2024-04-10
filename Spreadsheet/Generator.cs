@@ -1,6 +1,9 @@
 ﻿using ClosedXML.Excel;
 using Core.Utils;
+using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Drawing.ChartDrawing;
+using IronXL;
+using IronXL.Drawing.Charts;
 
 namespace Spreadsheet
 {
@@ -102,6 +105,45 @@ namespace Spreadsheet
 
             workbook.SaveAs(path);
 
+            WorkBook wb = WorkBook.Load(path);
+            int counter = 0;
+
+            // array of all month names
+            string[] monthNames = calendar.Months.Select(month => month.MonthName).ToArray();
+
+            string[] weekLabels = calendar.Months.SelectMany(month => month.Weeks.Select(week => week.Label)).ToArray();
+
+
+            while (wb.WorkSheets.Count > counter)
+            {
+                var workSheet = wb.WorkSheets[counter];
+                if (monthNames.Contains(workSheet.Name))
+                {
+                    // this worksheet is a month summary
+
+                }
+                else if (weekLabels.Contains(workSheet.Name))
+                {
+                    Console.WriteLine($"Plotting graph for sheet {workSheet.Name}");
+                    // this worksheet is a week summary
+                    string xAxis = "K4:L4";
+                    string yAxis = "K5:L5";
+
+                    var chart = workSheet.CreateChart(ChartType.Bar, 5, 5, 20, 20);
+
+                    var series = chart.AddSeries(yAxis, xAxis);
+
+                    chart.SetTitle("Financial Summary");
+                    chart.SetLegendPosition(LegendPosition.Bottom);
+                    chart.Plot();
+                }
+                counter++;
+            }
+
+
+            Console.WriteLine($"Your excel spreadsheet is ready to open at \"{path}\"");
+            Console.ReadKey();
+            return;
 
         }
     }
