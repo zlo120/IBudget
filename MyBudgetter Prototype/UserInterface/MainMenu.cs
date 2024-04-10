@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using MyBudgetter_Prototype.Config;
 using MyBudgetter_Prototype.UserInterface.MenuOptions;
 using MyBudgetter_Prototype.Utils;
+using Spreadsheet;
 
 namespace MyBudgetter_Prototype.UserInterface
 {
@@ -82,6 +83,11 @@ namespace MyBudgetter_Prototype.UserInterface
                     case 6:
                         var deleteRecordOption = new DeleteRecordOption(this, "delete record", _serviceProvider);
                         deleteRecordOption.Execute();
+                        break;
+
+                    // Generate spreadsheet
+                    case 7:
+                        Generator.GenerateSpreadsheet();
                         break;
                 }
 
