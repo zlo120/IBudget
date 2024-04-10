@@ -9,7 +9,6 @@ namespace Core.Model
         public double Amount { get; set; }
         public Frequency? Frequency { get; set; }
         public virtual List<Tag>? Tags { get; set; }
-
         public override string ToString()
         {
             return $"ID: {ID,-5} Date: {Date.ToString("dd/MM/yyyy"),-15} Amount: {Amount.ToString("C", CultureInfo.GetCultureInfo("en-US")),-10}\n\tTags: {GetTags()}\n";
