@@ -13,6 +13,13 @@ namespace Core.Services
 
         public async Task<bool> AddIncome(Income income)
         {
+            for (int i = 0; i < income.Tags.Count; i++)
+            {
+                var tag = income.Tags[i];
+                tag.Name = tag.Name.ToLower();
+                income.Tags[i] = tag;
+            }
+
             return await _incomeRepository.AddIncome(income);
         }
 

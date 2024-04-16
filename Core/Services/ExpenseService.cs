@@ -13,6 +13,13 @@ namespace Core.Services
 
         public async Task<bool> AddExpense(Expense expense)
         {
+            for (int i = 0; i < expense.Tags.Count; i++)
+            {
+                var tag = expense.Tags[i];
+                tag.Name = tag.Name.ToLower();
+                expense.Tags[i] = tag;
+            }
+
             return await _expenseRepository.AddExpense(expense);
         }
 
