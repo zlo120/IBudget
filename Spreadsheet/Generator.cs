@@ -38,6 +38,11 @@ namespace Spreadsheet
 
             var firstSheet = workbook.Worksheets.First();
             workbook.Save();
+
+            Console.WriteLine($"Your excel spreadsheet is ready to open at \"{path}\"");
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
+            return;
         }
 
         private static void GenerateCharts(string path, string[] monthNames, string[] weekLabels)
@@ -105,11 +110,6 @@ namespace Spreadsheet
             }
 
             workBook.Save(path);
-
-            Console.WriteLine($"Your excel spreadsheet is ready to open at \"{path}\"");
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();
-            return;
         }
     
         private static void GenerateMonths(Year calendar, XLWorkbook workbook, IXLWorksheet tableOfContentsWS, ref int nextFreeCell)
