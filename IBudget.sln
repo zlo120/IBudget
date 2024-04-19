@@ -3,25 +3,25 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleUI", "MyBudgetter Prototype\ConsoleUI.csproj", "{FE3EFAE3-8D26-4A77-A1BA-B4480718F632}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IBudget.ConsoleUI", "IBudget.ConsoleUI\IBudget.ConsoleUI.csproj", "{FE3EFAE3-8D26-4A77-A1BA-B4480718F632}"
 	ProjectSection(ProjectDependencies) = postProject
 		{51A4DB52-CD8E-48DD-A7CA-C2AA06310095} = {51A4DB52-CD8E-48DD-A7CA-C2AA06310095}
 		{7BD88A92-4065-4B27-A7C5-6E822AF6F1BA} = {7BD88A92-4065-4B27-A7C5-6E822AF6F1BA}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{7BD88A92-4065-4B27-A7C5-6E822AF6F1BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IBudget.Core", "IBudget.Core\IBudget.Core.csproj", "{7BD88A92-4065-4B27-A7C5-6E822AF6F1BA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spreadsheet", "Spreadsheet\Spreadsheet.csproj", "{51A4DB52-CD8E-48DD-A7CA-C2AA06310095}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IBudget.Spreadsheet", "IBudget.Spreadsheet\IBudget.Spreadsheet.csproj", "{51A4DB52-CD8E-48DD-A7CA-C2AA06310095}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7BD88A92-4065-4B27-A7C5-6E822AF6F1BA} = {7BD88A92-4065-4B27-A7C5-6E822AF6F1BA}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{2CE8F054-EB71-4563-A5F6-785B8B484361}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IBudget.Infrastructure", "IBudget.Infrastructure\IBudget.Infrastructure.csproj", "{2CE8F054-EB71-4563-A5F6-785B8B484361}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7BD88A92-4065-4B27-A7C5-6E822AF6F1BA} = {7BD88A92-4065-4B27-A7C5-6E822AF6F1BA}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API\API.csproj", "{968F326C-F7FA-43E2-AF04-7AD8F216ABA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IBudget.API", "IBudget.API\IBudget.API.csproj", "{968F326C-F7FA-43E2-AF04-7AD8F216ABA4}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2CE8F054-EB71-4563-A5F6-785B8B484361} = {2CE8F054-EB71-4563-A5F6-785B8B484361}
 		{51A4DB52-CD8E-48DD-A7CA-C2AA06310095} = {51A4DB52-CD8E-48DD-A7CA-C2AA06310095}

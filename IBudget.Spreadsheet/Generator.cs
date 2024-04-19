@@ -17,6 +17,8 @@ namespace Spreadsheet
             tableOfContentsWS.Cell(1, 1).Style.Font.Bold = true;
             tableOfContentsWS.Column(1).Width = 5 * tableOfContentsWS.Column(1).Width;
 
+            GenerateBudgetSheet(workbook);
+
             int nextFreeCell = 2;
 
             GenerateMonths(calendar, workbook, tableOfContentsWS, ref nextFreeCell);
@@ -72,8 +74,8 @@ namespace Spreadsheet
                 chart.ValueAxis.MinorUnit = 100; // Set minor unit for Y-axis
                 chart.ValueAxis.MajorGridLines.IsVisible = true; // Show major gridlines
 
-                chart.NSeries.Add("A5", true); // Replace with your actual cell range
-                chart.NSeries.Add("B5", true); // Replace with your actual cell range
+                chart.NSeries.Add("A11", true); // Replace with your actual cell range
+                chart.NSeries.Add("B11", true); // Replace with your actual cell range
 
 
                 chart.NSeries[0].Name = "Total outgoing"; // Replace with your actual series name
@@ -84,7 +86,7 @@ namespace Spreadsheet
             {
                 var workSheet = workBook.Worksheets.Where(s => s.Name == week).FirstOrDefault();
 
-                int chartIndex = workSheet.Charts.Add(ChartType.Column, 6, 9, 18, 13);
+                int chartIndex = workSheet.Charts.Add(ChartType.Column, 7, 11, 20, 15);
 
                 var chart = workSheet.Charts[chartIndex];
 
@@ -101,9 +103,8 @@ namespace Spreadsheet
                 chart.ValueAxis.MinorUnit = 100; // Set minor unit for Y-axis
                 chart.ValueAxis.MajorGridLines.IsVisible = true; // Show major gridlines
 
-                chart.NSeries.Add("K5", true); // Replace with your actual cell range
-                chart.NSeries.Add("L5", true); // Replace with your actual cell range
-
+                chart.NSeries.Add("M7", true); // Replace with your actual cell range
+                chart.NSeries.Add("N7", true); // Replace with your actual cell range
 
                 chart.NSeries[0].Name = "Total outgoing"; // Replace with your actual series name
                 chart.NSeries[1].Name = "Total income"; // Replace with your actual series name
@@ -120,25 +121,33 @@ namespace Spreadsheet
                 var foodFormula = $"_xlfn.SUM(";
                 var totalSpendingFormula = $"_xlfn.SUM(";
                 var totalIncomeFormula = $"_xlfn.SUM(";
+                var totalPublicTransportFormula = $"_xlfn.SUM(";
+                var totalAlcoholFormula = $"_xlfn.SUM(";
                 foreach (var week in month.Weeks)
                 {
                     if (week == month.Weeks.Last())
                     {
-                        foodFormula += $"'{week.Label}'!K3";
-                        totalSpendingFormula += $"'{week.Label}'!K5";
-                        totalIncomeFormula += $"'{week.Label}'!L5";
+                        foodFormula += $"'{week.Label}'!M3";
+                        totalSpendingFormula += $"'{week.Label}'!M7";
+                        totalIncomeFormula += $"'{week.Label}'!N7";
+                        totalPublicTransportFormula += $"'{week.Label}'!N5";
+                        totalAlcoholFormula += $"'{week.Label}'!M5";
                     }
                     else
                     {
-                        foodFormula += $"'{week.Label}'!K3,";
-                        totalSpendingFormula += $"'{week.Label}'!K5,";
-                        totalIncomeFormula += $"'{week.Label}'!L5,";
+                        foodFormula += $"'{week.Label}'!M3,";
+                        totalSpendingFormula += $"'{week.Label}'!M7,";
+                        totalIncomeFormula += $"'{week.Label}'!N7,";
+                        totalPublicTransportFormula += $"'{week.Label}'!N5,";
+                        totalAlcoholFormula += $"'{week.Label}'!M5,";
                     }
                 }
 
                 foodFormula += ")";
                 totalSpendingFormula += ")";
                 totalIncomeFormula += ")";
+                totalPublicTransportFormula += ")";
+                totalAlcoholFormula += ")";
 
                 var monthSummaryWorksheet = workbook.Worksheets.Add(month.MonthName);
 
@@ -150,27 +159,39 @@ namespace Spreadsheet
                 monthSummaryWorksheet.Cell(1, 1).Style.Font.Bold = true;
                 monthSummaryWorksheet.Cell(2, 1).FormulaA1 = foodFormula;
 
-                monthSummaryWorksheet.Cell(1, 2).Value = "Food money budget remaining";
+                monthSummaryWorksheet.Cell(1, 2).Value = "Total money spent on alcohol";
                 monthSummaryWorksheet.Cell(1, 2).Style.Font.Bold = true;
-                monthSummaryWorksheet.Cell(2, 2).Value = "To be added"; // edit this formula!
+                monthSummaryWorksheet.Cell(2, 2).FormulaA1 = totalAlcoholFormula;
 
-                monthSummaryWorksheet.Cell(4, 1).Value = "Total money spent this month";
+                monthSummaryWorksheet.Cell(4, 1).Value = "Total money spent on public transport";
                 monthSummaryWorksheet.Cell(4, 1).Style.Font.Bold = true;
-                monthSummaryWorksheet.Cell(5, 1).FormulaA1 = totalSpendingFormula;
+                monthSummaryWorksheet.Cell(5, 1).FormulaA1 = totalPublicTransportFormula;
 
-                monthSummaryWorksheet.Cell(4, 2).Value = "Total income this month";
+                monthSummaryWorksheet.Cell(4, 2).Value = "Public transport budget balance";
                 monthSummaryWorksheet.Cell(4, 2).Style.Font.Bold = true;
-                monthSummaryWorksheet.Cell(5, 2).FormulaA1 = totalIncomeFormula;
+                monthSummaryWorksheet.Cell(5, 2).FormulaA1 = "='Monthly Budget'!B4 - A5";
 
-                monthSummaryWorksheet.Cell(7, 1).Value = "Monthy budget balance";
+                monthSummaryWorksheet.Cell(7, 1).Value = "Monthly budget balance";
                 monthSummaryWorksheet.Cell(7, 1).Style.Font.Bold = true;
-                monthSummaryWorksheet.Cell(8, 1).Value = "To be added"; // edit this formula!
+                monthSummaryWorksheet.Cell(8, 1).FormulaA1 = "='Monthly Budget'!D2 - A11";
+
+                monthSummaryWorksheet.Cell(7, 2).Value = "Monthy food/alcohol budget balance";
+                monthSummaryWorksheet.Cell(7, 2).Style.Font.Bold = true;
+                monthSummaryWorksheet.Cell(8, 2).FormulaA1 = "='Monthly Budget'!B2 + 'Monthly Budget'!B3 - B2 - A2";
+
+                monthSummaryWorksheet.Cell(10, 1).Value = "Total money spent this month";
+                monthSummaryWorksheet.Cell(10, 1).Style.Font.Bold = true;
+                monthSummaryWorksheet.Cell(11, 1).FormulaA1 = totalSpendingFormula;
+
+                monthSummaryWorksheet.Cell(10, 2).Value = "Total income this month";
+                monthSummaryWorksheet.Cell(10, 2).Style.Font.Bold = true;
+                monthSummaryWorksheet.Cell(11, 2).FormulaA1 = totalIncomeFormula;
 
                 monthSummaryWorksheet.Column(1).AdjustToContents();
                 monthSummaryWorksheet.Column(2).AdjustToContents();
 
-                monthSummaryWorksheet.Cell(7, 2).Value = "Go back to Table of Contents";
-                monthSummaryWorksheet.Cell(7, 2).SetHyperlink(new XLHyperlink($"'Table of Contents'!A1"));
+                monthSummaryWorksheet.Cell(13, 1).Value = "Go back to Table of Contents";
+                monthSummaryWorksheet.Cell(13, 1).SetHyperlink(new XLHyperlink($"'Table of Contents'!A1"));
 
                 var col1 = monthSummaryWorksheet.Column(1);
                 col1.Style.NumberFormat.Format = "$#,##0.00";
@@ -210,51 +231,92 @@ namespace Spreadsheet
                 weekWorksheet.Cell(2, 1).Value = "Petrol";
                 weekWorksheet.Cell(2, 2).Value = "Fitness";
                 weekWorksheet.Cell(2, 3).Value = "Bills";
-                weekWorksheet.Cell(2, 4).Value = "Food";
-                weekWorksheet.Cell(2, 5).Value = "Other";
-                weekWorksheet.Cell(2, 6).Value = "Description of other";
-                weekWorksheet.Column(6).Width = 3 * weekWorksheet.Column(6).Width;
+                weekWorksheet.Cell(2, 4).Value = "Public transport";
+                weekWorksheet.Cell(2, 5).Value = "Food";
+                weekWorksheet.Cell(2, 6).Value = "Alcohol";
+                weekWorksheet.Cell(2, 7).Value = "Other";
+                weekWorksheet.Cell(2, 8).Value = "Description of other";
+                weekWorksheet.Column(8).Width = 3 * weekWorksheet.Column(6).Width;
 
 
-                weekWorksheet.Cell(2, 8).Value = "Income";
-                weekWorksheet.Cell(2, 9).Value = "Description";
-                weekWorksheet.Column(9).Width = 3 * weekWorksheet.Column(9).Width;
+                weekWorksheet.Cell(2, 10).Value = "Income";
+                weekWorksheet.Cell(2, 11).Value = "Description";
+                weekWorksheet.Column(11).Width = 3 * weekWorksheet.Column(9).Width;
 
 
-                weekWorksheet.Cell(1, 11).Value = "Summary";
-                weekWorksheet.Cell(1, 11).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                weekWorksheet.Cell(1, 11).Style.Font.Bold = true;
+                weekWorksheet.Cell(1, 13).Value = "Summary";
+                weekWorksheet.Cell(1, 13).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                weekWorksheet.Cell(1, 13).Style.Font.Bold = true;
 
                 weekWorksheet.Range(
-                        weekWorksheet.Cell(1, 11),
-                        weekWorksheet.Cell(1, 12)
+                        weekWorksheet.Cell(1, 13),
+                        weekWorksheet.Cell(1, 14)
                     ).Merge();
 
-                weekWorksheet.Cell(2, 11).Value = "Money spent on food";
-                weekWorksheet.Cell(3, 11).FormulaA1 = "_xlfn.SUM(D:D)";
+                weekWorksheet.Cell(2, 13).Value = "Money spent on food";
+                weekWorksheet.Cell(3, 13).FormulaA1 = "_xlfn.SUM(E:E)";
 
-                weekWorksheet.Cell(2, 12).Value = "Money spent on other";
-                weekWorksheet.Cell(3, 12).FormulaA1 = "_xlfn.SUM(E:E)";
+                weekWorksheet.Cell(2, 14).Value = "Money spent on other";
+                weekWorksheet.Cell(3, 14).FormulaA1 = "_xlfn.SUM(G:G)";
 
-                weekWorksheet.Cell(4, 11).Value = "Total Outgoing";
-                weekWorksheet.Cell(5, 11).FormulaA1 = "_xlfn.SUM(A:E)";
+                weekWorksheet.Cell(4, 13).Value = "Money spent on alcohol";
+                weekWorksheet.Cell(5, 13).FormulaA1 = "_xlfn.SUM(F:F)";
 
-                weekWorksheet.Cell(4, 12).Value = "Total Income";
-                weekWorksheet.Cell(5, 12).FormulaA1 = "_xlfn.SUM(H:H)";
+                weekWorksheet.Cell(4, 14).Value = "Money spent on public transport";
+                weekWorksheet.Cell(5, 14).FormulaA1 = "_xlfn.SUM(D:D)";
 
-                weekWorksheet.Column(11).AdjustToContents();
-                weekWorksheet.Column(12).AdjustToContents();
+                weekWorksheet.Cell(6, 13).Value = "Total Outgoing";
+                weekWorksheet.Cell(7, 13).FormulaA1 = "_xlfn.SUM(A:G)";
 
-                for (int i = 1; i <= 5; i++)
+                weekWorksheet.Cell(6, 14).Value = "Total Income";
+                weekWorksheet.Cell(7, 14).FormulaA1 = "_xlfn.SUM(J:J)";
+
+                weekWorksheet.Column(4).AdjustToContents();
+                weekWorksheet.Column(13).AdjustToContents();
+                weekWorksheet.Column(14).AdjustToContents();
+
+                for (int i = 1; i <= 7; i++)
                 {
                     var column = weekWorksheet.Column(i);
                     column.Style.NumberFormat.Format = "$#,##0.00";
                 }
 
-                var column8 = weekWorksheet.Column(8);
-                column8.Style.NumberFormat.Format = "$#,##0.00";
+                var column10 = weekWorksheet.Column(10);
+                column10.Style.NumberFormat.Format = "$#,##0.00";
+
+
+                var column13 = weekWorksheet.Column(13);
+                column13.Style.NumberFormat.Format = "$#,##0.00";
+
+                var column14 = weekWorksheet.Column(14);
+                column14.Style.NumberFormat.Format = "$#,##0.00";
             }
         }
 
+        private static void GenerateBudgetSheet(XLWorkbook workbook)
+        {
+            var budgetSheet = workbook.Worksheets.Add("Monthly Budget");
+            budgetSheet.Cell(1, 1).Value = "Name";
+            budgetSheet.Cell(1, 1).Style.Font.Bold = true;
+            budgetSheet.Cell(2, 1).Value = "Food";
+            budgetSheet.Cell(3, 1).Value = "Alcohol";
+            budgetSheet.Cell(4, 1).Value = "Public transport";
+
+            budgetSheet.Cell(1,2).Value = "Amount";
+            budgetSheet.Cell(1,2).Style.Font.Bold = true;
+
+            var column2 = budgetSheet.Column(2);
+            column2.Style.NumberFormat.Format = "$#,##0.00";
+
+            budgetSheet.Cell(1,4).Value = "Total Monthly Expense Budget";
+            budgetSheet.Cell(1,4).Style.Font.Bold = true;
+            budgetSheet.Cell(2,4).FormulaA1 = "_xlfn.SUM(B:B)";
+
+            var column4 = budgetSheet.Column(4);
+            column4.Style.NumberFormat.Format = "$#,##0.00";
+
+
+            budgetSheet.Column(1).AdjustToContents();
+        }
     }
 }
