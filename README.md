@@ -1,11 +1,11 @@
-# IBudgetter
+# IBudget
 
-Welcome to the documentation for IBudgetter. This document provides an overview of the API calls available for interacting with the backend of IBudgetter.
+Welcome to the documentation for IBudget. This document provides an overview of the API calls available for interacting with the backend of IBudget.
 
 ## API Calls
 
 ## Entity Framework Commands
 
 - **Install EFCore in CLI:** `dotnet tool install --global dotnet-ef`
-- **Create migration:** `dotnet-ef migrations add MyMigration --context Context --project Infrastructure`
-- **Update db:** `dotnet-ef database update --context Context --project Infrastructure`
+- **Create migration:** `dotnet-ef migrations add MyMigration --context Context --project IBudget.Infrastructure`
+- **Update db:** `dotnet-ef database update --context Context --project IBudget.Infrastructure`
