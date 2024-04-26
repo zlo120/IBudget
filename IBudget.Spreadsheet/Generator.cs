@@ -1,9 +1,9 @@
 ﻿using Aspose.Cells.Charts;
 using ClosedXML.Excel;
-using Core.Model;
-using Core.Utils;
+using IBudget.Core.Model;
+using IBudget.Core.Utils;
 
-namespace Spreadsheet
+namespace IBudget.Spreadsheet
 {
     public class Generator
     {
@@ -23,7 +23,7 @@ namespace Spreadsheet
 
             GenerateMonths(calendar, workbook, tableOfContentsWS, ref nextFreeCell);
 
-            string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\IBudgetterSpreadsheet.xlsx";
+            string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + $"\\{calendar.YearNumber} - IBudgetSheet.xlsx";
 
             workbook.SaveAs(path);
 

@@ -1,8 +1,8 @@
-﻿using Core.Interfaces;
-using Core.Model;
+﻿using IBudget.Core.Interfaces;
+using IBudget.Core.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repositories
+namespace IBudget.Infrastructure.Repositories
 {
     public class TagRepository : ITagRepository
     {

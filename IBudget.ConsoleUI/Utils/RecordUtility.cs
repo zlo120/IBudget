@@ -1,25 +1,17 @@
-﻿using Core.Exceptions;
-using Core.Interfaces;
-using Core.Model;
+﻿using IBudget.Core.Exceptions;
+using IBudget.Core.Interfaces;
+using IBudget.Core.Model;
 using System.Globalization;
 
-namespace MyBudgetter_Prototype.Utils
+namespace IBudget.ConsoleUI.Utils
 {
-    public class Record
+    public class RecordUtility : IRecordUtility
     {
-        private readonly ISummaryService _summaryService;
-        private readonly ITagService? _tagService;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IIncomeService _incomeService;
-        private readonly IExpenseService _expenseService;
+        private readonly ICalendarService _calendarService;
 
-        public Record(IServiceProvider serviceProvider)
+        public RecordUtility(ICalendarService calendarService)
         {
-            _incomeService = serviceProvider.GetService(typeof(IIncomeService)) as IIncomeService;
-            _expenseService = serviceProvider.GetService(typeof(IExpenseService)) as IExpenseService;
-            _summaryService = serviceProvider.GetService(typeof(ISummaryService)) as ISummaryService;
-            _tagService = serviceProvider.GetService(typeof(ITagService)) as ITagService;
-            _serviceProvider = serviceProvider;
+            _calendarService = calendarService;
         }
 
         public async Task<DataEntry> FindRecord()
@@ -34,7 +26,9 @@ namespace MyBudgetter_Prototype.Utils
             var monthDecision = UserInput.MultipleChoicePrompt(months);
 
             Console.Clear();
-            Month result = new Month(monthDecision, _serviceProvider);
+            Month result = new Month(monthDecision);
+            result = await _calendarService.RetrieveMonthData(result);
+            result.PopulateAllWeeks(_calendarService);
             UserInput.PrintTitle(result.MonthName);
 
             Console.WriteLine("NOTE: When selecting use the numbers starting from 1, not the IDs.");

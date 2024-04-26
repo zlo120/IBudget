@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Text;
 
-namespace Core.Model
+namespace IBudget.Core.Model
 {
     public abstract class DataEntry : BaseModel
     {

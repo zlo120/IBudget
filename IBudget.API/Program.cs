@@ -1,7 +1,7 @@
-using Core.Interfaces;
-using Core.Services;
-using Infrastructure;
-using Infrastructure.Repositories;
+using IBudget.Core.Interfaces;
+using IBudget.Core.Services;
+using IBudget.Infrastructure;
+using IBudget.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

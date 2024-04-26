@@ -1,6 +1,6 @@
-﻿using Core.Model;
+﻿using IBudget.Core.Model;
 
-namespace Core.Interfaces
+namespace IBudget.Core.Interfaces
 {
     public interface ITagService
     {

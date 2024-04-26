@@ -1,11 +1,10 @@
-﻿using Core.Interfaces;
-using Core.Model;
+﻿using IBudget.Core.Interfaces;
+using IBudget.Core.Model;
 
-namespace MyBudgetter_Prototype.UserInterface
+namespace IBudget.ConsoleUI.UserInterface
 {
-    public abstract class MenuOption : BaseModel
+    public abstract class MenuOption : BaseModel, IMenuOption
     {
-        public MainMenu Parent { get; set; }
         public string Label { get; set; }
 
         protected readonly IIncomeService _incomeService;
@@ -13,18 +12,13 @@ namespace MyBudgetter_Prototype.UserInterface
         protected readonly ISummaryService _summaryService;
         protected readonly ITagService _tagService;
 
-        protected readonly IServiceProvider _serviceProvider;
-
-        public MenuOption(MainMenu parent, string label, IServiceProvider serviceProvider)
+        public MenuOption(IIncomeService incomeService, 
+            IExpenseService expenseService, ISummaryService summaryService, ITagService tagService)
         {
-            Parent = parent;
-            Label = label.ToUpper();
-
-            _incomeService = serviceProvider.GetService(typeof(IIncomeService)) as IIncomeService;
-            _expenseService = serviceProvider.GetService(typeof(IExpenseService)) as IExpenseService;
-            _summaryService = serviceProvider.GetService(typeof(ISummaryService)) as ISummaryService;
-            _tagService = serviceProvider.GetService(typeof(ITagService)) as ITagService;
-            _serviceProvider = serviceProvider;
+            _incomeService = incomeService;
+            _expenseService = expenseService;
+            _summaryService = summaryService;
+            _tagService = tagService;
         }
 
         public abstract void Execute();

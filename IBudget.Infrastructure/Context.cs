@@ -1,7 +1,7 @@
-﻿using Core.Model;
+﻿using IBudget.Core.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure
+namespace IBudget.Infrastructure
 {
     public class Context : DbContext
     {
@@ -15,7 +15,7 @@ namespace Infrastructure
         {
             var folder = Environment.SpecialFolder.LocalApplicationData;
             var path = Environment.GetFolderPath(folder);
-            DbPath = Path.Join(path, "IBudgetter\\IBudgetterDB\\IBudgetter.db");
+            DbPath = Path.Join(path, "IBudget\\IBudgetDB\\IBudget.db");
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)

@@ -1,7 +1,7 @@
-﻿using Core.Exceptions;
-using Core.Model;
+﻿using IBudget.Core.Exceptions;
+using IBudget.Core.Model;
 
-namespace MyBudgetter_Prototype.Utils
+namespace IBudget.ConsoleUI.Utils
 {
     public static class UserInput
     {
@@ -97,10 +97,10 @@ namespace MyBudgetter_Prototype.Utils
 
             return userInput;
         }
-        public static int NumberPrompt(string message)
+        public static double NumberPrompt(string message)
         {
             var userInput = Prompt(message);
-            if (int.TryParse(userInput, out int amount))
+            if (double.TryParse(userInput, out double amount))
             {
                 return amount;
             }

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace Core.Model
+namespace IBudget.Core.Model
 {
     public class BaseModel
     {

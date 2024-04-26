@@ -1,11 +1,13 @@
-﻿using Core.Exceptions;
-using Core.Utils;
-using MyBudgetter_Prototype.Utils;
+﻿using IBudget.Core.Exceptions;
+using IBudget.Core.Interfaces;
+using IBudget.Core.Utils;
+using IBudget.ConsoleUI.Utils;
 
-namespace MyBudgetter_Prototype.UserInterface.MenuOptions
+namespace IBudget.ConsoleUI.UserInterface.MenuOptions
 {
-    public class ReadWeekOption(MainMenu parent, string label, IServiceProvider serviceProvider)
-        : MenuOption(parent, label, serviceProvider)
+    public class ReadWeekOption(IIncomeService incomeService,
+            IExpenseService expenseService, ISummaryService summaryService, ITagService tagService)
+        : MenuOption(incomeService, expenseService, summaryService, tagService)
     {
         public override void Execute()
         {

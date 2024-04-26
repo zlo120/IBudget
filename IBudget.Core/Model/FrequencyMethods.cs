@@ -1,4 +1,4 @@
-﻿namespace Core.Model
+﻿namespace IBudget.Core.Model
 {
     public static class FrequencyMethods
     {

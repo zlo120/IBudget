@@ -1,21 +1,27 @@
-﻿using Core.Exceptions;
-using Core.Model;
-using MyBudgetter_Prototype.Utils;
+﻿using IBudget.ConsoleUI.Utils;
+using IBudget.Core.Exceptions;
+using IBudget.Core.Interfaces;
+using IBudget.Core.Model;
 
-namespace MyBudgetter_Prototype.UserInterface.MenuOptions
+namespace IBudget.ConsoleUI.UserInterface.MenuOptions
 {
-    public class UpdateRecordOption(MainMenu parent, string label, IServiceProvider serviceProvider)
-        : MenuOption(parent, label, serviceProvider)
+    public class UpdateRecordOption : MenuOption
     {
+        private readonly IRecordUtility _recordUtils;
+        public UpdateRecordOption(IIncomeService incomeService,
+            IExpenseService expenseService, ISummaryService summaryService, ITagService tagService, IRecordUtility recordUtility)
+        : base(incomeService, expenseService, summaryService, tagService)
+        {
+            _recordUtils = recordUtility;
+        }
         public override async void Execute()
         {
             Console.WriteLine(Label);
 
-            var RecordUtils = new Record(_serviceProvider);
             DataEntry result;
             try
             {
-                result = await RecordUtils.FindRecord();
+                result = await _recordUtils.FindRecord();
             }
             catch (RecordNotFoundException ex)
             {
@@ -64,7 +70,7 @@ namespace MyBudgetter_Prototype.UserInterface.MenuOptions
             _expenseService.UpdateExpense(result);
         }
 
-        private void PerformAmountUpdate(DataEntry record, int amount)
+        private void PerformAmountUpdate(DataEntry record, double amount)
         {
             if (record is null) throw new NullReferenceException("Record is null");
 

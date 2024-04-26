@@ -1,7 +1,7 @@
-﻿using Core.Model;
+﻿using IBudget.Core.Model;
 using System.Globalization;
 
-namespace Core.Utils
+namespace IBudget.Core.Utils
 {
     public enum CalendarEnum
     {
@@ -31,7 +31,7 @@ namespace Core.Utils
 
             for (int i = 1; i <= 12; i++)
             {
-                months.Add(new Month(i));
+                months.Add(new Month(i, yearNum));
             }
 
             year.Months = months;

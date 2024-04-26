@@ -1,9 +1,9 @@
-﻿using API.DTO;
-using Core.Interfaces;
-using Core.Model;
+﻿using IBudget.API.DTO;
+using IBudget.Core.Interfaces;
+using IBudget.Core.Model;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers
+namespace IBudget.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

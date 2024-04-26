@@ -1,9 +1,9 @@
-﻿using Core.Interfaces;
-using Core.Model;
-using Core.Utils;
+﻿using IBudget.Core.Interfaces;
+using IBudget.Core.Model;
+using IBudget.Core.Utils;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repositories
+namespace IBudget.Infrastructure.Repositories
 {
     public class SummaryRepository : ISummaryRepository
     {

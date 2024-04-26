@@ -1,7 +1,7 @@
-﻿using Core.Model;
+﻿using IBudget.Core.Model;
 using System.ComponentModel.DataAnnotations;
 
-namespace API.DTO
+namespace IBudget.API.DTO
 {
     public class IncomeDTO
     {

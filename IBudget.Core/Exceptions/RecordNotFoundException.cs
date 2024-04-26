@@ -1,4 +1,4 @@
-﻿namespace Core.Exceptions
+﻿namespace IBudget.Core.Exceptions
 {
     public class RecordNotFoundException : Exception
     {

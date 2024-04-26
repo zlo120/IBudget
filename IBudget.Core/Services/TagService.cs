@@ -1,7 +1,7 @@
-﻿using Core.Interfaces;
-using Core.Model;
+﻿using IBudget.Core.Interfaces;
+using IBudget.Core.Model;
 
-namespace Core.Services
+namespace IBudget.Core.Services
 {
     public class TagService : ITagService
     {

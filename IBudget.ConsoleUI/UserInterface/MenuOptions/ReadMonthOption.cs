@@ -1,13 +1,21 @@
-﻿using Core.Exceptions;
-using Core.Model;
-using MyBudgetter_Prototype.Utils;
+﻿using IBudget.ConsoleUI.Utils;
+using IBudget.Core.Exceptions;
+using IBudget.Core.Interfaces;
+using IBudget.Core.Model;
+using IBudget.Core.Services;
 using System.Globalization;
 
-namespace MyBudgetter_Prototype.UserInterface.MenuOptions
+namespace IBudget.ConsoleUI.UserInterface.MenuOptions
 {
-    public class ReadMonthOption(MainMenu parent, string label, IServiceProvider serviceProvider)
-        : MenuOption(parent, label, serviceProvider)
+    public class ReadMonthOption : MenuOption
     {
+        private readonly ICalendarService _calendarService;
+        public ReadMonthOption(IIncomeService incomeService,
+            IExpenseService expenseService, ISummaryService summaryService, ITagService tagService, ICalendarService calendarService)
+        : base(incomeService, expenseService, summaryService, tagService)
+        {
+            _calendarService = calendarService;
+        }
         public override void Execute()
         {
             Console.WriteLine(Label);
@@ -19,7 +27,9 @@ namespace MyBudgetter_Prototype.UserInterface.MenuOptions
                 months = months.Where(m => !string.IsNullOrEmpty(m)).ToArray();
                 // get the month from the user
                 var userMonthInput = UserInput.MultipleChoicePrompt(months);
-                var month = new Month(userMonthInput, _serviceProvider);
+                var month = new Month(userMonthInput);
+                month = _calendarService.RetrieveMonthData(month).Result;
+                month.PopulateAllWeeks(_calendarService);
 
                 Console.Clear();
                 var border = new String('=', month.MonthName.Length * 3);
@@ -28,7 +38,7 @@ namespace MyBudgetter_Prototype.UserInterface.MenuOptions
                 Console.WriteLine($"Month: {month.MonthName}");
                 Console.WriteLine(border);
                 Console.WriteLine();
-                
+
                 UserInput.PrintTitle("Income");
                 month.AllIncome.ForEach(i => Console.WriteLine(i.ToString()));
 
@@ -45,7 +55,7 @@ namespace MyBudgetter_Prototype.UserInterface.MenuOptions
                 Console.WriteLine(ex.Message);
                 Console.WriteLine("Press any key to continue...");
                 Console.ReadKey();
-            }   
+            }
         }
     }
 }

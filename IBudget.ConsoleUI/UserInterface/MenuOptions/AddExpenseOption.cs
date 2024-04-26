@@ -1,11 +1,13 @@
-﻿using Core.Exceptions;
-using Core.Model;
-using MyBudgetter_Prototype.Utils;
+﻿using IBudget.Core.Exceptions;
+using IBudget.Core.Interfaces;
+using IBudget.Core.Model;
+using IBudget.ConsoleUI.Utils;
 
-namespace MyBudgetter_Prototype.UserInterface.MenuOptions
+namespace IBudget.ConsoleUI.UserInterface.MenuOptions
 {
-    public class AddExpenseOption(MainMenu parent, string label, IServiceProvider serviceProvider)
-        : MenuOption(parent, label, serviceProvider)
+    public class AddExpenseOption(IIncomeService incomeService,
+            IExpenseService expenseService, ISummaryService summaryService, ITagService tagService)
+        : MenuOption(incomeService, expenseService, summaryService, tagService)
     {
 
         public override async void Execute()

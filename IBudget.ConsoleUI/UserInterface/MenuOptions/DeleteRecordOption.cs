@@ -1,21 +1,27 @@
-﻿using Core.Exceptions;
-using Core.Model;
-using MyBudgetter_Prototype.Utils;
+﻿using IBudget.ConsoleUI.Utils;
+using IBudget.Core.Exceptions;
+using IBudget.Core.Interfaces;
+using IBudget.Core.Model;
 
-namespace MyBudgetter_Prototype.UserInterface
+namespace IBudget.ConsoleUI.UserInterface.MenuOptions
 {
-    public class DeleteRecordOption(MainMenu parent, string label, IServiceProvider serviceProvider)
-        : MenuOption(parent, label, serviceProvider)
+    public class DeleteRecordOption : MenuOption
     {
+        private readonly IRecordUtility _recordUtility;
+        public DeleteRecordOption(IIncomeService incomeService,
+            IExpenseService expenseService, ISummaryService summaryService, ITagService tagService, IRecordUtility recordUtility)
+        : base(incomeService, expenseService, summaryService, tagService)
+        {
+            _recordUtility = recordUtility;
+        }
         public override async void Execute()
         {
             Console.WriteLine(Label);
-            var RecordUtils = new Record(_serviceProvider);
             DataEntry result;
 
             try
             {
-                result = await RecordUtils.FindRecord();
+                result = await _recordUtility.FindRecord();
             }
             catch (RecordNotFoundException ex)
             {
@@ -31,7 +37,7 @@ namespace MyBudgetter_Prototype.UserInterface
             }
             else
             {
-                _incomeService.DeleteIncome((Income) result);
+                _incomeService.DeleteIncome((Income)result);
             }
 
             Console.Clear();

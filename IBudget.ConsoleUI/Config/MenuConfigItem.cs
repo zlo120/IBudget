@@ -1,6 +1,6 @@
-﻿using Core.Model;
+﻿using IBudget.Core.Model;
 
-namespace MyBudgetter_Prototype.Config
+namespace IBudget.ConsoleUI.Config
 {
     public class MenuConfigItem : BaseModel
     {

@@ -1,7 +1,7 @@
-﻿using Core.Interfaces;
-using Core.Model;
+﻿using IBudget.Core.Interfaces;
+using IBudget.Core.Model;
 
-namespace Infrastructure.Repositories
+namespace IBudget.Infrastructure.Repositories
 {
     public class ExpenseRepository : IExpenseRepository
     {
