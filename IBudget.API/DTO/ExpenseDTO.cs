@@ -8,9 +8,9 @@ namespace IBudget.API.DTO
         [Required]
         public double Amount { get; set; }
         [Required]
-        public DateOnly Date { get; set; }
-        public Frequency Frequency { get; set; }
-        public string Notes { get; set; }
-        public List<string> Tags { get; set; }
+        public DateOnly? Date { get; set; }
+        public Frequency? Frequency { get; set; }
+        public string? Notes { get; set; }
+        public List<string>? Tags { get; set; }
     }
 }

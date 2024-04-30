@@ -5,10 +5,6 @@ namespace IBudget.Core.Model
 {
     public class Month
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IIncomeService _incomeService;
-        private readonly IExpenseService _expenseService;
-
         private readonly int? _year;
 
         public string MonthName { get; }

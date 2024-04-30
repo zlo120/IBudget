@@ -1,6 +1,7 @@
 ﻿using IBudget.Core.Exceptions;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
+using MyBudgetter_Prototype.Utils;
 using System.Globalization;
 
 namespace IBudget.ConsoleUI.Utils
@@ -29,7 +30,7 @@ namespace IBudget.ConsoleUI.Utils
             Month result = new Month(monthDecision);
             result = await _calendarService.RetrieveMonthData(result);
             result.PopulateAllWeeks(_calendarService);
-            UserInput.PrintTitle(result.MonthName);
+            ConsoleStyler.PrintTitle(result.MonthName);
 
             Console.WriteLine("NOTE: When selecting use the numbers starting from 1, not the IDs.");
 

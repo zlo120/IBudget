@@ -1,6 +1,8 @@
 ﻿using IBudget.API.DTO;
+using IBudget.API.Utils;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
+using IBudget.Core.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IBudget.API.Controllers
@@ -27,12 +29,12 @@ namespace IBudget.API.Controllers
             {
                 Amount = incomeDTO.Amount,
                 Source = incomeDTO.Source,
-                Date = incomeDTO.Date.ToDateTime(TimeOnly.Parse("12:00AM")),
+                Date = incomeDTO.Date.Value.ToDateTime(TimeOnly.Parse("12:00AM")),
                 Frequency = incomeDTO.Frequency,
                 Tags = new List<Tag>()
             };
 
-            foreach(var tag in incomeDTO.Tags)
+            foreach (var tag in incomeDTO.Tags)
             {
                 var tagObj = new Tag()
                 {
@@ -52,7 +54,7 @@ namespace IBudget.API.Controllers
             var expense = new Expense()
             {
                 Amount = expenseDTO.Amount,
-                Date = expenseDTO.Date.ToDateTime(TimeOnly.Parse("12:00AM")),
+                Date = expenseDTO.Date.Value.ToDateTime(TimeOnly.Parse("12:00AM")),
                 Frequency = expenseDTO.Frequency,
                 Notes = expenseDTO.Notes,
                 Tags = new List<Tag>()
@@ -75,8 +77,17 @@ namespace IBudget.API.Controllers
         [HttpGet("ReadWeek")]
         public async Task<IActionResult> ReadWeek(DateTime date)
         {
-            var week = _summaryService.ReadWeek(date);
-            return Ok(week);
+            var week = await _summaryService.ReadWeek(date);
+            var weekDTO = DTOUtil.ConvertToDTO(week);
+            return Ok(weekDTO);
+        }
+
+        [HttpGet("ReadMonth")]
+        public async Task<IActionResult> ReadMonth(CalendarEnum monthEnum)
+        {
+            var month = await _summaryService.ReadMonth((int)monthEnum);
+            var monthDTO = DTOUtil.ConvertToDTO(month);
+            return Ok(monthDTO);
         }
     }
 }

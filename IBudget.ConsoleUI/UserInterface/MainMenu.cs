@@ -4,12 +4,14 @@ using IBudget.ConsoleUI.Config;
 using IBudget.ConsoleUI.UserInterface.MenuOptions;
 using IBudget.ConsoleUI.Utils;
 using IBudget.Spreadsheet;
+using IBudget.Spreadsheet.Interfaces;
 
 namespace IBudget.ConsoleUI.UserInterface
 {
     public class MainMenu : IMainMenu
     {
         private readonly List<MenuConfigItem> _menuConfig;
+        private readonly IGenerator _spreadsheetGenerator;
         private readonly AddExpenseOption _addExpenseOption;
         private readonly AddIncomeOption _addIncomeOption;
         private readonly DeleteRecordOption _deleteRecordOption;
@@ -17,7 +19,7 @@ namespace IBudget.ConsoleUI.UserInterface
         private readonly ReadWeekOption _readWeekOption;
         private readonly UpdateRecordOption _updateRecordOption;
 
-        public MainMenu(IEnumerable<IMenuOption> menuOptions)
+        public MainMenu(IEnumerable<IMenuOption> menuOptions, IGenerator spreadsheetGenerator)
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
@@ -25,6 +27,8 @@ namespace IBudget.ConsoleUI.UserInterface
                 .Build();
 
             _menuConfig = config.GetSection("MenuConfig").Get<List<MenuConfigItem>>();
+
+            _spreadsheetGenerator = spreadsheetGenerator;
 
             foreach (var menuOption in menuOptions)
             {
@@ -110,7 +114,7 @@ namespace IBudget.ConsoleUI.UserInterface
 
                     // Generate spreadsheet
                     case 7:
-                        Generator.GenerateSpreadsheet();
+                        _spreadsheetGenerator.GenerateSpreadsheet();
                         break;
                 }
 

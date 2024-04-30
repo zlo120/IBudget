@@ -13,10 +13,16 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // DI registration 
-builder.Services.AddScoped<IExpenseService, ExpenseService>();
-builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
+
 builder.Services.AddScoped<IIncomeService, IncomeService>();
 builder.Services.AddScoped<IIncomeRepository, IncomeRepository>();
+builder.Services.AddScoped<IExpenseService, ExpenseService>();
+builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
+builder.Services.AddScoped<ISummaryService, SummaryService>();
+builder.Services.AddScoped<ISummaryRepository, SummaryRepository>();
+builder.Services.AddScoped<ITagService, TagService>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
+builder.Services.AddScoped<ICalendarService, CalendarService>();
 
 builder.Services.AddDbContext<Context>();
 

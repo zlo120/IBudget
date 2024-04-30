@@ -118,13 +118,5 @@ namespace IBudget.ConsoleUI.Utils
 
             return GetUserDecision(1, choices.Length, optional);
         }
-        public static void PrintTitle(string message)
-        {
-            var border = new String('=', message.Length);
-            Console.WriteLine(border);
-            Console.WriteLine(message);
-            Console.WriteLine(border);
-            Console.WriteLine();
-        }
     }
 }

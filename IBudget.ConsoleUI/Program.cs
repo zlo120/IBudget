@@ -20,7 +20,7 @@ internal class Program
         var services = ServiceHandler.RegisterServices();
         var serviceProvider = services.BuildServiceProvider();
         var mainMenu = serviceProvider.GetService(typeof(IMainMenu)) as IMainMenu;
-        mainMenu.MainMenuLoop();
+        mainMenu?.MainMenuLoop();
         return Task.CompletedTask;
     }
 }

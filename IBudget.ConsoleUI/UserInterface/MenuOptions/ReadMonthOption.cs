@@ -2,7 +2,7 @@
 using IBudget.Core.Exceptions;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
-using IBudget.Core.Services;
+using MyBudgetter_Prototype.Utils;
 using System.Globalization;
 
 namespace IBudget.ConsoleUI.UserInterface.MenuOptions
@@ -39,11 +39,11 @@ namespace IBudget.ConsoleUI.UserInterface.MenuOptions
                 Console.WriteLine(border);
                 Console.WriteLine();
 
-                UserInput.PrintTitle("Income");
+                ConsoleStyler.PrintTitle("Income");
                 month.AllIncome.ForEach(i => Console.WriteLine(i.ToString()));
 
                 Console.WriteLine();
-                UserInput.PrintTitle("Expenses");
+                ConsoleStyler.PrintTitle("Expenses");
                 month.AllExpenses.ForEach(e => Console.WriteLine(e.ToString()));
 
                 Console.WriteLine();

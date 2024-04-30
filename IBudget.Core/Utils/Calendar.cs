@@ -5,7 +5,7 @@ namespace IBudget.Core.Utils
 {
     public enum CalendarEnum
     {
-        January,
+        January = 1,
         February,
         March,
         April,
@@ -113,7 +113,6 @@ namespace IBudget.Core.Utils
 
             return $"{start} to {end}";
         }
-
         public static bool DatesAreInTheSameWeek(DateTime date1, DateTime date2)
         {
             var cal = DateTimeFormatInfo.CurrentInfo.Calendar;
@@ -158,6 +157,26 @@ namespace IBudget.Core.Utils
             }
 
             Console.WriteLine();
+        }
+        public static DateTime ParseWeekStartFromWeekRange(string weekRange)
+        {
+            string[] dateParts = weekRange.Split(new[] { " to " }, StringSplitOptions.None);
+            if (dateParts.Length != 2)
+            {
+                // throw string splitting exception
+                throw new Exception("An error occurred when trying to split the worksheet week name string.");
+            }
+            var dateString = dateParts[0];
+            string[] formats = { "d-MM-yyyy", "dd-MM-yyyy" };
+            if (DateTime.TryParseExact(dateString, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime result))
+            {
+                return result;
+            }
+            else
+            {
+                // throw string parsing exception
+                throw new Exception("An error occurred when parse a d-MM-yyyy date string or dd-MM-yyyy date string.");
+            }
         }
     }
 }

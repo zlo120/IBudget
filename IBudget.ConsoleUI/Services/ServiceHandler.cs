@@ -6,6 +6,8 @@ using IBudget.Infrastructure;
 using IBudget.ConsoleUI.UserInterface;
 using IBudget.ConsoleUI.UserInterface.MenuOptions;
 using IBudget.ConsoleUI.Utils;
+using IBudget.Spreadsheet;
+using IBudget.Spreadsheet.Interfaces;
 
 namespace IBudget.ConsoleUI.Services
 {
@@ -24,6 +26,8 @@ namespace IBudget.ConsoleUI.Services
             services.AddScoped<ITagRepository, TagRepository>();
             services.AddScoped<ICalendarService, CalendarService>();
             services.AddScoped<IRecordUtility, RecordUtility>();
+            services.AddScoped<IGenerator, Generator>();
+            services.AddScoped<IPopulator, Populator>();
 
             services.AddScoped<IMenuOption, AddExpenseOption>();
             services.AddScoped<IMenuOption, AddIncomeOption>();
