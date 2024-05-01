@@ -2,12 +2,19 @@
 using ClosedXML.Excel;
 using IBudget.Core.Model;
 using IBudget.Core.Utils;
+using IBudget.Spreadsheet.Interfaces;
 
 namespace IBudget.Spreadsheet
 {
-    public class Generator
+    public class Generator : IGenerator
     {
-        public static void GenerateSpreadsheet()
+        private readonly IPopulator _populator;
+
+        public Generator(IPopulator populator)
+        {
+            _populator = populator;
+        }
+        public async void GenerateSpreadsheet()
         {
             var calendar = Calendar.InitiateCalendar();
             var workbook = new XLWorkbook();
@@ -39,6 +46,9 @@ namespace IBudget.Spreadsheet
             lastSheet.Delete();
 
             var firstSheet = workbook.Worksheets.First();
+
+            workbook = await _populator.PopulateSpreadsheet(workbook);
+
             workbook.Save();
 
             Console.WriteLine($"Your excel spreadsheet is ready to open at \"{path}\"");
