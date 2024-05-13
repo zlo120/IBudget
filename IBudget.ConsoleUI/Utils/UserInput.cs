@@ -1,5 +1,6 @@
 ﻿using IBudget.Core.Exceptions;
 using IBudget.Core.Model;
+using Microsoft.Extensions.Options;
 
 namespace IBudget.ConsoleUI.Utils
 {
@@ -92,7 +93,7 @@ namespace IBudget.ConsoleUI.Utils
 
             if (string.IsNullOrEmpty(userInput) && optional is false)
             {
-                throw new InvalidInputException("Invalid input. Please enter a valid amount.");
+                throw new InvalidInputException("Invalid input. Please enter a valid value.");
             }
 
             return userInput;
@@ -108,6 +109,28 @@ namespace IBudget.ConsoleUI.Utils
             {
                 throw new InvalidInputException("Invalid input. Please enter a valid amount.");
             }
+        }
+        public static void FilePrompt(string message, out string filePath, bool optional = false)
+        {
+            if (message.Contains(":"))
+                Console.Write(message);
+            else
+                Console.Write(message + ": ");
+
+            var fileLocation = Console.ReadLine();
+            fileLocation = fileLocation.Replace("\"", "");
+
+            if (!File.Exists(fileLocation))
+            {
+                throw new InvalidInputException($"Invalid input. A file does not exist at: {fileLocation}.");
+            }
+
+            if (string.IsNullOrEmpty(fileLocation) && optional is false)
+            {
+                throw new InvalidInputException("Invalid input. Please enter a valid value.");
+            }
+
+            filePath = fileLocation;
         }
         public static int MultipleChoicePrompt(string[] choices, bool optional = false)
         {

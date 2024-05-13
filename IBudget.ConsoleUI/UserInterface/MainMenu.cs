@@ -1,16 +1,12 @@
-﻿using IBudget.Core.Exceptions;
-using Microsoft.Extensions.Configuration;
-using IBudget.ConsoleUI.Config;
-using IBudget.ConsoleUI.UserInterface.MenuOptions;
+﻿using IBudget.ConsoleUI.UserInterface.MenuOptions;
 using IBudget.ConsoleUI.Utils;
-using IBudget.Spreadsheet;
+using IBudget.Core.Exceptions;
 using IBudget.Spreadsheet.Interfaces;
 
 namespace IBudget.ConsoleUI.UserInterface
 {
     public class MainMenu : IMainMenu
     {
-        private readonly List<MenuConfigItem> _menuConfig;
         private readonly IGenerator _spreadsheetGenerator;
         private readonly AddExpenseOption _addExpenseOption;
         private readonly AddIncomeOption _addIncomeOption;
@@ -18,16 +14,12 @@ namespace IBudget.ConsoleUI.UserInterface
         private readonly ReadMonthOption _readMonthOption;
         private readonly ReadWeekOption _readWeekOption;
         private readonly UpdateRecordOption _updateRecordOption;
+        private readonly ParseCSVOption _parseCSVOption;
+
+        private readonly string[] MENU_LABELS = ["Add income", "Add expense", "Read week", "Read month", "Update record", "Delete record", "Generate spreadsheet", "Parse CSV"];
 
         public MainMenu(IEnumerable<IMenuOption> menuOptions, IGenerator spreadsheetGenerator)
         {
-            var config = new ConfigurationBuilder()
-                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                .AddJsonFile("appsettings.json")
-                .Build();
-
-            _menuConfig = config.GetSection("MenuConfig").Get<List<MenuConfigItem>>();
-
             _spreadsheetGenerator = spreadsheetGenerator;
 
             foreach (var menuOption in menuOptions)
@@ -49,6 +41,9 @@ namespace IBudget.ConsoleUI.UserInterface
 
                 if (menuOption is UpdateRecordOption)
                     _updateRecordOption = (UpdateRecordOption)menuOption;
+
+                if (menuOption is ParseCSVOption)
+                    _parseCSVOption = (ParseCSVOption)menuOption;
             }
         }
 
@@ -59,11 +54,10 @@ namespace IBudget.ConsoleUI.UserInterface
                 Console.Clear();
                 Console.WriteLine("MAIN MENU\n");
 
-                var menuLabels = _menuConfig.Select(item => item.Label).ToList().ToArray();
                 int decision;
                 try
                 {
-                    decision = UserInput.MultipleChoicePrompt(menuLabels);
+                    decision = UserInput.MultipleChoicePrompt(MENU_LABELS);
                 }
                 catch (InvalidInputException ex)
                 {
@@ -78,43 +72,51 @@ namespace IBudget.ConsoleUI.UserInterface
                 {
                     // Add income
                     case 1:
-                        _addIncomeOption.Label = menuLabels[decision - 1];
+                        _addIncomeOption.Label = MENU_LABELS[decision - 1];
                         _addIncomeOption.Execute();
                         break;
 
                     // Add expense option
                     case 2:
-                        _addExpenseOption.Label = menuLabels[decision - 1];
+                        _addExpenseOption.Label = MENU_LABELS[decision - 1];
                         _addExpenseOption.Execute();
                         break;
 
                     // Read week
                     case 3:
-                        _readWeekOption.Label = menuLabels[decision - 1];
+                        _readWeekOption.Label = MENU_LABELS[decision - 1];
                         _readWeekOption.Execute();
                         break;
 
                     // Read month
                     case 4:
-                        _readMonthOption.Label = menuLabels[decision - 1];
+                        _readMonthOption.Label = MENU_LABELS[decision - 1];
                         _readMonthOption.Execute();
                         break;
 
                     // Update record
                     case 5:
-                        _updateRecordOption.Label = menuLabels[decision - 1];
+                        _updateRecordOption.Label = MENU_LABELS[decision - 1];
                         _updateRecordOption.Execute();
                         break;
 
                     // Delete record
                     case 6:
-                        _deleteRecordOption.Label = menuLabels[decision - 1];
+                        _deleteRecordOption.Label = MENU_LABELS[decision - 1];
                         _deleteRecordOption.Execute();
                         break;
 
                     // Generate spreadsheet
                     case 7:
                         _spreadsheetGenerator.GenerateSpreadsheet();
+                        break;
+
+                    case 8:
+                        _parseCSVOption.Label = MENU_LABELS[decision - 1];
+                        _parseCSVOption.Execute();
+                        break;
+
+                    default:
                         break;
                 }
 
