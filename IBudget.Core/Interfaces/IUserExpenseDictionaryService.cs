@@ -2,7 +2,7 @@
 
 namespace IBudget.Core.Interfaces
 {
-    public interface IExpenseDictionaryService
+    public interface IUserExpenseDictionaryService
     {
         Task<bool> AddExpenseDictionary(UserExpenseDictionary expenseDictionary);
         Task<UserExpenseDictionary> GetExpenseDictionary(int userId);

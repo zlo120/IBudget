@@ -3,11 +3,11 @@ using IBudget.Core.Model;
 
 namespace IBudget.Core.Services
 {
-    public class ExpenseDictionaryService : IExpenseDictionaryService
+    public class UserExpenseDictionaryService : IUserExpenseDictionaryService
     {
-        private readonly IExpenseDictionaryRepository _expenseDictionaryRepository;
+        private readonly IUserExpenseDictionaryRepository _expenseDictionaryRepository;
 
-        public ExpenseDictionaryService(IExpenseDictionaryRepository expenseDictionaryRepository) 
+        public UserExpenseDictionaryService(IUserExpenseDictionaryRepository expenseDictionaryRepository) 
         { 
             _expenseDictionaryRepository = expenseDictionaryRepository;
         }

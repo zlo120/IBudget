@@ -7,10 +7,10 @@ using MongoDB.Driver;
 
 namespace IBudget.Infrastructure.Repositories
 {
-    public class ExpenseDictionaryRepository : IExpenseDictionaryRepository
+    public class UserExpenseDictionaryRepository : IUserExpenseDictionaryRepository
     {
         private readonly MongoDBContext _db;
-        public ExpenseDictionaryRepository(IConfiguration config)
+        public UserExpenseDictionaryRepository(IConfiguration config)
         {
             var client = new MongoClient(config.GetConnectionString("MongoDB"));
             var db = MongoDBContext.Create(client.GetDatabase("IBudget"));
@@ -20,7 +20,7 @@ namespace IBudget.Infrastructure.Repositories
         {
             try
             {
-                await _db.expenseDictionaries.AddAsync(expenseDictionary);
+                await _db.userExpenseDictionaries.AddAsync(expenseDictionary);
                 await _db.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -33,7 +33,7 @@ namespace IBudget.Infrastructure.Repositories
 
         public async Task<UserExpenseDictionary> GetExpenseDictionary(int userId)
         {
-            return await _db.expenseDictionaries.FirstOrDefaultAsync(ed => ed.userId == userId);
+            return await _db.userExpenseDictionaries.FirstOrDefaultAsync(ed => ed.userId == userId);
         }
 
         public Task<bool> RemoveExpenseDictionary(string title)
@@ -43,8 +43,8 @@ namespace IBudget.Infrastructure.Repositories
 
         public async Task<bool> UpdateExpenseDictionary(List<ExpenseDictionary> expenseDictionaries, int userID)
         {
-            // START DOESN'T WORK
-            var result = await _db.expenseDictionaries.FirstOrDefaultAsync(ed => ed.userId == userID);
+            // DOESN'T WORK
+            var result = await _db.userExpenseDictionaries.FirstOrDefaultAsync(ed => ed.userId == userID);
             if (result is null) throw new RecordNotFoundException("A user with that ID does not exist");
             var newExpenseDictionaries = new List<ExpenseDictionary>(expenseDictionaries);
             foreach(var updatedExpenseDict in expenseDictionaries)
@@ -66,7 +66,7 @@ namespace IBudget.Infrastructure.Repositories
                 result.ExpenseDictionaries.Add(expenseDict);
 
             await _db.SaveChangesAsync();
-            // END DOESN'T WORK
+            // DOESN'T WORK
 
             return true;
         }

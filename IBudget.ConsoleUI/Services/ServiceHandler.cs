@@ -30,8 +30,8 @@ namespace IBudget.ConsoleUI.Services
             services.AddScoped<IGenerator, Generator>();
             services.AddScoped<IPopulator, Populator>();
 
-            services.AddScoped<IExpenseDictionaryService, ExpenseDictionaryService>();
-            services.AddScoped<IExpenseDictionaryRepository, ExpenseDictionaryRepository>();
+            services.AddScoped<IUserExpenseDictionaryService, UserExpenseDictionaryService>();
+            services.AddScoped<IUserExpenseDictionaryRepository, UserExpenseDictionaryRepository>();
 
             services.AddScoped<IMenuOption, AddExpenseOption>();
             services.AddScoped<IMenuOption, AddIncomeOption>();

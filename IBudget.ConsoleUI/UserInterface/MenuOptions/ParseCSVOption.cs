@@ -8,10 +8,10 @@ namespace IBudget.ConsoleUI.UserInterface.MenuOptions
 {
     public class ParseCSVOption : MenuOption
     {
-        private readonly IExpenseDictionaryService _expenseDictionaryService;
+        private readonly IUserExpenseDictionaryService _expenseDictionaryService;
         public ParseCSVOption(IIncomeService incomeService,
             IExpenseService expenseService, ISummaryService summaryService, ITagService tagService,
-            IExpenseDictionaryService expenseDictionaryService)
+            IUserExpenseDictionaryService expenseDictionaryService)
         : base(incomeService, expenseService, summaryService, tagService)
         {
             _expenseDictionaryService = expenseDictionaryService;
