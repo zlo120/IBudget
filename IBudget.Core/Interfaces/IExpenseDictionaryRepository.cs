@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using IBudget.Core.Model;
 
 namespace IBudget.Core.Interfaces
 {
-    internal interface IExpenseDictionaryRepository
+    public interface IExpenseDictionaryRepository
     {
+        Task<bool> AddExpenseDictionary(UserExpenseDictionary expenseDictionary);
+        Task<UserExpenseDictionary> GetExpenseDictionary(int userId);
+        Task<bool> UpdateExpenseDictionary(List<ExpenseDictionary> expenseDictionaries, int userID);
+        Task<bool> RemoveExpenseDictionary(string title);
     }
 }
