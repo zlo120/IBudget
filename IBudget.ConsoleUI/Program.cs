@@ -1,5 +1,4 @@
-﻿// Create the SQLite db if it doesn't exist
-using IBudget.ConsoleUI.Services;
+﻿using IBudget.ConsoleUI.Services;
 using IBudget.ConsoleUI.UserInterface;
 using IBudget.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
