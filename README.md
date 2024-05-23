@@ -18,6 +18,15 @@ This application uses MongoDB. For your local environment, you must install Mong
 - **MongoDB Community Server:** https://www.mongodb.com/try/download/community
 - **MongoSH & MongoDB compass:** https://www.mongodb.com/try/download/compass 
 
+### Recommended DB name and collection name
+I have created my local db with the name `IBudget` with the collection name `expenseDictionary`.
+
+### Helpful commands
+To find your DB connection string:
+1. Open mongo shell, but using the command `> mongosh` in terminal
+2. Use your db, `> use db-name`. For example, I would run `> use IBudget`
+3. `> db.getMongo()`
+
 ## ⚙️ AppSettings 
 Both `appsettings.json` for the `IBudget.ConsoleUI` project and `IBudget.API` project are untracked. Here are templates to create your own `appsettings.json` in the root directory of both projects. 
 
