@@ -143,7 +143,7 @@ namespace IBudget.ConsoleUI.UserInterface
         {
             // Check to see if the db exists
             var dbType = _config["DBtype"];
-            if (dbType == "sqlite")
+            if (dbType == "SQLite")
             {
                 var pathString = _config.GetConnectionString("SQLite");
                 if (pathString == null)
@@ -173,7 +173,7 @@ namespace IBudget.ConsoleUI.UserInterface
                     Environment.Exit(0);
                 }
             }
-            else if (dbType == "SQL")
+            else if (dbType == "SQLServer")
             {
                 // do nothing
             }
