@@ -12,6 +12,12 @@ The console application will create a `IBudget.db` file wherever the data string
 - **Create migration:** `dotnet-ef migrations add MyMigration --context Context --project IBudget.Infrastructure --startup-project IBudget.ConsoleUI`
 - **Update db:** `dotnet-ef database update --context Context --project IBudget.Infrastructure  --startup-project IBudget.ConsoleUI`
 
+## MongoDB
+This application uses MongoDB. For your local environment, you must install MongoDB Community Server, Mongo Shell (or MongoSh) and it is recommended you to install MongoDB compass too.
+
+- **MongoDB Community Server:** https://www.mongodb.com/try/download/community
+- **MongoSH & MongoDB compass:** https://www.mongodb.com/try/download/compass 
+
 ## AppSettings
 Both appsettings.json for the IBudget.ConsoleUI project and IBudget.API project are untracked. Here are templates to create your own appsettings.json in the root directory of both projects. 
 ### IBudget.ConsoleUI\appsettings.json
