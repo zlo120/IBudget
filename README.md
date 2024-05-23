@@ -19,7 +19,8 @@ This application uses MongoDB. For your local environment, you must install Mong
 - **MongoSH & MongoDB compass:** https://www.mongodb.com/try/download/compass 
 
 ## ⚙️ AppSettings 
-Both appsettings.json for the IBudget.ConsoleUI project and IBudget.API project are untracked. Here are templates to create your own appsettings.json in the root directory of both projects. 
+Both `appsettings.json` for the `IBudget.ConsoleUI` project and `IBudget.API` project are untracked. Here are templates to create your own `appsettings.json` in the root directory of both projects. 
+
 ### IBudget.ConsoleUI\appsettings.json
 ```
 {
