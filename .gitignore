@@ -396,3 +396,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/IBudget.Infrastructure/Migrations
+/IBudget.API/appsettings.json
+/IBudget.ConsoleUI/appsettings.json
