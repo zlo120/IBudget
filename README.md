@@ -4,6 +4,10 @@ Welcome to the documentation for IBudget. This document provides an overview of 
 
 ## API Calls
 
+## SQLite db
+<p>This is paragraph</p>
+Another paragraph
+
 ## Entity Framework Commands
 
 - **Install EFCore in CLI:** `dotnet tool install --global dotnet-ef`
