@@ -19,7 +19,7 @@ This application uses MongoDB. For your local environment, you must install Mong
 - **MongoSH & MongoDB compass:** https://www.mongodb.com/try/download/compass 
 
 ### Recommended DB name and collection name
-I have created my local db with the name `IBudget` with the collection name `expenseDictionary`.
+I have created my local db with the name `IBudget` with the collection name `expenseDictionaries`.
 
 ### Helpful commands
 To find your DB connection string:
