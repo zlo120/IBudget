@@ -7,5 +7,5 @@ Welcome to the documentation for IBudget. This document provides an overview of 
 ## Entity Framework Commands
 
 - **Install EFCore in CLI:** `dotnet tool install --global dotnet-ef`
-- **Create migration:** `dotnet-ef migrations add MyMigration --context Context --project IBudget.Infrastructure`
-- **Update db:** `dotnet-ef database update --context Context --project IBudget.Infrastructure`
+- **Create migration:** `dotnet-ef migrations add MyMigration --context Context --project IBudget.Infrastructure --startup-project IBudget.ConsoleUI`
+- **Update db:** `dotnet-ef database update --context Context --project IBudget.Infrastructure  --startup-project IBudget.ConsoleUI`

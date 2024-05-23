@@ -120,14 +120,14 @@ namespace IBudget.ConsoleUI.Utils
             var fileLocation = Console.ReadLine();
             fileLocation = fileLocation.Replace("\"", "");
 
-            if (!File.Exists(fileLocation))
-            {
-                throw new InvalidInputException($"Invalid input. A file does not exist at: {fileLocation}.");
-            }
-
             if (string.IsNullOrEmpty(fileLocation) && optional is false)
             {
                 throw new InvalidInputException("Invalid input. Please enter a valid value.");
+            }
+
+            if (!File.Exists(fileLocation))
+            {
+                throw new InvalidInputException($"Invalid input. A file does not exist at: {fileLocation}.");
             }
 
             filePath = fileLocation;

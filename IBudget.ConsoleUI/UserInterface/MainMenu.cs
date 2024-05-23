@@ -2,12 +2,18 @@
 using IBudget.ConsoleUI.Utils;
 using IBudget.Core.Exceptions;
 using IBudget.Spreadsheet.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using MyBudgetter_Prototype.Utils;
+using System.Data;
 
 namespace IBudget.ConsoleUI.UserInterface
 {
     public class MainMenu : IMainMenu
     {
+        
         private readonly IGenerator _spreadsheetGenerator;
+        private readonly IConfiguration _config;
         private readonly AddExpenseOption _addExpenseOption;
         private readonly AddIncomeOption _addIncomeOption;
         private readonly DeleteRecordOption _deleteRecordOption;
@@ -16,11 +22,12 @@ namespace IBudget.ConsoleUI.UserInterface
         private readonly UpdateRecordOption _updateRecordOption;
         private readonly ParseCSVOption _parseCSVOption;
 
-        private readonly string[] MENU_LABELS = ["Add income", "Add expense", "Read week", "Read month", "Update record", "Delete record", "Generate spreadsheet", "Parse CSV"];
+        private readonly List<string> MENU_LABELS = ["Add income", "Add expense", "Read week", "Read month", "Update record", "Delete record", "Generate spreadsheet", "Parse CSV"];
 
-        public MainMenu(IEnumerable<IMenuOption> menuOptions, IGenerator spreadsheetGenerator)
+        public MainMenu(IEnumerable<IMenuOption> menuOptions, IGenerator spreadsheetGenerator, IConfiguration config)
         {
             _spreadsheetGenerator = spreadsheetGenerator;
+            _config = config;
 
             foreach (var menuOption in menuOptions)
             {
@@ -49,6 +56,7 @@ namespace IBudget.ConsoleUI.UserInterface
 
         public async void MainMenuLoop()
         {
+            MENU_LABELS.Add("Exit");
             while (true)
             {
                 Console.Clear();
@@ -57,7 +65,7 @@ namespace IBudget.ConsoleUI.UserInterface
                 int decision;
                 try
                 {
-                    decision = UserInput.MultipleChoicePrompt(MENU_LABELS);
+                    decision = UserInput.MultipleChoicePrompt([..MENU_LABELS]);
                 }
                 catch (InvalidInputException ex)
                 {
@@ -68,6 +76,13 @@ namespace IBudget.ConsoleUI.UserInterface
                 }
 
                 Console.Clear();
+
+                if (decision == MENU_LABELS.Count)
+                {
+                    ConsoleStyler.PrintTitle("GOOD BYE!");
+                    Environment.Exit(0);
+                }
+                    
                 switch (decision)
                 {
                     // Add income
@@ -122,6 +137,48 @@ namespace IBudget.ConsoleUI.UserInterface
 
                 Console.Clear();
             }
+        }
+    
+        public async Task Execute()
+        {
+            // Check to see if the db exists
+            var dbType = _config["DBtype"];
+            if (dbType == "sqlite")
+            {
+                var pathString = _config.GetConnectionString("SQLite");
+                if (pathString == null)
+                {
+                    Console.WriteLine("No connection string exists, please edit the config file with the correct connection string");
+                    Console.ReadLine();
+                    Environment.Exit(0);
+                }
+
+                var filePath = pathString.Replace("Data Source=", "");
+                if (!File.Exists(filePath))
+                {
+                    Console.WriteLine("DB file does not exist, creating it now...");
+                    if (!Directory.Exists(filePath))
+                    {
+                        Directory.CreateDirectory(filePath.Replace("\\IBudget.db", ""));
+                    }
+
+                    var dbFile = File.Create(filePath);
+                    dbFile.Close();
+
+                    Console.Write("DB file created successfully. Please run migration to set up the db..." +
+                        "\n\nTo generate migration execute this command: \n\tdotnet-ef migrations add MyMigration --context Context --project IBudget.Infrastructure --startup-project IBudget.ConsoleUI" +
+                        "\nThen to execute migration run: \n\tdotnet-ef database update --context Context --project IBudget.Infrastructure  --startup-project IBudget.ConsoleUI" +
+                        "\n\nPress any key to exit...");
+                    Console.ReadKey();
+                    Environment.Exit(0);
+                }
+            }
+            else if (dbType == "SQL")
+            {
+                // do nothing
+            }
+
+            MainMenuLoop();
         }
     }
 }

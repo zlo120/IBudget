@@ -1,26 +1,27 @@
 ﻿// Create the SQLite db if it doesn't exist
 using IBudget.ConsoleUI.Services;
 using IBudget.ConsoleUI.UserInterface;
+using IBudget.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 internal class Program
 {
-    private static Task Main(string[] args)
+    private static async Task Main(string[] args)
     {
-        var folder = Environment.SpecialFolder.LocalApplicationData;
-        var rootDir = Path.Combine(Environment.GetFolderPath(folder), "IBudget");
-        var dbDir = Path.Join(rootDir, "IBudgetDB");
-        if (!Directory.Exists(rootDir)) Directory.CreateDirectory(rootDir);
-        if (!Directory.Exists(dbDir)) Directory.CreateDirectory(dbDir);
-        if (!File.Exists(Path.Join(dbDir, "IBudget.db")))
+        var hostBuilder = Host.CreateDefaultBuilder();
+        hostBuilder.ConfigureServices(conf =>
         {
-            var dbFile = File.Create(Path.Join(dbDir, "IBudget.db"));
-            dbFile.Close();
-        }
-        var services = ServiceHandler.RegisterServices();
-        var serviceProvider = services.BuildServiceProvider();
-        var mainMenu = serviceProvider.GetService(typeof(IMainMenu)) as IMainMenu;
-        mainMenu?.MainMenuLoop();
-        return Task.CompletedTask;
+            ServiceHandler.RegisterServices(ref conf);
+            conf.AddDbContext<Context>();
+        });
+        hostBuilder.UseConsoleLifetime();
+
+        var host = hostBuilder.Build();
+
+        var mainMenu = host.Services.GetService<IMainMenu>() as MainMenu;
+        var hostTask = host.StartAsync();
+        await mainMenu.Execute();
+        await hostTask;
     }
 }

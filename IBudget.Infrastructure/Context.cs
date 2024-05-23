@@ -1,5 +1,6 @@
 ﻿using IBudget.Core.Model;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace IBudget.Infrastructure
 {
@@ -8,19 +9,22 @@ namespace IBudget.Infrastructure
         public DbSet<Income> Income { get; set; }
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        private readonly IConfiguration _config;
 
         public string DbPath { get; }
 
-        public Context()
+        public Context(IConfiguration configuration)
         {
-            var folder = Environment.SpecialFolder.LocalApplicationData;
-            var path = Environment.GetFolderPath(folder);
-            DbPath = Path.Join(path, "IBudget\\IBudgetDB\\IBudget.db");
+            //var folder = Environment.SpecialFolder.LocalApplicationData;
+            //var path = Environment.GetFolderPath(folder);
+            //DbPath = Path.Join(path, "IBudget\\IBudgetDB\\IBudget.db");
+
+            _config = configuration;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlite($"Data Source={DbPath}");
+            options.UseSqlite(_config.GetConnectionString("SQLite"));
             options.UseLazyLoadingProxies();
             options.EnableSensitiveDataLogging();
         }
