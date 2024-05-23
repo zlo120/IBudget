@@ -22,8 +22,7 @@ Both appsettings.json for the IBudget.ConsoleUI project and IBudget.API project 
       "Default" : "None"
     }
   },
-  "DBtype": "sqlite",
-  "DBpath": "x",
+  "DBtype": "SQLite",
   "ConnectionStrings": {
     "SQLite": "",
     "MongoDB": ""
