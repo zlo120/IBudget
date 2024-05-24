@@ -43,30 +43,12 @@ namespace IBudget.Infrastructure.Repositories
 
         public async Task<bool> UpdateExpenseDictionary(List<ExpenseDictionary> expenseDictionaries, int userID)
         {
-            // DOESN'T WORK
             var result = await _db.userExpenseDictionaries.FirstOrDefaultAsync(ed => ed.userId == userID);
-            if (result is null) throw new RecordNotFoundException("A user with that ID does not exist");
-            var newExpenseDictionaries = new List<ExpenseDictionary>(expenseDictionaries);
-            foreach(var updatedExpenseDict in expenseDictionaries)
-            {
-                foreach(var existingExpenseDict in result.ExpenseDictionaries)
-                {
-                    if (updatedExpenseDict.title == existingExpenseDict.title)
-                    {
-                        newExpenseDictionaries.RemoveAt(newExpenseDictionaries.IndexOf(updatedExpenseDict));
-                        // join both lists together but only keep distinct elements
-                        var indexOfDict = result.ExpenseDictionaries.IndexOf(existingExpenseDict);
-                        var setOfTags = new HashSet<ExpenseDictionary>(result.ExpenseDictionaries.Concat(expenseDictionaries));
-                        result.ExpenseDictionaries = setOfTags.ToList();
-                    }
-                }
-            }
+            if (result is null) throw new RecordNotFoundException("A user with that ID does not exist"); // won't throw exception
 
-            foreach (var expenseDict in newExpenseDictionaries)
-                result.ExpenseDictionaries.Add(expenseDict);
-
-            await _db.SaveChangesAsync();
-            // DOESN'T WORK
+            // find all the expenseDictionaries that do not exist in the userExpenseDictionary.ExpenseDictionaries
+            var newExpenseDictionaries = expenseDictionaries.Except(result.ExpenseDictionaries).ToList();
+            var existingExpenseDictionaries = expenseDictionaries.Intersect(result.ExpenseDictionaries);
 
             return true;
         }

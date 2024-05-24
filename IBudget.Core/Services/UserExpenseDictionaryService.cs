@@ -1,4 +1,5 @@
-﻿using IBudget.Core.Interfaces;
+﻿using IBudget.Core.Exceptions;
+using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
 
 namespace IBudget.Core.Services
@@ -28,7 +29,14 @@ namespace IBudget.Core.Services
 
         public async Task<bool> UpdateExpenseDictionary(List<ExpenseDictionary> expenseDictionaries, int userID)
         {
-            return await _expenseDictionaryRepository.UpdateExpenseDictionary(expenseDictionaries, userID);
+            try
+            {
+                return await _expenseDictionaryRepository.UpdateExpenseDictionary(expenseDictionaries, userID);
+            }
+            catch (RecordNotFoundException ex)
+            {
+                throw ex;
+            }
         }
     }
 }

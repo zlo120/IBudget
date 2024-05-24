@@ -1,4 +1,5 @@
 ﻿using IBudget.ConsoleUI.Utils;
+using IBudget.Core.Exceptions;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
 using IBudget.Core.Services;
