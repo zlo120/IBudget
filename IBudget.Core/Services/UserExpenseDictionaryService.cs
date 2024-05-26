@@ -29,14 +29,7 @@ namespace IBudget.Core.Services
 
         public async Task<bool> UpdateExpenseDictionary(List<ExpenseDictionary> expenseDictionaries, int userID)
         {
-            try
-            {
-                return await _expenseDictionaryRepository.UpdateExpenseDictionary(expenseDictionaries, userID);
-            }
-            catch (RecordNotFoundException ex)
-            {
-                throw ex;
-            }
+            return await _expenseDictionaryRepository.UpdateExpenseDictionary(expenseDictionaries, userID);
         }
     }
 }

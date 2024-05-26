@@ -44,11 +44,40 @@ namespace IBudget.Infrastructure.Repositories
         public async Task<bool> UpdateExpenseDictionary(List<ExpenseDictionary> expenseDictionaries, int userID)
         {
             var result = await _db.userExpenseDictionaries.FirstOrDefaultAsync(ed => ed.userId == userID);
-            if (result is null) throw new RecordNotFoundException("A user with that ID does not exist"); // won't throw exception
+            if (result is null) throw new RecordNotFoundException("A user with that ID does not exist");
+            var newExpenseDictionaries = expenseDictionaries.Where(ed => !result.ExpenseDictionaries.Contains(ed)).ToList();
+            var duplicateDictionaries = result.ExpenseDictionaries.Where(expenseDictionaries.Contains).ToList();
 
-            // find all the expenseDictionaries that do not exist in the userExpenseDictionary.ExpenseDictionaries
-            var newExpenseDictionaries = expenseDictionaries.Except(result.ExpenseDictionaries).ToList();
-            var existingExpenseDictionaries = expenseDictionaries.Intersect(result.ExpenseDictionaries);
+            foreach (var expenseDictionary in newExpenseDictionaries)
+                result.ExpenseDictionaries.Add(expenseDictionary);
+
+            foreach (var duplicateDictionary in duplicateDictionaries)
+            {
+                // this search will work for both existing and updated dictionary collections
+                //  since comparing dictionaries is accomplished by comparing title strings.
+                var existingExpenseDictionary = result.ExpenseDictionaries.Where(existingExpenseDictionary => 
+                    existingExpenseDictionary.Equals(duplicateDictionary)).FirstOrDefault();
+
+                var updatedExpenseDictionary = expenseDictionaries.Where(updatedExpenseDictionary =>
+                    updatedExpenseDictionary.Equals(duplicateDictionary)).FirstOrDefault();
+
+                var combinedDictionaries = new List<ExpenseDictionary>();
+                var distinctTags = new HashSet<string>(existingExpenseDictionary.tags);
+                foreach(var tag in updatedExpenseDictionary.tags)
+                    distinctTags.Add(tag);
+
+                var indexForDuplicateDictionary = result.ExpenseDictionaries.IndexOf(duplicateDictionary);
+                result.ExpenseDictionaries[indexForDuplicateDictionary].tags = distinctTags.ToArray();
+            }
+
+            try
+            {
+                _db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new MongoCRUDException(ex.Message);
+            }
 
             return true;
         }
