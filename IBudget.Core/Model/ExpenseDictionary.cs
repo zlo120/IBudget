@@ -24,5 +24,16 @@ namespace IBudget.Core.Model
         }
         public int GetHashCode([DisallowNull] ExpenseDictionary obj) => (obj.title, obj.tags).GetHashCode();
         public override int GetHashCode() => (title, tags).GetHashCode();
+        public override string ToString()
+        {
+            var output = $"{{\n            title: {title},\n            tags: {{";
+            if (tags.Length == 0) output += "}";
+            foreach (var tag in tags)
+                output += $"\n                {tag},";
+            if (tags.Length > 0) output += "\n            }";
+            output += "\n        },";
+
+            return output;
+        }
     }
 }

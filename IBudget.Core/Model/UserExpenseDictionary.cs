@@ -19,5 +19,17 @@ namespace IBudget.Core.Model
         public static bool operator !=(UserExpenseDictionary eD1, UserExpenseDictionary eD2) => !eD1.Equals(eD2);
         public override bool Equals(object obj) => Equals(obj as UserExpenseDictionary);
         public override int GetHashCode() => (_id, userId, ExpenseDictionaries).GetHashCode();
+        public override string ToString()
+        {
+            var output = $"{{\n    _id: {_id},\n    userId: {userId},\n\texpenseDictionaries: {{";
+            if (ExpenseDictionaries.Count == 0) output += "}\n";
+            foreach(var expense in ExpenseDictionaries)
+                output += $"\n        {expense}";
+            if (ExpenseDictionaries.Count > 0)
+                output += "\n    }";
+
+            output += "\n}";
+            return output;
+        }
     }
 }
