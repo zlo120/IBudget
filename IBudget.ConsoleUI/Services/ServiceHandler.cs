@@ -29,6 +29,7 @@ namespace IBudget.ConsoleUI.Services
             services.AddScoped<IRecordUtility, RecordUtility>();
             services.AddScoped<IGenerator, Generator>();
             services.AddScoped<IPopulator, Populator>();
+            services.AddScoped<ICSVParserService, CSVParserService>();
 
             services.AddScoped<IUserExpenseDictionaryService, UserExpenseDictionaryService>();
             services.AddScoped<IUserExpenseDictionaryRepository, UserExpenseDictionaryRepository>();
