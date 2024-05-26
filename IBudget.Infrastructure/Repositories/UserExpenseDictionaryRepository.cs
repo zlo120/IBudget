@@ -4,6 +4,7 @@ using IBudget.Core.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
+using System.ComponentModel.DataAnnotations;
 
 namespace IBudget.Infrastructure.Repositories
 {
@@ -36,9 +37,25 @@ namespace IBudget.Infrastructure.Repositories
             return await _db.userExpenseDictionaries.FirstOrDefaultAsync(ed => ed.userId == userId);
         }
 
-        public Task<bool> RemoveExpenseDictionary(string title)
+        public async Task<bool> RemoveExpenseDictionary(int userId, string title)
         {
-            throw new NotImplementedException();
+            var result = await GetExpenseDictionary(userId);
+            if (result is null) throw new RecordNotFoundException("A user with that ID does not exist");
+
+            var expenseDictionary = result.ExpenseDictionaries.Where(expenseDictionary => expenseDictionary.title == title).FirstOrDefault();
+            if (expenseDictionary is null) throw new RecordNotFoundException($"An expense dictionary with that title does not exist for that user");
+
+            result.ExpenseDictionaries.Remove(expenseDictionary);
+
+            try
+            {
+                _db.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new MongoCRUDException(ex.Message);
+            }
         }
 
         public async Task<bool> UpdateExpenseDictionary(List<ExpenseDictionary> expenseDictionaries, int userID)

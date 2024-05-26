@@ -22,9 +22,9 @@ namespace IBudget.Core.Services
             return await _expenseDictionaryRepository.GetExpenseDictionary(userId);
         }
 
-        public async Task<bool> RemoveExpenseDictionary(string title)
+        public async Task<bool> RemoveExpenseDictionary(int userId, string title)
         {
-            return await _expenseDictionaryRepository.RemoveExpenseDictionary(title);
+            return await _expenseDictionaryRepository.RemoveExpenseDictionary(userId, title);
         }
 
         public async Task<bool> UpdateExpenseDictionary(List<ExpenseDictionary> expenseDictionaries, int userID)
