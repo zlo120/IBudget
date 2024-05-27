@@ -8,7 +8,7 @@ namespace IBudget.Core.Interfaces
         Task<UserExpenseDictionary> GetExpenseDictionary(int userId);
         Task<bool> UpdateExpenseDictionary(List<ExpenseDictionary> expenseDictionaries, int userID);
         Task<bool> RemoveExpenseDictionary(int userId, string title);
-
+        Task<bool> RemoveUser(int userId);
         Task<bool> AddRuleDictionary(int userId, RuleDictionary ruleDictionary);
         Task<List<RuleDictionary>> GetRuleDictionaries(int userId);
         Task<bool> UpdateRuleDictionary(List<RuleDictionary> ruleDictionary, int userID);

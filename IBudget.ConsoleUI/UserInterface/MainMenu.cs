@@ -4,9 +4,7 @@ using IBudget.Core.Exceptions;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
 using IBudget.Spreadsheet.Interfaces;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
-using MongoDB.Driver;
 
 namespace IBudget.ConsoleUI.UserInterface
 {
@@ -24,7 +22,7 @@ namespace IBudget.ConsoleUI.UserInterface
         private readonly ParseCSVOption _parseCSVOption;
         private readonly AddRuleDictionaryOption _addExpenseDictionaryOption;
 
-        
+
 
         private readonly List<string> MENU_LABELS = ["Add income", "Add expense", "Read week", "Read month", "Update record", "Delete record", "Generate spreadsheet", "Parse CSV", "Add Dictionary Rule"];
 
@@ -157,7 +155,7 @@ namespace IBudget.ConsoleUI.UserInterface
         {
             SQLDbCheck();
             MongoDBStartupCheck();
-            MainMenuLoop();
+            //MainMenuLoop();
         }
 
         private void SQLDbCheck()
@@ -199,7 +197,7 @@ namespace IBudget.ConsoleUI.UserInterface
                 // do nothing
             }
         }
-        private async void MongoDBStartupCheck()
+        private async Task MongoDBStartupCheck()
         {
             var userExpenseDictionary1 = new UserExpenseDictionary()
             {
@@ -218,8 +216,15 @@ namespace IBudget.ConsoleUI.UserInterface
             {
                 await _userExpenseDictionaryService.AddExpenseDictionary(userExpenseDictionary1);
                 await _userExpenseDictionaryService.AddExpenseDictionary(userExpenseDictionary2);
+                await _userExpenseDictionaryService.RemoveUser(99999);
+                await _userExpenseDictionaryService.RemoveUser(99999);
+                Console.Write("You have not configured the MongoDB correctly, currently it allows duplicate UserExpenseDictionaries. " +
+                    "\nPlease open mongosh and run the command: \ndb.userExpenseDictionaries.createIndex( { \"userId\": 1 }, { unique: true } )\n" +
+                    "Press any key to exit...");
+                Console.ReadKey();
+                Environment.Exit(0);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }

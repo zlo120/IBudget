@@ -121,6 +121,26 @@ namespace IBudget.Infrastructure.Repositories
             }
         }
 
+        public async Task<bool> RemoveUser(int userId)
+        {
+            using var dbTransaction = _db.Database.BeginTransaction();
+            var result = await GetExpenseDictionary(userId);
+            if (result is null) throw new RecordNotFoundException("A user with that ID does not exist");
+
+            try
+            {
+                _db.userExpenseDictionaries.Remove(result);
+                _db.SaveChanges();
+                dbTransaction.Commit();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                dbTransaction.Rollback();
+                throw new MongoCRUDException(ex.Message);
+            }
+        }
+
         public async Task<bool> UpdateExpenseDictionary(List<ExpenseDictionary> expenseDictionaries, int userID)
         {
             var result = await _db.userExpenseDictionaries.FirstOrDefaultAsync(ed => ed.userId == userID);
