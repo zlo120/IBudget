@@ -154,7 +154,7 @@ namespace IBudget.ConsoleUI.UserInterface
         public async Task Execute()
         {
             SQLDbCheck();
-            MongoDBStartupCheck();
+            await MongoDBStartupCheck();
             //MainMenuLoop();
         }
 
