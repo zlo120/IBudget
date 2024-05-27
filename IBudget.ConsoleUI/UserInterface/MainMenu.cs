@@ -1,17 +1,20 @@
 ﻿using IBudget.ConsoleUI.UserInterface.MenuOptions;
 using IBudget.ConsoleUI.Utils;
 using IBudget.Core.Exceptions;
+using IBudget.Core.Interfaces;
+using IBudget.Core.Model;
 using IBudget.Spreadsheet.Interfaces;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
-using MyBudgetter_Prototype.Utils;
+using MongoDB.Driver;
 
 namespace IBudget.ConsoleUI.UserInterface
 {
     public class MainMenu : IMainMenu
     {
-
         private readonly IGenerator _spreadsheetGenerator;
         private readonly IConfiguration _config;
+        private readonly IUserExpenseDictionaryService _userExpenseDictionaryService;
         private readonly AddExpenseOption _addExpenseOption;
         private readonly AddIncomeOption _addIncomeOption;
         private readonly DeleteRecordOption _deleteRecordOption;
@@ -21,12 +24,15 @@ namespace IBudget.ConsoleUI.UserInterface
         private readonly ParseCSVOption _parseCSVOption;
         private readonly AddRuleDictionaryOption _addExpenseDictionaryOption;
 
+        
+
         private readonly List<string> MENU_LABELS = ["Add income", "Add expense", "Read week", "Read month", "Update record", "Delete record", "Generate spreadsheet", "Parse CSV", "Add Dictionary Rule"];
 
-        public MainMenu(IEnumerable<IMenuOption> menuOptions, IGenerator spreadsheetGenerator, IConfiguration config)
+        public MainMenu(IEnumerable<IMenuOption> menuOptions, IGenerator spreadsheetGenerator, IConfiguration config, IUserExpenseDictionaryService userExpenseDictionaryService)
         {
             _spreadsheetGenerator = spreadsheetGenerator;
             _config = config;
+            _userExpenseDictionaryService = userExpenseDictionaryService;
 
             foreach (var menuOption in menuOptions)
             {
@@ -149,6 +155,13 @@ namespace IBudget.ConsoleUI.UserInterface
 
         public async Task Execute()
         {
+            SQLDbCheck();
+            MongoDBStartupCheck();
+            MainMenuLoop();
+        }
+
+        private void SQLDbCheck()
+        {
             // Check to see if the db exists
             var dbType = _config["DBtype"];
             if (dbType == "SQLite")
@@ -185,8 +198,31 @@ namespace IBudget.ConsoleUI.UserInterface
             {
                 // do nothing
             }
+        }
+        private async void MongoDBStartupCheck()
+        {
+            var userExpenseDictionary1 = new UserExpenseDictionary()
+            {
+                userId = 99999,
+                RuleDictionary = new List<RuleDictionary>(),
+                ExpenseDictionaries = new List<ExpenseDictionary>()
+            };
+            var userExpenseDictionary2 = new UserExpenseDictionary()
+            {
+                userId = 99999,
+                RuleDictionary = new List<RuleDictionary>(),
+                ExpenseDictionaries = new List<ExpenseDictionary>()
+            };
 
-            MainMenuLoop();
+            try
+            {
+                await _userExpenseDictionaryService.AddExpenseDictionary(userExpenseDictionary1);
+                await _userExpenseDictionaryService.AddExpenseDictionary(userExpenseDictionary2);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }

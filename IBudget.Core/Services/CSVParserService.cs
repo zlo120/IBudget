@@ -3,7 +3,6 @@ using CsvHelper.Configuration;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
 using IBudget.Core.Utils;
-using System.Collections.Generic;
 using System.Globalization;
 
 namespace IBudget.Core.Services
@@ -23,19 +22,19 @@ namespace IBudget.Core.Services
                 HasHeaderRecord = false
             };
 
-            using (var reader = new StreamReader(csvFilePath)) 
+            using (var reader = new StreamReader(csvFilePath))
             using (var csv = new CsvReader(reader, config))
             {
                 var records = csv.GetRecords<FinancialCSV>();
                 var formattedRecords = new List<FormattedFinancialCSV>();
-                foreach(var record in records)
+                foreach (var record in records)
                 {
                     if (record.Amount >= 0) continue;
                     formattedRecords.Add(new FormattedFinancialCSV()
                     {
                         Date = CsvFormatter.FormatDate(record.Date),
                         Description = CsvFormatter.FormatDescription(record.Description),
-                        Amount = record.Amount
+                        Amount = record.Amount * -1
                     });
                 }
 
@@ -66,7 +65,7 @@ namespace IBudget.Core.Services
                     .FirstOrDefault();
 
                 var ruleDictionaryMatch = userExpenseDictionaries.RuleDictionary
-                    .Where(ruleDictionary => 
+                    .Where(ruleDictionary =>
                         record.Description.Contains(ruleDictionary.rule)
                         )
                     .FirstOrDefault();
@@ -74,7 +73,7 @@ namespace IBudget.Core.Services
                 if (expenseDictionaryMatch is null && ruleDictionaryMatch is null)
                     untaggedRecords.Add(record);
 
-                if (expenseDictionaryMatch is not null) 
+                if (expenseDictionaryMatch is not null)
                 {
                     record.Tags.AddRange(expenseDictionaryMatch.tags.ToList());
                     taggedRecords.Add(record);

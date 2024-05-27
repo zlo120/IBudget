@@ -1,4 +1,4 @@
-﻿namespace MyBudgetter_Prototype.Utils
+﻿namespace IBudget.ConsoleUI.Utils
 {
     public static class ConsoleStyler
     {        public static void PrintTitle(string message)

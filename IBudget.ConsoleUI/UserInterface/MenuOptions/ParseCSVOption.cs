@@ -1,7 +1,6 @@
 ﻿using IBudget.ConsoleUI.Utils;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
-using MyBudgetter_Prototype.Utils;
 
 namespace IBudget.ConsoleUI.UserInterface.MenuOptions
 {
