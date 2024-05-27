@@ -4,19 +4,19 @@ using MongoDB.Driver;
 
 namespace IBudget.Infrastructure
 {
-    public class MongoDBContext : DbContext
+    public class MongoDBEFContext : DbContext
     {
         public DbSet<UserExpenseDictionary> userExpenseDictionaries { get; set; }
-        public static MongoDBContext Create(IMongoDatabase database) =>
-            new(new DbContextOptionsBuilder<MongoDBContext>()
+        public static MongoDBEFContext Create(IMongoDatabase database) =>
+            new(new DbContextOptionsBuilder<MongoDBEFContext>()
                 .UseMongoDB(database.Client, database.DatabaseNamespace.DatabaseName)
                 .Options);
 
-        public MongoDBContext(DbContextOptions<MongoDBContext> options) : base(options)
+        public MongoDBEFContext(DbContextOptions<MongoDBEFContext> options) : base(options)
         {
         }
 
-        public MongoDBContext(ModelBuilder modelBuilder)
+        public MongoDBEFContext(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
         }

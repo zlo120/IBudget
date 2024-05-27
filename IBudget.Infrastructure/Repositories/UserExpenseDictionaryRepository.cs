@@ -9,11 +9,11 @@ namespace IBudget.Infrastructure.Repositories
 {
     public class UserExpenseDictionaryRepository : IUserExpenseDictionaryRepository
     {
-        private readonly MongoDBContext _db;
+        private readonly MongoDBEFContext _db;
         public UserExpenseDictionaryRepository(IConfiguration config)
         {
             var client = new MongoClient(config.GetConnectionString("MongoDB"));
-            var db = MongoDBContext.Create(client.GetDatabase("IBudget"));
+            var db = MongoDBEFContext.Create(client.GetDatabase("IBudget"));
             _db = db;
         }
         public async Task<bool> AddExpenseDictionary(UserExpenseDictionary expenseDictionary)
