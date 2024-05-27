@@ -6,7 +6,8 @@ namespace IBudget.Core.Model
     {
         public ObjectId _id { get; set; }
         public int userId { get; set; }
-        public List<ExpenseDictionary> ExpenseDictionaries { get; set; }
+        public List<ExpenseDictionary>? ExpenseDictionaries { get; set; }
+        public List<RuleDictionary>? RuleDictionary { get; set; }
         public bool Equals(UserExpenseDictionary? other)
         {
             if (other is null) return false;
@@ -22,10 +23,17 @@ namespace IBudget.Core.Model
         public override string ToString()
         {
             var output = $"{{\n    _id: {_id},\n    userId: {userId},\n\texpenseDictionaries: {{";
-            if (ExpenseDictionaries.Count == 0) output += "}\n";
+            if (ExpenseDictionaries.Count == 0) output += "},\n";
             foreach(var expense in ExpenseDictionaries)
                 output += $"\n        {expense}";
             if (ExpenseDictionaries.Count > 0)
+                output += "\n    }";
+
+            output += "\n    ruleDictionary: {";
+            if (RuleDictionary.Count == 0) output += "}\n";
+            foreach (var rule in RuleDictionary)
+                output += $"\n        {rule}";
+            if (RuleDictionary.Count > 0)
                 output += "\n    }";
 
             output += "\n}";

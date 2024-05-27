@@ -3,15 +3,13 @@ using IBudget.ConsoleUI.Utils;
 using IBudget.Core.Exceptions;
 using IBudget.Spreadsheet.Interfaces;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using MyBudgetter_Prototype.Utils;
-using System.Data;
 
 namespace IBudget.ConsoleUI.UserInterface
 {
     public class MainMenu : IMainMenu
     {
-        
+
         private readonly IGenerator _spreadsheetGenerator;
         private readonly IConfiguration _config;
         private readonly AddExpenseOption _addExpenseOption;
@@ -21,8 +19,9 @@ namespace IBudget.ConsoleUI.UserInterface
         private readonly ReadWeekOption _readWeekOption;
         private readonly UpdateRecordOption _updateRecordOption;
         private readonly ParseCSVOption _parseCSVOption;
+        private readonly AddRuleDictionaryOption _addExpenseDictionaryOption;
 
-        private readonly List<string> MENU_LABELS = ["Add income", "Add expense", "Read week", "Read month", "Update record", "Delete record", "Generate spreadsheet", "Parse CSV"];
+        private readonly List<string> MENU_LABELS = ["Add income", "Add expense", "Read week", "Read month", "Update record", "Delete record", "Generate spreadsheet", "Parse CSV", "Add Dictionary Rule"];
 
         public MainMenu(IEnumerable<IMenuOption> menuOptions, IGenerator spreadsheetGenerator, IConfiguration config)
         {
@@ -51,6 +50,10 @@ namespace IBudget.ConsoleUI.UserInterface
 
                 if (menuOption is ParseCSVOption)
                     _parseCSVOption = (ParseCSVOption)menuOption;
+
+                if (menuOption is AddRuleDictionaryOption)
+                    _addExpenseDictionaryOption = (AddRuleDictionaryOption)menuOption;
+
             }
         }
 
@@ -65,7 +68,7 @@ namespace IBudget.ConsoleUI.UserInterface
                 int decision;
                 try
                 {
-                    decision = UserInput.MultipleChoicePrompt([..MENU_LABELS]);
+                    decision = UserInput.MultipleChoicePrompt([.. MENU_LABELS]);
                 }
                 catch (InvalidInputException ex)
                 {
@@ -82,7 +85,7 @@ namespace IBudget.ConsoleUI.UserInterface
                     ConsoleStyler.PrintTitle("GOOD BYE!");
                     Environment.Exit(0);
                 }
-                    
+
                 switch (decision)
                 {
                     // Add income
@@ -131,6 +134,11 @@ namespace IBudget.ConsoleUI.UserInterface
                         _parseCSVOption.Execute();
                         break;
 
+                    case 9:
+                        _addExpenseDictionaryOption.Label = MENU_LABELS[decision - 1];
+                        _addExpenseDictionaryOption.Execute();
+                        break;
+
                     default:
                         break;
                 }
@@ -138,7 +146,7 @@ namespace IBudget.ConsoleUI.UserInterface
                 Console.Clear();
             }
         }
-    
+
         public async Task Execute()
         {
             // Check to see if the db exists

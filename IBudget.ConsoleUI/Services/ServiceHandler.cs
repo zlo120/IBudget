@@ -41,6 +41,7 @@ namespace IBudget.ConsoleUI.Services
             services.AddScoped<IMenuOption, ReadWeekOption>();
             services.AddScoped<IMenuOption, UpdateRecordOption>();
             services.AddScoped<IMenuOption, ParseCSVOption>();
+            services.AddScoped<IMenuOption, AddRuleDictionaryOption>();
 
             services.AddScoped<IMainMenu, MainMenu>();
         }

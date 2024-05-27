@@ -65,7 +65,6 @@ namespace IBudget.ConsoleUI.Utils
             Console.WriteLine("Enter a tag associated with this expense (optional, enter nothing to continue): ");
             while (true)
             {
-
                 Console.Write(" > ");
                 var input = Console.ReadLine().ToLower();
                 if (input == "")
@@ -131,6 +130,31 @@ namespace IBudget.ConsoleUI.Utils
             }
 
             filePath = fileLocation;
+        }
+        public static string[] ContinuousPrompt(string message, bool repeatMessage = true)
+        {
+            Console.WriteLine("This is a continuous prompt. Enter nothing to stop.");
+            var responseList = new List<string>();
+
+            while(true)
+            {
+                var response = "";
+                if (repeatMessage)
+                {
+                    response = Prompt(message, true);
+                } else
+                {
+                    Console.WriteLine(message);
+                    response = Prompt(" > ", true);
+                }
+
+                if (response.Equals("") || response is null)
+                    break;  
+                
+                responseList.Add(response);
+            }
+
+            return [.. responseList];
         }
         public static int MultipleChoicePrompt(string[] choices, bool optional = false)
         {
