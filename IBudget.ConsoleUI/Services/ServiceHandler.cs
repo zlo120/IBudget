@@ -31,8 +31,8 @@ namespace IBudget.ConsoleUI.Services
             services.AddScoped<IPopulator, Populator>();
             services.AddScoped<ICSVParserService, CSVParserService>();
 
-            services.AddScoped<IUserExpenseDictionaryService, UserExpenseDictionaryService>();
-            services.AddScoped<IUserExpenseDictionaryRepository, UserExpenseDictionaryRepository>();
+            services.AddTransient<IUserDictionaryService, UserDictionaryService>();
+            services.AddTransient<IUserDictionaryRepository, UserDictionaryRepository>();
 
             services.AddScoped<IMenuOption, AddExpenseOption>();
             services.AddScoped<IMenuOption, AddIncomeOption>();

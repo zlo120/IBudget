@@ -3,17 +3,20 @@ using CsvHelper.Configuration;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
 using IBudget.Core.Utils;
+using Microsoft.Extensions.Configuration;
 using System.Globalization;
 
 namespace IBudget.Core.Services
 {
     public class CSVParserService : ICSVParserService
     {
-        private readonly IUserExpenseDictionaryService _userExpenseDictionaryService;
+        private readonly IUserDictionaryService _userDictionaryService;
+        private readonly int _userId;
 
-        public CSVParserService(IUserExpenseDictionaryService userExpenseDictionaryService)
+        public CSVParserService(IUserDictionaryService userDictionaryService, IConfiguration config)
         {
-            _userExpenseDictionaryService = userExpenseDictionaryService;
+            _userDictionaryService = userDictionaryService;
+            _userId = int.Parse(config["MongoDbUserId"]);
         }
         public async Task<List<FormattedFinancialCSV>> ParseCSV(string csvFilePath)
         {
@@ -44,27 +47,16 @@ namespace IBudget.Core.Services
         public async Task<(List<FormattedFinancialCSV>, List<FormattedFinancialCSV>)> DistinguishTaggedAndUntagged(List<FormattedFinancialCSV> records)
         {
             records = records.Distinct().ToList();
-            var userExpenseDictionaries = await _userExpenseDictionaryService.GetExpenseDictionary(1); // replace this with userId from config
-            if (userExpenseDictionaries is null)
-            {
-                await _userExpenseDictionaryService.AddExpenseDictionary(new UserExpenseDictionary()
-                {
-                    userId = 1, // replace this with userId from config
-                    RuleDictionary = new List<RuleDictionary>(),
-                    ExpenseDictionaries = new List<ExpenseDictionary>()
-                });
-
-                userExpenseDictionaries = await _userExpenseDictionaryService.GetExpenseDictionary(1); // replace this with userId from config
-            }
+            var userDictionary = await _userDictionaryService.GetUser(_userId);
             var untaggedRecords = new List<FormattedFinancialCSV>();
             var taggedRecords = new List<FormattedFinancialCSV>();
             foreach (var record in records)
             {
-                var expenseDictionaryMatch = userExpenseDictionaries.ExpenseDictionaries
+                var expenseDictionaryMatch = userDictionary.ExpenseDictionaries
                     .Where(expenseDictionary => expenseDictionary.title.Equals(record.Description))
                     .FirstOrDefault();
 
-                var ruleDictionaryMatch = userExpenseDictionaries.RuleDictionary
+                var ruleDictionaryMatch = userDictionary.RuleDictionaries
                     .Where(ruleDictionary =>
                         record.Description.Contains(ruleDictionary.rule)
                         )

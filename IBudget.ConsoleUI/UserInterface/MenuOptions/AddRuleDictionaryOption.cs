@@ -1,27 +1,25 @@
 ﻿using IBudget.ConsoleUI.Utils;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
-using IBudget.ConsoleUI.Utils;
 
 namespace IBudget.ConsoleUI.UserInterface.MenuOptions
 {
     public class AddRuleDictionaryOption : MenuOption
     {
         private readonly ICSVParserService _CSVParserService;
-        private readonly IUserExpenseDictionaryService _userExpenseDictionaryService;
+        private readonly IUserDictionaryService _userExpenseDictionaryService;
 
         public AddRuleDictionaryOption(IIncomeService incomeService,
             IExpenseService expenseService, ISummaryService summaryService, ITagService tagService,
-            ICSVParserService CSVParserService, IUserExpenseDictionaryService userExpenseDictionaryService)
+            ICSVParserService CSVParserService, IUserDictionaryService userExpenseDictionaryService)
         : base(incomeService, expenseService, summaryService, tagService)
         {
             _CSVParserService = CSVParserService;
             _userExpenseDictionaryService = userExpenseDictionaryService;
         }
-        public async override void Execute()
+        public async override Task Execute()
         {
             Console.WriteLine(Label);
-            var userId = 1; // replace with userId from config
             string fileLocation;
             UserInput.FilePrompt("Please drag and drop the csv file into this terminal then press enter: ", out fileLocation);
 
@@ -34,7 +32,7 @@ namespace IBudget.ConsoleUI.UserInterface.MenuOptions
 
             Console.WriteLine("\nPlease add your rules now (non regular expressions as of yet). Your rule will be used in a contains() function.\nEnter nothing in rule to finish.");
             var rules = new List<RuleDictionary>();
-            while(true)
+            while (true)
             {
                 var rule = UserInput.Prompt("Rule", true);
                 if (rule is null || rule.Length == 0) break;
@@ -50,7 +48,7 @@ namespace IBudget.ConsoleUI.UserInterface.MenuOptions
 
             if (rules.Count > 0)
             {
-                foreach(var rule in rules)
+                foreach (var rule in rules)
                     await _userExpenseDictionaryService.AddRuleDictionary(1, rule);
             }
 

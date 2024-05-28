@@ -2,13 +2,13 @@
 
 namespace IBudget.Core.Model
 {
-    public class UserExpenseDictionary
+    public class UserDictionary
     {
         public ObjectId _id { get; set; }
         public int userId { get; set; }
         public List<ExpenseDictionary>? ExpenseDictionaries { get; set; }
-        public List<RuleDictionary>? RuleDictionary { get; set; }
-        public bool Equals(UserExpenseDictionary? other)
+        public List<RuleDictionary>? RuleDictionaries { get; set; }
+        public bool Equals(UserDictionary? other)
         {
             if (other is null) return false;
 
@@ -16,9 +16,9 @@ namespace IBudget.Core.Model
 
             return true;
         }
-        public static bool operator ==(UserExpenseDictionary eD1, UserExpenseDictionary eD2) => eD1.Equals(eD2);
-        public static bool operator !=(UserExpenseDictionary eD1, UserExpenseDictionary eD2) => !eD1.Equals(eD2);
-        public override bool Equals(object obj) => Equals(obj as UserExpenseDictionary);
+        public static bool operator ==(UserDictionary eD1, UserDictionary eD2) => eD1.Equals(eD2);
+        public static bool operator !=(UserDictionary eD1, UserDictionary eD2) => !eD1.Equals(eD2);
+        public override bool Equals(object obj) => Equals(obj as UserDictionary);
         public override int GetHashCode() => (_id, userId, ExpenseDictionaries).GetHashCode();
         public override string ToString()
         {
@@ -30,10 +30,10 @@ namespace IBudget.Core.Model
                 output += "\n    }";
 
             output += "\n    ruleDictionary: {";
-            if (RuleDictionary.Count == 0) output += "}\n";
-            foreach (var rule in RuleDictionary)
+            if (RuleDictionaries.Count == 0) output += "}\n";
+            foreach (var rule in RuleDictionaries)
                 output += $"\n        {rule}";
-            if (RuleDictionary.Count > 0)
+            if (RuleDictionaries.Count > 0)
                 output += "\n    }";
 
             output += "\n}";

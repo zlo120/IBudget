@@ -6,7 +6,7 @@ namespace IBudget.Infrastructure
 {
     public class MongoDBEFContext : DbContext
     {
-        public DbSet<UserExpenseDictionary> userExpenseDictionaries { get; set; }
+        public DbSet<UserDictionary> userExpenseDictionaries { get; set; }
         public static MongoDBEFContext Create(IMongoDatabase database) =>
             new(new DbContextOptionsBuilder<MongoDBEFContext>()
                 .UseMongoDB(database.Client, database.DatabaseNamespace.DatabaseName)

@@ -14,7 +14,7 @@ namespace IBudget.ConsoleUI.UserInterface.MenuOptions
         {
             _recordUtils = recordUtility;
         }
-        public override async void Execute()
+        public async override Task Execute()
         {
             Console.WriteLine(Label);
 

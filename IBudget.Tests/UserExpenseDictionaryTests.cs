@@ -67,7 +67,7 @@ namespace IBudget.Tests
         [Fact]
         public void UserExpenseDictionariesAreEqual()
         {
-            var userExpenseDictionary1 = new UserExpenseDictionary()
+            var userExpenseDictionary1 = new UserDictionary()
             {
                 userId = 1,
                 ExpenseDictionaries = new List<ExpenseDictionary>()
@@ -84,7 +84,7 @@ namespace IBudget.Tests
                     }
                 }
             };
-            var userExpenseDictionary2 = new UserExpenseDictionary()
+            var userExpenseDictionary2 = new UserDictionary()
             {
                 userId = 1,
                 ExpenseDictionaries = new List<ExpenseDictionary>()
@@ -108,7 +108,7 @@ namespace IBudget.Tests
         public void UserExpenseDictionariesAreNotEqual()
         {
 
-            var userExpenseDictionary1 = new UserExpenseDictionary()
+            var userExpenseDictionary1 = new UserDictionary()
             {
                 userId = 1,
                 ExpenseDictionaries = new List<ExpenseDictionary>()
@@ -125,7 +125,7 @@ namespace IBudget.Tests
                     }
                 }
             };
-            var userExpenseDictionary2 = new UserExpenseDictionary()
+            var userExpenseDictionary2 = new UserDictionary()
             {
                 userId = 2,
                 ExpenseDictionaries = new List<ExpenseDictionary>()

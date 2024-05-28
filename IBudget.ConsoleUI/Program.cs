@@ -17,10 +17,9 @@ internal class Program
         hostBuilder.UseConsoleLifetime();
 
         var host = hostBuilder.Build();
-
         var mainMenu = host.Services.GetService<IMainMenu>() as MainMenu;
-        var hostTask = host.StartAsync();
         await mainMenu.Execute();
+        var hostTask = host.StartAsync();
         await hostTask;
     }
 }

@@ -2,8 +2,8 @@
 using IBudget.ConsoleUI.Utils;
 using IBudget.Core.Exceptions;
 using IBudget.Core.Interfaces;
-using IBudget.Core.Model;
 using IBudget.Spreadsheet.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace IBudget.ConsoleUI.UserInterface
@@ -12,7 +12,7 @@ namespace IBudget.ConsoleUI.UserInterface
     {
         private readonly IGenerator _spreadsheetGenerator;
         private readonly IConfiguration _config;
-        private readonly IUserExpenseDictionaryService _userExpenseDictionaryService;
+        private readonly IUserDictionaryService _userDictionaryService;
         private readonly AddExpenseOption _addExpenseOption;
         private readonly AddIncomeOption _addIncomeOption;
         private readonly DeleteRecordOption _deleteRecordOption;
@@ -21,16 +21,12 @@ namespace IBudget.ConsoleUI.UserInterface
         private readonly UpdateRecordOption _updateRecordOption;
         private readonly ParseCSVOption _parseCSVOption;
         private readonly AddRuleDictionaryOption _addExpenseDictionaryOption;
-
-
-
         private readonly List<string> MENU_LABELS = ["Add income", "Add expense", "Read week", "Read month", "Update record", "Delete record", "Generate spreadsheet", "Parse CSV", "Add Dictionary Rule"];
-
-        public MainMenu(IEnumerable<IMenuOption> menuOptions, IGenerator spreadsheetGenerator, IConfiguration config, IUserExpenseDictionaryService userExpenseDictionaryService)
+        public MainMenu(IEnumerable<IMenuOption> menuOptions, IGenerator spreadsheetGenerator, IConfiguration config, IUserDictionaryService userExpenseDictionaryService)
         {
             _spreadsheetGenerator = spreadsheetGenerator;
             _config = config;
-            _userExpenseDictionaryService = userExpenseDictionaryService;
+            _userDictionaryService = userExpenseDictionaryService;
 
             foreach (var menuOption in menuOptions)
             {
@@ -60,8 +56,7 @@ namespace IBudget.ConsoleUI.UserInterface
 
             }
         }
-
-        public async void MainMenuLoop()
+        public async Task MainMenuLoop()
         {
             MENU_LABELS.Add("Exit");
             while (true)
@@ -95,37 +90,37 @@ namespace IBudget.ConsoleUI.UserInterface
                     // Add income
                     case 1:
                         _addIncomeOption.Label = MENU_LABELS[decision - 1];
-                        _addIncomeOption.Execute();
+                        await _addIncomeOption.Execute();
                         break;
 
                     // Add expense option
                     case 2:
                         _addExpenseOption.Label = MENU_LABELS[decision - 1];
-                        _addExpenseOption.Execute();
+                        await _addExpenseOption.Execute();
                         break;
 
                     // Read week
                     case 3:
                         _readWeekOption.Label = MENU_LABELS[decision - 1];
-                        _readWeekOption.Execute();
+                        await _readWeekOption.Execute();
                         break;
 
                     // Read month
                     case 4:
                         _readMonthOption.Label = MENU_LABELS[decision - 1];
-                        _readMonthOption.Execute();
+                        await _readMonthOption.Execute();
                         break;
 
                     // Update record
                     case 5:
                         _updateRecordOption.Label = MENU_LABELS[decision - 1];
-                        _updateRecordOption.Execute();
+                        await _updateRecordOption.Execute();
                         break;
 
                     // Delete record
                     case 6:
                         _deleteRecordOption.Label = MENU_LABELS[decision - 1];
-                        _deleteRecordOption.Execute();
+                        await _deleteRecordOption.Execute();
                         break;
 
                     // Generate spreadsheet
@@ -135,12 +130,12 @@ namespace IBudget.ConsoleUI.UserInterface
 
                     case 8:
                         _parseCSVOption.Label = MENU_LABELS[decision - 1];
-                        _parseCSVOption.Execute();
+                        await _parseCSVOption.Execute();
                         break;
 
                     case 9:
                         _addExpenseDictionaryOption.Label = MENU_LABELS[decision - 1];
-                        _addExpenseDictionaryOption.Execute();
+                        await _addExpenseDictionaryOption.Execute();
                         break;
 
                     default:
@@ -150,28 +145,20 @@ namespace IBudget.ConsoleUI.UserInterface
                 Console.Clear();
             }
         }
-
-        public async Task Execute()
+        private async Task SQLDbCheck()
         {
-            SQLDbCheck();
-            await MongoDBStartupCheck();
-            //MainMenuLoop();
-        }
-
-        private void SQLDbCheck()
-        {
+            Console.WriteLine("Verifying SQL db...");
             // Check to see if the db exists
             var dbType = _config["DBtype"];
             if (dbType == "SQLite")
             {
-                var pathString = _config.GetConnectionString("SQLite");
+                var pathString = _config.GetConnectionString("SQLite"); ;
                 if (pathString == null)
                 {
                     Console.WriteLine("No connection string exists, please edit the config file with the correct connection string");
                     Console.ReadLine();
                     Environment.Exit(0);
                 }
-
                 var filePath = pathString.Replace("Data Source=", "");
                 if (!File.Exists(filePath))
                 {
@@ -185,11 +172,28 @@ namespace IBudget.ConsoleUI.UserInterface
                     dbFile.Close();
 
                     Console.Write("DB file created successfully. Please run migration to set up the db..." +
-                        "\n\nTo generate migration execute this command: \n\tdotnet-ef migrations add MyMigration --context Context --project IBudget.Infrastructure --startup-project IBudget.ConsoleUI" +
-                        "\nThen to execute migration run: \n\tdotnet-ef database update --context Context --project IBudget.Infrastructure  --startup-project IBudget.ConsoleUI" +
-                        "\n\nPress any key to exit...");
+                        "\nPress any key to exit...");
                     Console.ReadKey();
                     Environment.Exit(0);
+                }
+                else
+                {
+                    try
+                    {
+                        var fileInfo = new FileInfo(filePath);
+                        var fileSizeInBytes = fileInfo.Length;
+                        if (fileSizeInBytes < 30000)
+                        {
+                            Console.WriteLine("It does not seem the db file has a migration ran for it just yet. Please run migration and update the db\nPress any key to exit...");
+                            Console.ReadKey();
+                            Environment.Exit(0);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        Environment.Exit(0);
+                    }
                 }
             }
             else if (dbType == "SQLServer")
@@ -199,35 +203,38 @@ namespace IBudget.ConsoleUI.UserInterface
         }
         private async Task MongoDBStartupCheck()
         {
-            var userExpenseDictionary1 = new UserExpenseDictionary()
-            {
-                userId = 99999,
-                RuleDictionary = new List<RuleDictionary>(),
-                ExpenseDictionaries = new List<ExpenseDictionary>()
-            };
-            var userExpenseDictionary2 = new UserExpenseDictionary()
-            {
-                userId = 99999,
-                RuleDictionary = new List<RuleDictionary>(),
-                ExpenseDictionaries = new List<ExpenseDictionary>()
-            };
-
+            Console.WriteLine("Verifying MongoDb...");
             try
             {
-                await _userExpenseDictionaryService.AddExpenseDictionary(userExpenseDictionary1);
-                await _userExpenseDictionaryService.AddExpenseDictionary(userExpenseDictionary2);
-                await _userExpenseDictionaryService.RemoveUser(99999);
-                await _userExpenseDictionaryService.RemoveUser(99999);
+                await _userDictionaryService.AddUser(99999);
+                await _userDictionaryService.AddUser(99999);
+                await _userDictionaryService.RemoveUser(99999);
+                await _userDictionaryService.RemoveUser(99999);
                 Console.Write("You have not configured the MongoDB correctly, currently it allows duplicate UserExpenseDictionaries. " +
-                    "\nPlease open mongosh and run the command: \ndb.userExpenseDictionaries.createIndex( { \"userId\": 1 }, { unique: true } )\n" +
+                    "\nPlease open mongosh and run the command: \ndb.userDictionaries.createIndex( { \"userId\": 1 }, { unique: true } )\n" +
                     "Press any key to exit...");
                 Console.ReadKey();
                 Environment.Exit(0);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                await _userDictionaryService.RemoveUser(99999);
+                await _userDictionaryService.RemoveUser(99999);
             }
+
+            try
+            {
+                var userId = int.Parse(_config["MongoDbUserId"]);
+                if (await _userDictionaryService.GetUser(userId) is null)
+                    await _userDictionaryService.AddUser(userId);
+            }
+            catch(Exception ex) { }
+        }
+        public async Task Execute()
+        {
+            await SQLDbCheck();
+            await MongoDBStartupCheck();
+            await MainMenuLoop();
         }
     }
 }

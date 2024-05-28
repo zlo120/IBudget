@@ -2,6 +2,6 @@
 {
     public interface IMenuOption
     {
-        void Execute();
+        Task Execute();
     }
 }

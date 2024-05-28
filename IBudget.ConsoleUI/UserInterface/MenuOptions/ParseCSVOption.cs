@@ -1,28 +1,31 @@
 ﻿using IBudget.ConsoleUI.Utils;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
+using Microsoft.Extensions.Configuration;
 
 namespace IBudget.ConsoleUI.UserInterface.MenuOptions
 {
     public class ParseCSVOption : MenuOption
     {
-        private readonly IUserExpenseDictionaryService _expenseDictionaryService;
+        private readonly IUserDictionaryService _expenseDictionaryService;
         private readonly ICSVParserService _csvParserService;
+        private readonly int _userId;
         public ParseCSVOption(IIncomeService incomeService,
                               IExpenseService expenseService,
                               ISummaryService summaryService,
                               ITagService tagService,
-                              IUserExpenseDictionaryService expenseDictionaryService,
-                              ICSVParserService csvParserService)
+                              IUserDictionaryService expenseDictionaryService,
+                              ICSVParserService csvParserService,
+                              IConfiguration config)
         : base(incomeService, expenseService, summaryService, tagService)
         {
             _expenseDictionaryService = expenseDictionaryService;
             _csvParserService = csvParserService;
+            _userId = int.Parse(config["MongoDbUserId"]);
         }
-        public override async void Execute()
+        public async override Task Execute()
         {
             Console.WriteLine(Label);
-            var userId = 1; // replace with userId from config
             string fileLocation;
             UserInput.FilePrompt("Please drag and drop the csv file into this terminal then press enter: ", out fileLocation);
             try
@@ -33,7 +36,6 @@ namespace IBudget.ConsoleUI.UserInterface.MenuOptions
                 if (untaggedRecords.Count > 0)
                 {
                     var newlyTagged = TagRecords(untaggedRecords);
-                    var newExpenseDictionaries = new List<ExpenseDictionary>();
                     foreach (var taggedRecord in newlyTagged)
                     {
                         var expenseDictionary = new ExpenseDictionary()
@@ -41,20 +43,19 @@ namespace IBudget.ConsoleUI.UserInterface.MenuOptions
                             title = taggedRecord.Key,
                             tags = taggedRecord.Value
                         };
-                        newExpenseDictionaries.Add(expenseDictionary);
+                        await _expenseDictionaryService.AddExpenseDictionary(_userId, expenseDictionary);
                     }
-                    await _expenseDictionaryService.UpdateExpenseDictionary(newExpenseDictionaries, 1); // replace with userId from config
 
-                    foreach (var record in untaggedRecords)
+                    foreach (var newlyTaggedRecord in untaggedRecords)
                     {
-                        record.Tags.AddRange(newlyTagged[record.Description].ToList());
-                        taggedRecords.Add(record);
+                        newlyTaggedRecord.Tags.AddRange(newlyTagged[newlyTaggedRecord.Description].ToList());
+                        taggedRecords.Add(newlyTaggedRecord);
                     }
                 }
-                                
+                
                 // everything now has a tag
                 foreach(var record in taggedRecords)
-                    AddExpenseIntoDB(record);
+                    AddExpenseIntoSQLDB(record);
             }
             catch (Exception ex)
             {
@@ -92,7 +93,7 @@ namespace IBudget.ConsoleUI.UserInterface.MenuOptions
 
             return taggedRecords;
         }
-        private async void AddExpenseIntoDB(FormattedFinancialCSV formattedFinancialCSV)
+        private async void AddExpenseIntoSQLDB(FormattedFinancialCSV formattedFinancialCSV)
         {
             var tags = new List<Tag>();
             foreach (var tag in formattedFinancialCSV.Tags)

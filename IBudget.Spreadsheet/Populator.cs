@@ -38,7 +38,7 @@ namespace IBudget.Spreadsheet
                 var week = await _summaryService.ReadWeek(date);
                 if (week.Income.Count == 0 && week.Expenses.Count == 0) continue;
                 var remainingExpenses = new List<Expense>(week.Expenses);
-                var categories = new string[] { "Petrol", "Fitness", "Bills", "Public transport", "Food", "Alcohol" };
+                var categories = new string[] { "Petrol", "Fitness", "Bills", "Public transport", "Food", "Alcohol" }; // replace with tracked tags
 
                 // process the income
                 var incomeQueue = new Queue<Income>(week.Income);
@@ -48,12 +48,12 @@ namespace IBudget.Spreadsheet
                 var otherExpenses = new Queue<DataEntry>(remainingExpenses
                     .Where(expense => expense.Tags.Count == 0 || expense.Tags
                     .Any(tag =>
-                        tag.Name.ToLower() != "petrol" &&
-                        tag.Name.ToLower() != "fitness" &&
-                        tag.Name.ToLower() != "bills" &&
-                        tag.Name.ToLower() != "public transport" &&
-                        tag.Name.ToLower() != "food" &&
-                        tag.Name.ToLower() != "alcohol"))
+                        !tag.Name.ToLower().Contains("petrol") &&
+                        !tag.Name.ToLower().Contains("fitness") &&
+                        !tag.Name.ToLower().Contains("bills") &&
+                        !tag.Name.ToLower().Contains("public transport") &&
+                        !tag.Name.ToLower().Contains("food") &&
+                        !tag.Name.ToLower().Contains("alcohol")))
                     .ToList()
                     );
 
@@ -67,7 +67,7 @@ namespace IBudget.Spreadsheet
                     var remainingExpenseInColumn = new Queue<DataEntry>(
                         remainingExpenses
                             .Where(e => e.Tags
-                            .Any(t => t.Name.ToLower() == categories[columnCounter - 1].ToLower()))
+                            .Any(t => t.Name.ToLower().Contains(categories[columnCounter - 1].ToLower())))
                             .ToList()
                     );
 

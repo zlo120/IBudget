@@ -23,8 +23,8 @@ builder.Services.AddScoped<ISummaryRepository, SummaryRepository>();
 builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<ICalendarService, CalendarService>();
-builder.Services.AddScoped<IUserExpenseDictionaryService, UserExpenseDictionaryService>();
-builder.Services.AddScoped<IUserExpenseDictionaryRepository, UserExpenseDictionaryRepository>();
+builder.Services.AddScoped<IUserDictionaryService, UserDictionaryService>();
+builder.Services.AddScoped<IUserDictionaryRepository, UserDictionaryRepository>();
 
 builder.Services.AddDbContext<Context>();
 

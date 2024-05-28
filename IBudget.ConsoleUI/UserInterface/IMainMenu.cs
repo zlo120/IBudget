@@ -2,6 +2,7 @@
 {
     public interface IMainMenu
     {
-        void MainMenuLoop();
+        Task MainMenuLoop();
+        Task Execute();
     }
 }

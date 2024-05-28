@@ -9,7 +9,7 @@ namespace IBudget.ConsoleUI.UserInterface.MenuOptions
             IExpenseService expenseService, ISummaryService summaryService, ITagService tagService)
         : MenuOption(incomeService, expenseService, summaryService, tagService)
     {
-        public override void Execute()
+        public async override Task Execute()
         {
             Console.WriteLine(Label);
             try

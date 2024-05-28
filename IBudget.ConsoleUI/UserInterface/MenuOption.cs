@@ -21,6 +21,6 @@ namespace IBudget.ConsoleUI.UserInterface
             _tagService = tagService;
         }
 
-        public abstract void Execute();
+        public abstract Task Execute();
     }
 }

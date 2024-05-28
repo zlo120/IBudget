@@ -16,7 +16,7 @@ namespace IBudget.ConsoleUI.UserInterface.MenuOptions
         {
             _calendarService = calendarService;
         }
-        public override void Execute()
+        public async override Task Execute()
         {
             Console.WriteLine(Label);
 

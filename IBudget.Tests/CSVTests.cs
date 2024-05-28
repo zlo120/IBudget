@@ -1,5 +1,4 @@
 ﻿using IBudget.Core.Utils;
-using System.Security.Cryptography;
 
 namespace IBudget.Tests
 {
