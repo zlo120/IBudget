@@ -55,6 +55,7 @@ Both `appsettings.json` for the `IBudget.ConsoleUI` project and `IBudget.API` pr
       "Microsoft.AspNetCore": "Warning"
     }
   },
-  "AllowedHosts": "*"
+  "AllowedHosts": "*",
+  "MongoDbUserId": 1
 }
 ```
