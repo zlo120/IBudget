@@ -23,6 +23,7 @@ builder.Services.AddScoped<ISummaryRepository, SummaryRepository>();
 builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<ICalendarService, CalendarService>();
+builder.Services.AddScoped<ICSVParserService, CSVParserService>();
 builder.Services.AddScoped<IUserDictionaryService, UserDictionaryService>();
 builder.Services.AddScoped<IUserDictionaryRepository, UserDictionaryRepository>();
 
