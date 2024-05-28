@@ -42,7 +42,8 @@ Both `appsettings.json` for the `IBudget.ConsoleUI` project and `IBudget.API` pr
   "ConnectionStrings": {
     "SQLite": "",
     "MongoDB": ""
-  }
+  },
+  "MongoDbUserId": 1
 }
 ```
 ### IBudget.API\appsettings.json
