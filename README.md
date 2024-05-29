@@ -2,7 +2,29 @@
 
 Welcome to the documentation for IBudget. This document provides an overview of the API calls available for interacting with the backend of IBudget.
 
-## 📞 API Calls
+## 📞 API Controllers
+### 🖥️ Financial controller
+### `GET /endpoint1`
+This endpoint does...
+
+### `POST /endpoint2`
+This endpoint does...
+
+--- 
+### 🖥️ CSV Parser controller
+### `GET /endpoint1`
+This endpoint does...
+
+### `POST /endpoint2`
+This endpoint does...
+
+--- 
+### 🖥️ User Dictionary controller
+### `GET /endpoint1`
+This endpoint does...
+
+### `POST /endpoint2`
+This endpoint does...
 
 ## 📖 SQLite db 
 The console application will create a `IBudget.db` file wherever the data string specifies. An example data string is `"Data Source=C:\\Users\\Zac.Lo\\AppData\\Local\\IBudget\\IBudgetDB\\IBudget.db"` and therefore if that directory and the `IBudget.db` file doesn't exist, both directory and file will be created at `C:\Users\Zac.Lo\AppData\Local\IBudget\IBudgetDB\IBudget.db`.

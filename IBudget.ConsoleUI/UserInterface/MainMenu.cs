@@ -5,6 +5,7 @@ using IBudget.Core.Interfaces;
 using IBudget.Spreadsheet.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Globalization;
 
 namespace IBudget.ConsoleUI.UserInterface
 {
@@ -218,7 +219,6 @@ namespace IBudget.ConsoleUI.UserInterface
             }
             catch (Exception ex)
             {
-                await _userDictionaryService.RemoveUser(99999);
                 await _userDictionaryService.RemoveUser(99999);
             }
 
