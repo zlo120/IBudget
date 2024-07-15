@@ -10,6 +10,12 @@ namespace IBudget.Core.Services
         {
             _tagRepository = tagRepository;
         }
+
+        public async Task<List<Tag>> GetAll()
+        {
+            return await _tagRepository.GetAll();
+        }
+
         public async Task<Tag> GetTag(string name)
         {
             return await _tagRepository.GetTag(name);
