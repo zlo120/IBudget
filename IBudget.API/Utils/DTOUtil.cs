@@ -34,10 +34,9 @@ namespace IBudget.API.Utils
         {
             return new IncomeDTO()
             {
+                ID = income.ID,
                 Amount = income.Amount,
-                Source = income.Source,
                 Date = DateOnly.FromDateTime(income.Date),
-                Frequency = income.Frequency,
                 Tags = income.Tags.Select(t => t.Name).ToList()
             };
         }        
@@ -45,10 +44,9 @@ namespace IBudget.API.Utils
         {
             return new ExpenseDTO()
             {
+                ID = expense.ID,
                 Amount = expense.Amount,
                 Date = DateOnly.FromDateTime(expense.Date),
-                Frequency = expense.Frequency,
-                Notes = expense.Notes,
                 Tags = expense.Tags.Select(t => t.Name).ToList()
             };
         }

@@ -22,58 +22,6 @@ namespace IBudget.API.Controllers
             _summaryService = summaryService;
         }
 
-        [HttpPost("AddIncome")]
-        public async Task<IActionResult> AddIncome(IncomeDTO incomeDTO)
-        {
-            var income = new Income()
-            {
-                Amount = incomeDTO.Amount,
-                Source = incomeDTO.Source,
-                Date = incomeDTO.Date.Value.ToDateTime(TimeOnly.Parse("12:00AM")),
-                Frequency = incomeDTO.Frequency,
-                Tags = new List<Tag>()
-            };
-
-            foreach (var tag in incomeDTO.Tags)
-            {
-                var tagObj = new Tag()
-                {
-                    Name = tag
-                };
-
-                income.Tags.Add(tagObj);
-            }
-
-            _incomeService.AddIncome(income);
-            return Ok("Success");
-        }
-
-        [HttpPost("AddExpense")]
-        public async Task<IActionResult> AddExpense(ExpenseDTO expenseDTO)
-        {
-            var expense = new Expense()
-            {
-                Amount = expenseDTO.Amount,
-                Date = expenseDTO.Date.Value.ToDateTime(TimeOnly.Parse("12:00AM")),
-                Frequency = expenseDTO.Frequency,
-                Notes = expenseDTO.Notes,
-                Tags = new List<Tag>()
-            };
-
-            foreach (var tag in expenseDTO.Tags)
-            {
-                var tagObj = new Tag()
-                {
-                    Name = tag
-                };
-
-                expense.Tags.Add(tagObj);
-            }
-
-            _expenseService.AddExpense(expense);
-            return Ok("Success");
-        }
-
         [HttpGet("ReadWeek")]
         public async Task<IActionResult> ReadWeek(DateTime date)
         {

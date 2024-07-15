@@ -29,6 +29,8 @@ builder.Services.AddScoped<IUserDictionaryRepository, UserDictionaryRepository>(
 
 builder.Services.AddDbContext<Context>();
 
+builder.Services.AddCors();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -39,6 +41,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Handle cors better than this
+app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().WithExposedHeaders("X-Pagination"));
 
 app.UseAuthorization();
 

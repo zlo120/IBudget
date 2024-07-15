@@ -11,6 +11,12 @@ namespace IBudget.Infrastructure.Repositories
         {
             _context = context;
         }
+
+        public async Task<List<Tag>> GetAll()
+        {
+            return await _context.Tags.ToListAsync();
+        }
+
         public async Task<Tag> GetTag(string name)
         {
             return await _context.Tags.FirstOrDefaultAsync(x => x.Name == name);
