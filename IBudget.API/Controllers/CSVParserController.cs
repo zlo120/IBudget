@@ -6,6 +6,8 @@ using System.Globalization;
 
 namespace IBudget.API.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class CSVParserController : ControllerBase
     {
         private readonly ICSVParserService _csvParserService;
@@ -37,7 +39,7 @@ namespace IBudget.API.Controllers
                 {
                     Amount = csv.Amount,
                     Description = csv.Description,
-                    Date = DateOnly.FromDateTime(DateTime.ParseExact(csv.Date, "MM/dd/yyyy", CultureInfo.InvariantCulture))
+                    Date = DateOnly.FromDateTime(DateTime.ParseExact(csv.Date, "dd/MM/yyyy", CultureInfo.InvariantCulture))
                 };
                 formattedCSVs.Add(formattedCsv);
             }
