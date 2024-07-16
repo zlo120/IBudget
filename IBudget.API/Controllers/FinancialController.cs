@@ -1,7 +1,5 @@
-﻿using IBudget.API.DTO;
-using IBudget.API.Utils;
+﻿using IBudget.API.Utils;
 using IBudget.Core.Interfaces;
-using IBudget.Core.Model;
 using IBudget.Core.Utils;
 using Microsoft.AspNetCore.Mvc;
 

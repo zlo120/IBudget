@@ -52,9 +52,9 @@ namespace IBudget.ConsoleUI.UserInterface.MenuOptions
                         taggedRecords.Add(newlyTaggedRecord);
                     }
                 }
-                
+
                 // everything now has a tag
-                foreach(var record in taggedRecords)
+                foreach (var record in taggedRecords)
                     AddExpenseIntoSQLDB(record);
             }
             catch (Exception ex)

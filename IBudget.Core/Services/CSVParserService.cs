@@ -22,7 +22,7 @@ namespace IBudget.Core.Services
         {
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                HasHeaderRecord = false
+                HasHeaderRecord = true
             };
 
             using (var reader = new StreamReader(csvFilePath))
