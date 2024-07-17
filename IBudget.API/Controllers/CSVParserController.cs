@@ -1,6 +1,7 @@
 ﻿using IBudget.API.DTO;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
+using IBudget.Core.Utils;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 
@@ -29,8 +30,8 @@ namespace IBudget.API.Controllers
             throw new NotImplementedException();
         }
 
-        [HttpPost("OrganiseCSV")]
-        public async Task<IActionResult> OrganiseCSV([FromBody]CsvDTO[] csvData)
+        [HttpPost("FindUntagged")]
+        public async Task<IActionResult> FindUntagged([FromBody]CsvDTO[] csvData)
         {
             var formattedCSVs = new List<FormattedFinancialCSV>();
             foreach(var csv in csvData)
@@ -44,11 +45,12 @@ namespace IBudget.API.Controllers
                 formattedCSVs.Add(formattedCsv);
             }
             var result = await _csvParserService.DistinguishTaggedAndUntagged(formattedCSVs);
-            return Ok(new
+            var distinctUntagged = result.Item1.Select(tag => tag.Description).Distinct().ToList();
+            for (int i = 0; i < distinctUntagged.Count; i++)
             {
-                UntaggedRecords = result.Item1,
-                TaggedRecords = result.Item2
-            });
+                distinctUntagged[i] = CsvFormatter.FormatDescription(distinctUntagged[i]);
+            }
+            return Ok(distinctUntagged);
         }
     }
 }
