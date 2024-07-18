@@ -16,19 +16,32 @@ namespace IBudget.API.Controllers
             _tagService = tagService;
         }
 
-        [HttpPost("TagUntaggedRecords")]
-        public async Task<IActionResult> TagUntaggedRecords()
-        {
-            // update existing mongodb records with these new records that now have tags
-            throw new NotImplementedException();
-        }
-
         [HttpGet("GetAllTags")]
         public async Task<IActionResult> GetAllTags()
         {
             var tags = await _tagService.GetAll();
             var tagStrings = tags.Select(tag => tag.Name.ToString());
             return Ok(tagStrings);
+        }
+
+        [HttpPost("CreateTag")]
+        public async Task<IActionResult> CreateTag([FromBody] string tagName)
+        {
+            await _tagService.CreateTag(tagName);
+            return Ok(new
+            {
+                Success = $"Tag {tagName} was created successfully!"
+            });
+        }
+
+        [HttpPost("DeleteTag")]
+        public async Task<IActionResult> DeleteTag([FromBody] string tagName)
+        {
+            await _tagService.DeleteTag(tagName);
+            return Ok(new
+            {
+                Success = $"Tag {tagName} was deleted successfully!"
+            });
         }
     }
 }

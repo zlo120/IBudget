@@ -15,5 +15,6 @@ namespace IBudget.Core.Interfaces
         Task<List<RuleDictionary>> GetRuleDictionaries(int userId);
         Task<bool> UpdateRuleDictionary(RuleDictionary updatedRuleDictionary, int userID);
         Task<bool> RemoveRuleDictionary(int userId, string rule);
+        Task CreateBatchHash(int userId, string hash);
     }
 }

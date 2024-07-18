@@ -10,7 +10,10 @@ namespace IBudget.API.DTO
         [Required]
         public double Amount { get; set; }
         [Required]
-        public DateOnly? Date { get; set; }
+        public string? Date { get; set; }
+        [Required]
+        public string Description { get; set; }
         public List<string>? Tags { get; set; }
+
     }
 }

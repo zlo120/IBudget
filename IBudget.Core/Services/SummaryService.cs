@@ -23,6 +23,5 @@ namespace IBudget.Core.Services
             var month = await _summaryRepository.ReadMonth(monthNum);
             return await _calendarService.RetrieveMonthData(month);
         }
-
     }
 }

@@ -1,4 +1,5 @@
-﻿using IBudget.API.Utils;
+﻿using IBudget.API.DTO;
+using IBudget.API.Utils;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +35,20 @@ namespace IBudget.API.Controllers
             var month = await _summaryService.ReadMonth((int)monthEnum);
             var monthDTO = DTOUtil.ConvertToDTO(month);
             return Ok(monthDTO);
+        }
+
+        [HttpGet("ReadYear")]
+        public async Task<IActionResult> ReadYear()
+        {
+            var monthList = new List<MonthDTO>();
+            for (int i = 1; i <= 12; i++)
+            {
+                var month = await _summaryService.ReadMonth(i);
+                var monthDTO = DTOUtil.ConvertToDTO(month);
+                monthList.Add(monthDTO);
+            }
+
+            return Ok(monthList);
         }
     }
 }

@@ -67,13 +67,28 @@ namespace IBudget.Infrastructure.Repositories
             {
                 userId = userId,
                 RuleDictionaries = new List<RuleDictionary>(),
-                ExpenseDictionaries = new List<ExpenseDictionary>()
+                ExpenseDictionaries = new List<ExpenseDictionary>(),
+                BatchHashes = new List<string>()
             };
 
             try
             {
                 _userDictionaries.InsertOne(newUser);
                 return true;
+            }
+            catch (Exception ex)
+            {
+                throw new MongoCRUDException(ex.Message);
+            }
+        }
+
+        public async Task CreateBatchHash(int userId, string hash)
+        {
+            var user = await GetUser(userId);
+            user.BatchHashes.Add(hash);
+            try
+            {
+                _userDictionaries.ReplaceOne(uD => uD.userId.Equals(userId), user);
             }
             catch (Exception ex)
             {

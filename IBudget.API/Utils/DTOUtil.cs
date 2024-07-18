@@ -36,8 +36,9 @@ namespace IBudget.API.Utils
             {
                 ID = income.ID,
                 Amount = income.Amount,
-                Date = DateOnly.FromDateTime(income.Date),
-                Tags = income.Tags.Select(t => t.Name).ToList()
+                Date = DateOnly.FromDateTime(income.Date).ToString("dd/MM/yyyy"),
+                Tags = income.Tags.Select(t => t.Name).ToList(),
+                Description = income.Source
             };
         }        
         public static ExpenseDTO ConvertToDTO(Expense expense)
@@ -46,8 +47,9 @@ namespace IBudget.API.Utils
             {
                 ID = expense.ID,
                 Amount = expense.Amount,
-                Date = DateOnly.FromDateTime(expense.Date),
-                Tags = expense.Tags.Select(t => t.Name).ToList()
+                Date = DateOnly.FromDateTime(expense.Date).ToString("dd/MM/yyyy"),
+                Tags = expense.Tags.Select(t => t.Name).ToList(),
+                Description = expense.Notes
             };
         }
     }

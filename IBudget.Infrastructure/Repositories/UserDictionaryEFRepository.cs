@@ -264,5 +264,10 @@ namespace IBudget.Infrastructure.Repositories
         {
             throw new NotImplementedException();
         }
+
+        public Task CreateBatchHash(int userId, string hash)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

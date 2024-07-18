@@ -8,6 +8,7 @@ namespace IBudget.Core.Model
         public int userId { get; set; }
         public List<ExpenseDictionary>? ExpenseDictionaries { get; set; }
         public List<RuleDictionary>? RuleDictionaries { get; set; }
+        public List<string>? BatchHashes { get; set; }
         public bool Equals(UserDictionary? other)
         {
             if (other is null) return false;

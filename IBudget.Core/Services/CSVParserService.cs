@@ -53,12 +53,12 @@ namespace IBudget.Core.Services
             foreach (var record in records)
             {
                 var expenseDictionaryMatch = userDictionary.ExpenseDictionaries
-                    .Where(expenseDictionary => expenseDictionary.title.Equals(record.Description))
+                    .Where(expenseDictionary => expenseDictionary.title.Equals(record.Description, StringComparison.InvariantCultureIgnoreCase))
                     .FirstOrDefault();
 
                 var ruleDictionaryMatch = userDictionary.RuleDictionaries
                     .Where(ruleDictionary =>
-                        record.Description.Contains(ruleDictionary.rule)
+                        record.Description.Contains(ruleDictionary.rule, StringComparison.InvariantCultureIgnoreCase)
                         )
                     .FirstOrDefault();
 
