@@ -20,7 +20,7 @@ namespace IBudget.API.Controllers
         public async Task<IActionResult> GetAllTags()
         {
             var tags = await _tagService.GetAll();
-            var tagStrings = tags.Select(tag => tag.Name.ToString());
+            var tagStrings = tags.Select(tag => tag.Name.ToString()).Reverse().ToList();
             return Ok(tagStrings);
         }
 

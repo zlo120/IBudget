@@ -40,7 +40,7 @@ namespace IBudget.API.Utils
                 Tags = income.Tags.Select(t => t.Name).ToList(),
                 Description = income.Source
             };
-        }        
+        }
         public static ExpenseDTO ConvertToDTO(Expense expense)
         {
             return new ExpenseDTO()
