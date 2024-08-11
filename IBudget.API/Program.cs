@@ -3,7 +3,10 @@ using IBudget.Core.Services;
 using IBudget.Infrastructure;
 using IBudget.Infrastructure.Repositories;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args); 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 
 // Add services to the container.
 
@@ -48,5 +51,7 @@ app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().WithExpose
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.Logger.LogInformation("IBudget server starting...");
 
 app.Run();

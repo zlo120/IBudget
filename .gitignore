@@ -399,3 +399,4 @@ FodyWeavers.xsd
 /IBudget.Infrastructure/Migrations
 /IBudget.API/appsettings.json
 /IBudget.ConsoleUI/appsettings.json
+/IBudget.API/appsettings.Development.json
