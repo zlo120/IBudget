@@ -3,6 +3,9 @@ from pathlib import Path
 import shutil
 from datetime import datetime
 import pymongo
+from bson.json_util import dumps
+from pymongo.collection import Collection
+import time
 
 # global constants
 APPDATA_DIR = os.getenv('LOCALAPPDATA')
@@ -77,7 +80,15 @@ def setup_db_file() -> None:
         new_filename = f"{filename}_{timestamp}{file_extension}"
         path_to_moved_file = f"{APPDATA_DIR}\\{ROOT_DIR_NAME}\\{BACKUP_DB_DIR_NAME}\\{new_filename}"
         log_info("An existing db file is present, we will move this into the backup folder")
-        shutil.move(path_to_file, path_to_moved_file)
+        
+        while True:
+            try:
+                shutil.move(path_to_file, path_to_moved_file)
+                break
+            except PermissionError:
+                log_error("Cannot access the database file! You may have it open currently. Please close the file, we will wait until we can access it...")
+                time.sleep(3)
+
     else:
         log_info("File was not found, creating db file now...")
     file = open(path_to_file, "x")
@@ -150,6 +161,15 @@ def setup_sqlite() -> None:
 
 # MONGODB SECTION
 
+def create_backup(collection: Collection) -> None:   
+    timestamp = datetime.now().strftime("%d_%m_%Y__%H_%M_%S") 
+    filename = f"mongo_backup_{timestamp}.json"
+    dir = f"{BACKUP_DIR}\\{filename}"
+    document = collection.find_one({"userId": 1})
+    json_data = dumps(document, indent=2)
+    with open(dir, 'w') as backup_file:
+        backup_file.write(json_data)
+
 # Main function for setting up mongodb
 def setup_mongodb() -> None:
     client = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -158,21 +178,24 @@ def setup_mongodb() -> None:
         log_info(f"The db {MONGO_DB_NAME} exists")   
         ibudget_db = client[MONGO_DB_NAME]     
         if COLLECTION_NAME in ibudget_db.list_collection_names():
-            log_info(f"The collection {COLLECTION_NAME} exists")   
+            log_info(f"The collection {COLLECTION_NAME} exists, we will be resetting the collection now...")
+            create_backup(ibudget_db[COLLECTION_NAME]) 
+            client.drop_database(MONGO_DB_NAME)       
         else:
             log_info(f"The collection {COLLECTION_NAME} does not exist. Creating now...")
             user_dictionaries_collection = ibudget_db[COLLECTION_NAME]
     else:
         log_info(f"The db {MONGO_DB_NAME} does not exist. Creating now...")
-        ibudget_db = client[MONGO_DB_NAME]
-        user_dictionaries_collection = ibudget_db[COLLECTION_NAME]
-        default_user = { 
-            "userId": 1,
-            "ExpenseDictionaries": [], 
-            "RuleDictionaries": [],
-            "BatchHashes": []
-        }
-        user_dictionaries_collection.insert_one(default_user)
+
+    ibudget_db = client[MONGO_DB_NAME]
+    user_dictionaries_collection = ibudget_db[COLLECTION_NAME]
+    default_user = { 
+        "userId": 1,
+        "ExpenseDictionaries": [], 
+        "RuleDictionaries": [],
+        "BatchHashes": []
+    }
+    user_dictionaries_collection.insert_one(default_user)
     
     if MONGO_DB_NAME in client.list_database_names() and COLLECTION_NAME in ibudget_db.list_collection_names():
         log_success("MongoDb is now set up")
