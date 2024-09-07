@@ -43,6 +43,15 @@ namespace IBudget.Infrastructure
             modelBuilder.Entity<Tag>()
                 .HasIndex(t => t.Name)
                 .IsUnique();
+
+            modelBuilder.Entity<Tag>().HasData(
+                new Tag()
+                {
+                    ID = 1,
+                    Name = "Ignored",
+                    IsTracked = false
+                }
+            );
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using IBudget.Core.Interfaces;
+﻿using IBudget.API.DTO;
+using IBudget.Core.Interfaces;
+using IBudget.Core.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IBudget.API.Controllers
@@ -19,18 +21,27 @@ namespace IBudget.API.Controllers
         [HttpGet("GetAllTags")]
         public async Task<IActionResult> GetAllTags()
         {
-            var tags = await _tagService.GetAll();
-            var tagStrings = tags.Select(tag => tag.Name.ToString()).Reverse().ToList();
-            return Ok(tagStrings);
+            var tags = (await _tagService.GetAll()).Select(t => new TagDTO()
+            {
+                TagName = t.Name,
+                IsTracked = t.IsTracked
+            }).Reverse().ToList();
+            return Ok(tags);
         }
 
         [HttpPost("CreateTag")]
-        public async Task<IActionResult> CreateTag([FromBody] string tagName)
+        public async Task<IActionResult> CreateTag([FromBody] TagDTO tagDto)
         {
-            await _tagService.CreateTag(tagName);
+            var tag = new Tag()
+            {
+                Name = tagDto.TagName,
+                IsTracked = tagDto.IsTracked
+            };
+
+            await _tagService.CreateTag(tag);
             return Ok(new
             {
-                Success = $"Tag {tagName} was created successfully!"
+                Success = $"Tag {tag.Name} was created successfully!"
             });
         }
 

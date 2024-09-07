@@ -19,10 +19,10 @@ namespace IBudget.Infrastructure.Repositories
             _config = config;
         }
 
-        public async Task CreateTag(string name)
+        public async Task CreateTag(Tag tag)
         {
-            if (await GetTag(name) is not null) return;
-            _context.Tags.Add(new Tag {  Name = name });
+            if (await GetTag(tag.Name) is not null) return;
+            _context.Tags.Add(tag);
             _context.SaveChanges();
         }
 
@@ -36,24 +36,26 @@ namespace IBudget.Infrastructure.Repositories
 
         public async Task<List<string>> FindTagByDescription(string description)
         {
-            var userDictionary = await _userDictionaryService.GetExpenseDictionaries(int.Parse(_config["MongoDbUserId"]));
-            var userRules = await _userDictionaryService.GetRuleDictionaries(int.Parse(_config["MongoDbUserId"]));
-            var tags = userDictionary
-                .Where(uD => uD.title.Equals(description, StringComparison.CurrentCultureIgnoreCase))?
-                .Select(uD => uD.tags)?
+            var userExpenseDictionary = await _userDictionaryService.GetExpenseDictionaries(int.Parse(_config["MongoDbUserId"]!));
+            var userRulesDictionary = await _userDictionaryService.GetRuleDictionaries(int.Parse(_config["MongoDbUserId"]!));
+            
+            // title should be the same as the description (both should be formatted descriptions)
+            var tags = userExpenseDictionary
+                .Where(uED => uED.title.Equals(description, StringComparison.InvariantCultureIgnoreCase))? 
+                .Select(uED => uED.tags)?
                 .FirstOrDefault()?
                 .ToList();
 
             if (tags is not null && tags.Count > 0) return tags;
 
-            tags = userRules
-                .Where(uR => description.Contains(uR.rule, StringComparison.CurrentCultureIgnoreCase))?
-                .Select(uD => uD.tags)?
+            tags = userRulesDictionary
+                .Where(uRD => description.Contains(uRD.rule, StringComparison.InvariantCultureIgnoreCase))?
+                .Select(rD => rD.tags)?
                 .FirstOrDefault()?
                 .ToList();
 
             if (tags is not null && tags.Count > 0) return tags;
-            return new List<string>();
+            throw new Exception("Could not find tag by description");
         }
 
         public async Task<List<Tag>> GetAll()
