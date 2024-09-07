@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import shutil
 from datetime import datetime
+import pymongo
 
 # global constants
 APPDATA_DIR = os.getenv('LOCALAPPDATA')
@@ -14,6 +15,8 @@ INFRASTRUCTURE_PROJECT_NAME = "IBudget.Infrastructure"
 MIGRATIONS_FOLDER_NAME = "Migrations"
 DB_DIR = f"{APPDATA_DIR}\\{ROOT_DIR_NAME}\\{DB_DIR_NAME}"
 BACKUP_DIR = f"{APPDATA_DIR}\\{ROOT_DIR_NAME}\\{BACKUP_DB_DIR_NAME}"
+MONGO_DB_NAME = "IBudget"
+COLLECTION_NAME = "userDictionaries"
 
 # UTILITY FUNCTIONS
 class bcolors:
@@ -44,6 +47,8 @@ def exit_application(error_code: int) -> None:
     exit(error_code)
 
 # PROCESSING FUNCTIONS
+
+# SQLITE SECTION
 def setup_appdata_dir() -> None:
     log_info("Setting up appdata dir")
     if not os.path.exists(APPDATA_DIR + f"\\{ROOT_DIR_NAME}"):
@@ -115,28 +120,69 @@ def setup_migrations() -> None:
     else:
         exit_application(1)
 
-# MAIN APPLICATION
-if __name__ == "__main__":
+# Main function for setting up sqlite db
+def setup_sqlite() -> None:
     setup_appdata_dir()
     setup_db_file()
-    project_dir = ""
-    while(True):
-        user_input = get_input("Please input your working directory of IBudget")
-        if user_input == "":
-            exit_application(0)
+    solution_file = Path(PROJECT_SLN_FILE_NAME)
+    if solution_file.is_file():
+        log_info("This appears to be the directory for the IBudget backend")
+    else:
+        project_dir = ""
+        while(True):
+            user_input = get_input("Please input your working directory of IBudget")
+            if user_input == "":
+                exit_application(0)
 
-        if validate_project_dir(user_input):
-            project_dir = user_input
-            break
+            if validate_project_dir(user_input):
+                project_dir = user_input
+                break
 
-    if project_dir == "":
-        log_error("There was an error getting project dir, closing application...")
-        exit_application(1)
+        if project_dir == "":
+            log_error("There was an error getting project dir, closing application...")
+            exit_application(1)
 
-    os.chdir(project_dir)
+        os.chdir(project_dir)
+        
     setup_migrations()
     log_info("Executing the database update command...")
     os.system("dotnet-ef database update --context Context --project IBudget.Infrastructure  --startup-project IBudget.ConsoleUI")
 
+# MONGODB SECTION
+
+# Main function for setting up mongodb
+def setup_mongodb() -> None:
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db_list = client.list_database_names()
+    if MONGO_DB_NAME in db_list:
+        log_info(f"The db {MONGO_DB_NAME} exists")   
+        ibudget_db = client[MONGO_DB_NAME]     
+        if COLLECTION_NAME in ibudget_db.list_collection_names():
+            log_info(f"The collection {COLLECTION_NAME} exists")   
+        else:
+            log_info(f"The collection {COLLECTION_NAME} does not exist. Creating now...")
+            user_dictionaries_collection = ibudget_db[COLLECTION_NAME]
+    else:
+        log_info(f"The db {MONGO_DB_NAME} does not exist. Creating now...")
+        ibudget_db = client[MONGO_DB_NAME]
+        user_dictionaries_collection = ibudget_db[COLLECTION_NAME]
+        default_user = { 
+            "userId": 1,
+            "ExpenseDictionaries": [], 
+            "RuleDictionaries": [],
+            "BatchHashes": []
+        }
+        user_dictionaries_collection.insert_one(default_user)
+    
+    if MONGO_DB_NAME in client.list_database_names() and COLLECTION_NAME in ibudget_db.list_collection_names():
+        log_success("MongoDb is now set up")
+    else:
+        log_error("MongoDb was not set up correctly...")
+        exit_application(1)
+
+# MAIN APPLICATION
+if __name__ == "__main__":
+    setup_sqlite()
+    setup_mongodb()
     # end of application
     exit_application(0)
