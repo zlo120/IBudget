@@ -1,5 +1,6 @@
 ﻿using Aspose.Cells.Charts;
 using ClosedXML.Excel;
+using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
 using IBudget.Core.Utils;
 using IBudget.Spreadsheet.Interfaces;
@@ -9,10 +10,12 @@ namespace IBudget.Spreadsheet
     public class Generator : IGenerator
     {
         private readonly IPopulator _populator;
+        private readonly ITagService _tagService;
 
-        public Generator(IPopulator populator)
+        public Generator(IPopulator populator, ITagService tagService)
         {
             _populator = populator;
+            _tagService = tagService;
         }
         public async void GenerateSpreadsheet()
         {
@@ -28,7 +31,7 @@ namespace IBudget.Spreadsheet
 
             int nextFreeCell = 2;
 
-            GenerateMonths(calendar, workbook, tableOfContentsWS, ref nextFreeCell);
+            GenerateMonths(calendar, workbook, tableOfContentsWS, ref nextFreeCell, _tagService);
 
             string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + $"\\{calendar.YearNumber} - IBudgetSheet.xlsx";
 
@@ -123,7 +126,7 @@ namespace IBudget.Spreadsheet
             workBook.Save(path);
         }
     
-        private static void GenerateMonths(Year calendar, XLWorkbook workbook, IXLWorksheet tableOfContentsWS, ref int nextFreeCell)
+        private static void GenerateMonths(Year calendar, XLWorkbook workbook, IXLWorksheet tableOfContentsWS, ref int nextFreeCell, ITagService tagService)
         {
             foreach (var month in calendar.Months)
             {
@@ -211,13 +214,13 @@ namespace IBudget.Spreadsheet
 
                 nextFreeCell++;
 
-                GenerateWeeks(month, workbook, tableOfContentsWS, ref nextFreeCell);
+                GenerateWeeks(month, workbook, tableOfContentsWS, ref nextFreeCell, tagService);
 
                 nextFreeCell++;
             }
         }
 
-        private static void GenerateWeeks(Core.Model.Month month, XLWorkbook workbook, IXLWorksheet tableOfContentsWS, ref int nextFreeCell)
+        private static void GenerateWeeks(Core.Model.Month month, XLWorkbook workbook, IXLWorksheet tableOfContentsWS, ref int nextFreeCell, ITagService tagService)
         {
             foreach (var week in month.Weeks)
             {
@@ -238,67 +241,65 @@ namespace IBudget.Spreadsheet
                 weekWorksheet.Cell(1, 6).Value = "Go back to Table of Contents";
                 weekWorksheet.Cell(1, 6).SetHyperlink(new XLHyperlink($"'Table of Contents'!A1"));
 
-                weekWorksheet.Cell(2, 1).Value = "Petrol";
-                weekWorksheet.Cell(2, 2).Value = "Fitness";
-                weekWorksheet.Cell(2, 3).Value = "Bills";
-                weekWorksheet.Cell(2, 4).Value = "Public transport";
-                weekWorksheet.Cell(2, 5).Value = "Food";
-                weekWorksheet.Cell(2, 6).Value = "Alcohol";
-                weekWorksheet.Cell(2, 7).Value = "Other";
-                weekWorksheet.Cell(2, 8).Value = "Description of other";
-                weekWorksheet.Column(8).Width = 3 * weekWorksheet.Column(6).Width;
+                var trackedTags = tagService.GetAll().Result
+                    .Where(tag => tag.IsTracked)
+                    .Select(tag => tag.Name)
+                    .ToArray();
 
-
-                weekWorksheet.Cell(2, 10).Value = "Income";
-                weekWorksheet.Cell(2, 11).Value = "Description";
-                weekWorksheet.Column(11).Width = 3 * weekWorksheet.Column(9).Width;
-
-
-                weekWorksheet.Cell(1, 13).Value = "Summary";
-                weekWorksheet.Cell(1, 13).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                weekWorksheet.Cell(1, 13).Style.Font.Bold = true;
-
-                weekWorksheet.Range(
-                        weekWorksheet.Cell(1, 13),
-                        weekWorksheet.Cell(1, 14)
-                    ).Merge();
-
-                weekWorksheet.Cell(2, 13).Value = "Money spent on food";
-                weekWorksheet.Cell(3, 13).FormulaA1 = "_xlfn.SUM(E:E)";
-
-                weekWorksheet.Cell(2, 14).Value = "Money spent on other";
-                weekWorksheet.Cell(3, 14).FormulaA1 = "_xlfn.SUM(G:G)";
-
-                weekWorksheet.Cell(4, 13).Value = "Money spent on alcohol";
-                weekWorksheet.Cell(5, 13).FormulaA1 = "_xlfn.SUM(F:F)";
-
-                weekWorksheet.Cell(4, 14).Value = "Money spent on public transport";
-                weekWorksheet.Cell(5, 14).FormulaA1 = "_xlfn.SUM(D:D)";
-
-                weekWorksheet.Cell(6, 13).Value = "Total Outgoing";
-                weekWorksheet.Cell(7, 13).FormulaA1 = "_xlfn.SUM(A:G)";
-
-                weekWorksheet.Cell(6, 14).Value = "Total Income";
-                weekWorksheet.Cell(7, 14).FormulaA1 = "_xlfn.SUM(J:J)";
-
-                weekWorksheet.Column(4).AdjustToContents();
-                weekWorksheet.Column(13).AdjustToContents();
-                weekWorksheet.Column(14).AdjustToContents();
-
-                for (int i = 1; i <= 7; i++)
+                for (int columnCounter = 1; columnCounter <= trackedTags.Length; columnCounter++)
                 {
-                    var column = weekWorksheet.Column(i);
-                    column.Style.NumberFormat.Format = "$#,##0.00";
+                    weekWorksheet.Cell(2, columnCounter).Value = trackedTags[columnCounter - 1];
                 }
 
-                var column10 = weekWorksheet.Column(10);
+                var otherColumn = trackedTags.Length + 1;
+                weekWorksheet.Cell(2, otherColumn).Value = "Other";
+                weekWorksheet.Cell(2, otherColumn + 1).Value = "Description of other";
+                weekWorksheet.Column(8).Width = 3 * weekWorksheet.Column(6).Width;
+
+                var incomeColumn = otherColumn + 3;
+                weekWorksheet.Cell(2, incomeColumn).Value = "Income";
+                weekWorksheet.Cell(2, incomeColumn + 1).Value = "Description";
+                weekWorksheet.Column(incomeColumn + 1).Width = 3 * weekWorksheet.Column(9).Width;
+
+                var summaryColumn = incomeColumn + 3;
+                weekWorksheet.Cell(1, summaryColumn).Value = "Summary";
+                weekWorksheet.Cell(1, summaryColumn).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                weekWorksheet.Cell(1, summaryColumn).Style.Font.Bold = true;
+
+                weekWorksheet.Range(
+                        weekWorksheet.Cell(1, summaryColumn),
+                        weekWorksheet.Cell(1, summaryColumn + 1)
+                    ).Merge();
+
+                weekWorksheet.Cell(2, summaryColumn).Value = "Money spent on food";
+                weekWorksheet.Cell(3, summaryColumn).FormulaA1 = "_xlfn.SUM(E:E)";
+
+                weekWorksheet.Cell(2, summaryColumn + 1).Value = "Money spent on other";
+                weekWorksheet.Cell(3, summaryColumn + 1).FormulaA1 = "_xlfn.SUM(G:G)";
+
+                weekWorksheet.Cell(4, summaryColumn).Value = "Money spent on alcohol";
+                weekWorksheet.Cell(5, summaryColumn).FormulaA1 = "_xlfn.SUM(F:F)";
+
+                weekWorksheet.Cell(4, summaryColumn + 1).Value = "Money spent on public transport";
+                weekWorksheet.Cell(5, summaryColumn + 1).FormulaA1 = "_xlfn.SUM(D:D)";
+
+                weekWorksheet.Cell(6, summaryColumn).Value = "Total Outgoing";
+                weekWorksheet.Cell(7, summaryColumn).FormulaA1 = "_xlfn.SUM(A:G)";
+
+                weekWorksheet.Cell(6, summaryColumn + 1).Value = "Total Income";
+                weekWorksheet.Cell(7, summaryColumn + 1).FormulaA1 = "_xlfn.SUM(J:J)";
+
+                weekWorksheet.Column(summaryColumn).AdjustToContents();
+                weekWorksheet.Column(summaryColumn + 1).AdjustToContents();
+
+                var column10 = weekWorksheet.Column(incomeColumn);
                 column10.Style.NumberFormat.Format = "$#,##0.00";
 
 
-                var column13 = weekWorksheet.Column(13);
+                var column13 = weekWorksheet.Column(summaryColumn);
                 column13.Style.NumberFormat.Format = "$#,##0.00";
 
-                var column14 = weekWorksheet.Column(14);
+                var column14 = weekWorksheet.Column(summaryColumn + 1);
                 column14.Style.NumberFormat.Format = "$#,##0.00";
             }
         }
