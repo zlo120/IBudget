@@ -1,10 +1,13 @@
 ﻿using MongoDB.Bson;
+using Newtonsoft.Json;
 
 namespace IBudget.Core.Model
 {
     public class UserDictionary
     {
+        [JsonIgnore]
         public ObjectId _id { get; set; }
+        [JsonIgnore]
         public int userId { get; set; }
         public List<ExpenseDictionary>? ExpenseDictionaries { get; set; }
         public List<RuleDictionary>? RuleDictionaries { get; set; }

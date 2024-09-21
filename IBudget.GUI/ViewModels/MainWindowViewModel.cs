@@ -12,23 +12,23 @@ namespace IBudget.GUI.ViewModels
 {
     public partial class MainWindowViewModel : ViewModelBase
     {
-        private readonly HomePageViewModel _homePageViewModel;
-        private readonly UploadCsvPageViewModel _uploadCsvPageViewModel;
-        private readonly ThisMonthPageViewModel _thisMonthPageViewModel;
-        private readonly TagsPageViewModel _tagsPageViewModel;
         private readonly List<ViewModelBase> _viewModels;
         public MainWindowViewModel(
             HomePageViewModel homePageViewModel,
             UploadCsvPageViewModel uploadCsvPageViewModel,
             ThisMonthPageViewModel thisMonthPageViewModel,
-            TagsPageViewModel tagsPageViewModel
+            TagsPageViewModel tagsPageViewModel,
+            DictionariesPageViewModel dictionariesPageViewModel
         )
         {
-            _homePageViewModel = homePageViewModel;
-            _uploadCsvPageViewModel = uploadCsvPageViewModel;
-            _thisMonthPageViewModel = thisMonthPageViewModel;
-            _tagsPageViewModel = tagsPageViewModel;
-            _viewModels = new List<ViewModelBase>() { homePageViewModel, uploadCsvPageViewModel, thisMonthPageViewModel, tagsPageViewModel };
+            _viewModels = new List<ViewModelBase>() 
+            { 
+                homePageViewModel, 
+                uploadCsvPageViewModel, 
+                thisMonthPageViewModel, 
+                tagsPageViewModel,
+                dictionariesPageViewModel
+            };
         }
 
         [ObservableProperty]
@@ -53,6 +53,7 @@ namespace IBudget.GUI.ViewModels
             new ListItemTemplate(typeof(UploadCsvPageViewModel), "DocumentRegular"),
             new ListItemTemplate(typeof(ThisMonthPageViewModel), "CalendarStar"),
             new ListItemTemplate(typeof(TagsPageViewModel), "TagRegular"),
+            new ListItemTemplate(typeof(DictionariesPageViewModel), "BookDbRegular"),
         };
 
         [RelayCommand]

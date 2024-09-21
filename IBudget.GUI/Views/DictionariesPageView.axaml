@@ -1,0 +1,86 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="IBudget.GUI.Views.DictionariesPageView"
+			 xmlns:vm="using:IBudget.GUI.ViewModels"
+			 x:DataType="vm:DictionariesPageViewModel"
+			 x:CompileBindings="True">
+
+	<Grid ColumnDefinitions="*, *">
+		<!-- Expense Dictionary column -->
+		<Grid RowDefinitions="Auto, *"
+			  Grid.Column="0">
+			<TextBlock Grid.Row="0"
+					   HorizontalAlignment="Center"
+					   FontSize="20">
+				Expense Dictionaries
+			</TextBlock>
+
+			<TextBlock Margin="0 20 0 0"
+					   IsVisible="{Binding IsLoadingRD}"
+					   Grid.Row="1"
+				       HorizontalAlignment="Center">
+				Loading rule dictionaries...
+			</TextBlock>
+			<StackPanel Grid.Row="1"
+						IsVisible="{Binding !IsLoadingED}">
+				<ScrollViewer VerticalScrollBarVisibility="Auto">
+					
+					
+					<DataGrid Margin="20 40 20 0" 
+							  ItemsSource="{Binding ExpenseDictionariesInfo}"
+							  GridLinesVisibility="All"
+							  BorderThickness="1" BorderBrush="Gray">
+						<DataGrid.Columns>
+							<DataGridTextColumn Header="Expense" Width="2*"
+												Binding="{Binding Key}" />
+							<DataGridTextColumn Header="Tag" Width="2*"
+												Binding="{Binding Value}" />
+						</DataGrid.Columns>
+					</DataGrid>
+					
+					
+				</ScrollViewer>				
+			</StackPanel>
+		</Grid>
+		
+		<!-- Rule Dictionary column -->
+		<Grid RowDefinitions="Auto, *"
+			  Grid.Column="1">
+			<TextBlock Grid.Row="0"
+					   HorizontalAlignment="Center"
+					   FontSize="20">
+				Rule Dictionaries
+			</TextBlock>
+
+			<TextBlock Margin="0 20 0 0"
+					   IsVisible="{Binding IsLoadingRD}"
+					   Grid.Row="1"
+					   HorizontalAlignment="Center">
+				Loading rule dictionaries...
+			</TextBlock>
+			<StackPanel Grid.Row="1"
+						IsVisible="{Binding !IsLoadingRD}">
+				<ScrollViewer VerticalScrollBarVisibility="Auto">
+
+
+					<DataGrid Margin="20 40 20 0"
+							  ItemsSource="{Binding RuleDictionariesInfo}"
+							  GridLinesVisibility="All"
+							  BorderThickness="1" BorderBrush="Gray">
+						<DataGrid.Columns>
+							<DataGridTextColumn Header="Expense" Width="2*"
+												Binding="{Binding Key}" />
+							<DataGridTextColumn Header="Tag" Width="2*"
+												Binding="{Binding Value}" />
+						</DataGrid.Columns>
+					</DataGrid>
+
+
+				</ScrollViewer>
+			</StackPanel>
+		</Grid>
+	</Grid>
+</UserControl>

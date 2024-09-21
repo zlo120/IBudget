@@ -35,7 +35,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IBudget.Tests", "IBudget.Te
 		{7BD88A92-4065-4B27-A7C5-6E822AF6F1BA} = {7BD88A92-4065-4B27-A7C5-6E822AF6F1BA}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IBudget.GUI", "IBudget.GUI\IBudget.GUI.csproj", "{58A105A8-488B-4362-9BC6-07860B73B2F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IBudget.GUI", "IBudget.GUI\IBudget.GUI.csproj", "{58A105A8-488B-4362-9BC6-07860B73B2F9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7BD88A92-4065-4B27-A7C5-6E822AF6F1BA} = {7BD88A92-4065-4B27-A7C5-6E822AF6F1BA}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -31,7 +31,7 @@ namespace IBudget.ConsoleUI.UserInterface.MenuOptions
             try
             {
                 var formattedFinancialCsv = await _csvParserService.ParseCSV(fileLocation);
-                var (untaggedRecords, taggedRecords) = await _csvParserService.DistinguishTaggedAndUntagged(formattedFinancialCsv);
+                var untaggedRecords = await _csvParserService.FindUntagged(formattedFinancialCsv);
                 
                 if (untaggedRecords.Count > 0)
                 {
@@ -49,13 +49,13 @@ namespace IBudget.ConsoleUI.UserInterface.MenuOptions
                     foreach (var newlyTaggedRecord in untaggedRecords)
                     {
                         newlyTaggedRecord.Tags.AddRange(newlyTagged[newlyTaggedRecord.Description].ToList());
-                        taggedRecords.Add(newlyTaggedRecord);
                     }
                 }
 
                 // everything now has a tag
-                foreach (var record in taggedRecords)
-                    AddExpenseIntoSQLDB(record);
+                //foreach (var record in taggedRecords)
+                //    AddExpenseIntoSQLDB(record);
+                throw new NotImplementedException("Changes to removing tagged records from CsvParserService has broken this functionality.");
             }
             catch (Exception ex)
             {

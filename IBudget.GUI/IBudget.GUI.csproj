@@ -11,7 +11,6 @@
   <ItemGroup>
     <Folder Include="Models\" />
     <AvaloniaResource Include="Assets\**" />
-    <Folder Include="Services\Impl\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,12 +30,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\IBudget.Core\IBudget.Core.csproj" />
+    <ProjectReference Include="..\IBudget.Infrastructure\IBudget.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <AvaloniaResource Update="Assets\Icons.axaml">
       <SubType>Designer</SubType>
     </AvaloniaResource>
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\DictionariesPageView.axaml.cs">
+      <DependentUpon>DictionariesPageView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\ThisMonthPageView.axaml.cs">
       <DependentUpon>ThisMonthPageView.axaml</DependentUpon>
     </Compile>

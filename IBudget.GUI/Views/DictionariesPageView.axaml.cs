@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace IBudget.GUI.Views;
 
-public partial class UploadCsvPageView : UserControl
+public partial class DictionariesPageView : UserControl
 {
-    public UploadCsvPageView()
+    public DictionariesPageView()
     {
         InitializeComponent();
     }

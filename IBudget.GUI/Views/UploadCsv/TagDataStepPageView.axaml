@@ -3,6 +3,114 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="IBudget.GUI.Views.UploadCsv.TagDataStepPageView">
-  Tagging data!
+             x:Class="IBudget.GUI.Views.UploadCsv.TagDataStepPageView"
+			 xmlns:vm="using:IBudget.GUI.ViewModels.UploadCsv"
+			 x:DataType="vm:TagDataStepPageViewModel"
+			 x:CompileBindings="True">
+
+	<Grid ColumnDefinitions="*, *">
+		<Grid RowDefinitions="Auto, *"
+			  Grid.Column="0">
+			<StackPanel>
+				<TextBlock FontSize="26"
+					   Grid.Row="0">
+					Untagged
+				</TextBlock>
+				<TextBlock IsVisible="{Binding IsLoading}"
+						   Grid.Row="0">
+					Loading...
+				</TextBlock>
+			</StackPanel>
+			<ScrollViewer VerticalScrollBarVisibility="Auto"
+						  Grid.Row="1"
+						  IsVisible="{Binding !IsLoading}">
+				<StackPanel Orientation="Vertical"
+						Grid.Row="0">
+					<ListBox ItemsSource="{Binding UntaggedItems}"
+							 SelectedItem="{Binding SelectedUntaggedItem}"
+							 Margin="0 0 -100 0"
+							 Padding="0">
+						<ListBox.Styles>
+							<Style Selector="ListBoxItem">
+								<Setter Property="Padding" Value="12 8"></Setter>
+							</Style>
+						</ListBox.Styles>
+						<ListBox.ItemTemplate>
+							<DataTemplate DataType="{x:Type vm:TagListItemTemplate}">
+								<TextBlock Text="{Binding Label}"/>
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
+				</StackPanel>
+			</ScrollViewer>
+			</Grid>
+		<StackPanel Orientation="Vertical"
+					Grid.Column="1">
+			<Grid RowDefinitions="Auto, Auto, *">
+				<StackPanel Orientation="Horizontal"
+							Grid.Row="0">
+					<CheckBox IsChecked="{Binding IsCreatingRule}" />
+					<TextBlock Margin="0 0 5 0"
+							   VerticalAlignment="Center"
+							   FontSize="16">
+						Create Rule
+					</TextBlock>
+					<Border Padding="5"
+							CornerRadius="50"
+							ToolTip.Tip="You can create a rule to capture more than one expense/income entry. Note: this is feature does not support regular expressions yet.">
+						<PathIcon Data="{StaticResource QuestionRegular}" VerticalAlignment="Top"/>
+					</Border>
+				</StackPanel>
+				<!--Start Tagging entries-->
+				<StackPanel Grid.Row="1"
+							IsVisible="{Binding !IsCreatingRule}">
+					<TextBlock FontSize="26">
+						Tagging Entry
+					</TextBlock>
+					<StackPanel Margin="0 5 0 0"
+								Grid.Row="2">
+						<TextBlock FontSize="20">Capturing</TextBlock>
+						<TextBlock Margin="0 5 0 0"
+								   FontSize="16"
+								   Text="{Binding SelectedUntaggedItemName}"/>
+						<TextBlock>Tag</TextBlock>
+						<AutoCompleteBox Margin="0 5 0 0" 
+										 x:Name="entriesTags" 
+										 FilterMode="Contains" 
+										 Text="{Binding Tag}"/>
+					</StackPanel>
+				</StackPanel>
+				<!--End Tagging entries-->				
+				<!--Start Creating rules-->
+				<StackPanel Grid.Row="1"
+							IsVisible="{Binding IsCreatingRule}">
+					<TextBlock FontSize="26">
+						Create Rule
+					</TextBlock>
+					<StackPanel Margin="0 5 0 0"
+								Grid.Row="2">
+						<TextBlock FontSize="20">Rule</TextBlock>
+						<TextBox Margin="0 5 0 0"
+								 Text="{Binding Rule}"/>
+						<TextBlock>Tag</TextBlock>
+						<AutoCompleteBox Margin="0 5 0 0" 
+										 x:Name="rulesTags" 
+										 FilterMode="Contains" 
+										 Text="{Binding Tag}"/>
+					</StackPanel>
+				</StackPanel>
+				<!--End Creating rules-->
+				
+				
+				<!--Submitting-->
+				<StackPanel Grid.Row="2"
+							Orientation="Horizontal"
+							HorizontalAlignment="Right">
+					<TextBlock Text="{Binding RemainingUntaggedRecords}"
+							   Margin="5 0 5 0"/>
+					<Button IsDefault="True" Command="{Binding SubmitTaggingCommand}">Submit</Button>
+				</StackPanel>
+			</Grid>
+		</StackPanel>
+	</Grid>
 </UserControl>

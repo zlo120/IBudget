@@ -8,32 +8,88 @@
 			 x:DataType="vm:UploadCsv.UploadStepPageViewModel"
 			 x:CompileBindings="True">
 	
-	<Grid RowDefinitions="Auto, Auto"
+	<Grid RowDefinitions="Auto, Auto, Auto, Auto"
 				HorizontalAlignment="Center"
 				VerticalAlignment="Center">
+		<StackPanel>
+			<Grid DragDrop.AllowDrop="True" 
+				  IsVisible="{Binding !CanProceed}">
+				<Border BorderBrush="Black"
+						Padding="10"
+						Background="DarkGray"
+						CornerRadius="7"
+						MinWidth="400"
+						MinHeight="250"
+						Margin="0 0 0 5">
+					<StackPanel Orientation="Horizontal"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Center">
+						<PathIcon Data="{Binding FileIcon}" 
+								  Margin="0 0 5 0"/>
+						<TextBlock Text="Drag and drop a file here"
+							   HorizontalAlignment="Center"
+							   VerticalAlignment="Center"/>
+					</StackPanel>
+				</Border>
+			</Grid>
+			<Button Grid.Row="0"
+					Click="OpenFileButton_Clicked"
+					IsVisible="{Binding !CanProceed}"
+					HorizontalAlignment="Center">
+				Or Click Here To Upload File
+			</Button>
+		</StackPanel>
 
-		<Button Grid.Row="0"
-				IsVisible="{Binding !CanProceed}"
-				Command="{Binding UploadFileCommand}"
-				HorizontalAlignment="Center">
-			Upload File
-		</Button>
-		<Button Grid.Row="0"
+		<StackPanel Grid.Row="1"
+					Orientation="Horizontal"					
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center">
+			<TextBlock Text="{Binding UploadMessage}"
+					   FontSize="16"
+					   HorizontalAlignment="Center"
+					   Margin="0 5 0 0"/>
+			
+			<Button IsVisible="{Binding CanProceed}"
+					Margin="5 0 5 0"
+					MaxWidth="25"
+					MaxHeight="25"
+					Background="Transparent"
+					VerticalAlignment="Center"
+					HorizontalAlignment="Center"
+					BorderBrush="Transparent"
+					Command="{Binding ClearCommand}">
+				<PathIcon Data="{Binding DismissIcon}"/> 
+			</Button>
+		</StackPanel>
+
+		<!--Error message-->
+		<StackPanel IsVisible="{Binding IsError}"
+					Orientation="Horizontal"
+					Grid.Row="2"
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center">
+			<TextBlock Text="{Binding ErrorMessage}"
+					   FontSize="16"
+					   HorizontalAlignment="Center"
+					   VerticalAlignment="Center"
+					   Margin="0 5 0 0"/>
+			<Button Margin="5 0 5 0"
+					MaxWidth="25"
+					MaxHeight="25"
+					Background="Transparent"
+					VerticalAlignment="Center"
+					HorizontalAlignment="Center"
+					BorderBrush="Transparent"
+					Command="{Binding ToggleErrorCommand}">
+				<PathIcon Data="{Binding DismissIcon}"/>
+			</Button>
+		</StackPanel>
+		
+		<Button Grid.Row="3"
 				IsVisible="{Binding CanProceed}"
 				HorizontalAlignment="Center"
 				Command="{Binding ConfirmFileCommand}">
 			Confirm File
 		</Button>
-		<StackPanel Grid.Row="1"
-					Orientation="Horizontal">
-			<TextBlock Text="{Binding UploadMessage}"
-				   HorizontalAlignment="Center"
-				   Margin="0 5 0 0"/>
-			<Button IsVisible="{Binding CanProceed}"
-					Margin="5 0 5 0"
-					Command="{Binding ClearCommand}">
-				Clear
-			</Button>
-		</StackPanel>
 	</Grid>
 </UserControl>

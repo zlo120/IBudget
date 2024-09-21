@@ -24,7 +24,7 @@ namespace IBudget.ConsoleUI.UserInterface.MenuOptions
             UserInput.FilePrompt("Please drag and drop the csv file into this terminal then press enter: ", out fileLocation);
 
             var formattedFinancialCsv = await _CSVParserService.ParseCSV(fileLocation);
-            var (untaggedRecords, taggedRecords) = await _CSVParserService.DistinguishTaggedAndUntagged(formattedFinancialCsv);
+            var untaggedRecords = await _CSVParserService.FindUntagged(formattedFinancialCsv);
             var distinctUntaggedRecords = untaggedRecords.Select(record => record.Description).Distinct().ToArray();
             ConsoleStyler.PrintTitle("Here are your untagged expenses");
             foreach (var record in distinctUntaggedRecords)

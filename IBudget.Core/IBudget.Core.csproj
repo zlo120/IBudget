@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="akavache" Version="10.1.6" />
     <PackageReference Include="CsvHelper" Version="32.0.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="MongoDB.EntityFrameworkCore" Version="8.0.1" />

@@ -159,9 +159,8 @@ namespace IBudget.API.Controllers
                 };
                 formattedCSVs.Add(formattedCsv);
             }
-            var result = await _csvParserService.DistinguishTaggedAndUntagged(formattedCSVs);
-            var distinctUntagged = result.Item1.Select(tag => tag.Description).Distinct().ToList();
-            return Ok(distinctUntagged);
+            var untagged = await _csvParserService.FindUntagged(formattedCSVs);
+            return Ok(untagged);
         }
     }
 }

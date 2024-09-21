@@ -16,6 +16,6 @@ namespace IBudget.Core.Interfaces
         /// </summary>
         /// <param name="records"></param>
         /// <returns>Tuple where Item1 is untaggedRecords and Item2 is tagged records: (untaggedRecords, taggedRecords)</returns>
-        public Task<(List<FormattedFinancialCSV>, List<FormattedFinancialCSV>)> DistinguishTaggedAndUntagged(List<FormattedFinancialCSV> records);
+        public Task<List<FormattedFinancialCSV>> FindUntagged(List<FormattedFinancialCSV> records);
     }
 }
