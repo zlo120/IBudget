@@ -1,0 +1,17 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="IBudget.GUI.App"
+			 xmlns:sty ="using:FluentAvalonia.Styling"
+             xmlns:local="using:IBudget.GUI"
+             RequestedThemeVariant="Default">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+  
+    <Application.Styles>
+		<sty:FluentAvaloniaTheme PreferUserAccentColor="True"/>
+		<StyleInclude Source="avares://IBudget.GUI/Assets/Icons.axaml"/>
+	</Application.Styles>
+</Application>

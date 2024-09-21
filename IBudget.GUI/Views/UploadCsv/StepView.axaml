@@ -1,0 +1,79 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="IBudget.GUI.Views.UploadCsv.StepView"
+			 xmlns:vm="using:IBudget.GUI.ViewModels"
+			 x:DataType="vm:UploadCsv.StepViewModel"
+			 x:CompileBindings="True">
+	<!-- Step counter start -->
+	<Grid ColumnDefinitions="Auto, *, Auto, *, Auto">
+		<StackPanel Grid.Column="0">
+			<Border CornerRadius="200"
+					Background="{Binding FirstStepColour, DataType={x:Type vm:UploadCsv.StepViewModel}}"
+					MinHeight="30"
+					MinWidth="30"
+					Margin="20 0 20 0">
+				<TextBlock
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center"
+					FontSize="16">
+					1
+				</TextBlock>
+			</Border>
+			<TextBlock HorizontalAlignment="Center"
+					   Margin="0 5 0 0">
+				Import Csv
+			</TextBlock>
+		</StackPanel>
+
+		<Separator Grid.Column="1"
+				   HorizontalAlignment="Stretch" />
+
+
+		<StackPanel Grid.Column="2">
+			<Border CornerRadius="200"
+					Background="{Binding SecondStepColour, DataType={x:Type vm:UploadCsv.StepViewModel}}"
+					MinHeight="30"
+					MinWidth="30"
+					Margin="20 0 20 0">
+				<TextBlock
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center"
+					FontSize="16">
+					2
+				</TextBlock>
+			</Border>
+			<TextBlock HorizontalAlignment="Center"
+					   Margin="0 5 0 0">
+				Tag Data
+			</TextBlock>
+		</StackPanel>
+
+
+		<Separator Grid.Column="3"
+				   Width="" />
+
+
+		<StackPanel Grid.Column="4">
+			<Border CornerRadius="200"
+					Background="{Binding ThirdStepColour, DataType={x:Type vm:UploadCsv.StepViewModel}}"
+					MinHeight="30"
+					MinWidth="30"
+					Margin="20 0 20 0">
+				<TextBlock
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center"
+					FontSize="16">
+					3
+				</TextBlock>
+			</Border>
+			<TextBlock HorizontalAlignment="Center"
+					   Margin="0 5 0 0">
+				Complete
+			</TextBlock>
+		</StackPanel>
+	</Grid>	
+	<!-- Step counter end -->
+</UserControl>

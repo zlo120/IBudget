@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="IBudget.GUI.Views.UploadCsv.UploadStepPageView"
+			 xmlns:vm="using:IBudget.GUI.ViewModels"
+			 x:DataType="vm:UploadCsv.UploadStepPageViewModel"
+			 x:CompileBindings="True">
+	
+	<Grid RowDefinitions="Auto, Auto"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center">
+
+		<Button Grid.Row="0"
+				IsVisible="{Binding !CanProceed}"
+				Command="{Binding UploadFileCommand}"
+				HorizontalAlignment="Center">
+			Upload File
+		</Button>
+		<Button Grid.Row="0"
+				IsVisible="{Binding CanProceed}"
+				HorizontalAlignment="Center"
+				Command="{Binding ConfirmFileCommand}">
+			Confirm File
+		</Button>
+		<StackPanel Grid.Row="1"
+					Orientation="Horizontal">
+			<TextBlock Text="{Binding UploadMessage}"
+				   HorizontalAlignment="Center"
+				   Margin="0 5 0 0"/>
+			<Button IsVisible="{Binding CanProceed}"
+					Margin="5 0 5 0"
+					Command="{Binding ClearCommand}">
+				Clear
+			</Button>
+		</StackPanel>
+	</Grid>
+</UserControl>
