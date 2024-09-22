@@ -5,8 +5,8 @@ namespace IBudget.GUI.ViewModels.UploadCsv
 {
     public partial class StepViewModel : ViewModelBase
     {
-        private static readonly IBrush _activeColour = Brushes.LightSkyBlue;
-        private static readonly IBrush _disabledColour = Brushes.LightGray;
+        private static readonly IBrush _activeColour = Brushes.LimeGreen;
+        private static readonly IBrush _disabledColour = Brushes.LightSkyBlue;
 
         [ObservableProperty]
         private IBrush _firstStepColour = _activeColour;

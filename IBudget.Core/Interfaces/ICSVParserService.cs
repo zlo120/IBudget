@@ -12,10 +12,10 @@ namespace IBudget.Core.Interfaces
         public Task<List<FormattedFinancialCSV>> ParseCSV(string csvFilePath);
 
         /// <summary>
-        /// Seperates tagged and untagged ExpenseDictionaries
+        /// Finds untagged ExpenseDictionaries
         /// </summary>
         /// <param name="records"></param>
-        /// <returns>Tuple where Item1 is untaggedRecords and Item2 is tagged records: (untaggedRecords, taggedRecords)</returns>
+        /// <returns>List of Formatted Financial Csv</returns>
         public Task<List<FormattedFinancialCSV>> FindUntagged(List<FormattedFinancialCSV> records);
     }
 }

@@ -40,10 +40,9 @@ namespace IBudget.Core.Services
                     {
                         Date = CsvFormatter.FormatDate(record.Date),
                         Description = CsvFormatter.FormatDescription(record.Description),
-                        Amount = record.Amount * -1
+                        Amount = record.Amount
                     });
                 }
-
                 return formattedRecords;
             }
         }

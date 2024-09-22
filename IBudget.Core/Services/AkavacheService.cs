@@ -56,5 +56,15 @@ namespace IBudget.Core.Services
         {
             return await _akavacheRepository.GetAllKeys<T>();
         }
+
+        public async Task InsertFinance(FormattedFinancialCSV finance)
+        {
+            await _akavacheRepository.InsertFinance(finance);
+        }
+
+        public async Task<List<FormattedFinancialCSV>> GetMonthsFinancialData(string key)
+        {
+            return await _akavacheRepository.GetMonthsFinancialData(key);
+        }
     }
 }

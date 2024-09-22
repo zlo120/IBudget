@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace IBudget.Core.Model
+﻿namespace IBudget.Core.Model
 {
     public class FormattedFinancialCSV
     {

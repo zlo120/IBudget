@@ -3,6 +3,29 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="IBudget.GUI.Views.UploadCsv.CompleteStepPageView">
-  Welcome to Avalonia!
+             x:Class="IBudget.GUI.Views.UploadCsv.CompleteStepPageView"
+			 xmlns:vm="using:IBudget.GUI.ViewModels.UploadCsv"
+			 x:DataType="vm:CompleteStepPageViewModel"
+			 x:CompileBindings="True">
+
+	<Grid RowDefinitions="Auto, *"
+		  Margin="15 25 15 5">
+		
+		<TextBlock Text="{Binding HeaderMessage}"
+				   HorizontalAlignment="Center"
+				   FontSize="26"
+				   Grid.Row="0" />
+		
+		<StackPanel Grid.Row="1"
+					Margin="0 20 0 0"
+					HorizontalAlignment="Center">
+			<TextBlock Text="{Binding BodyMessage}"/>
+			<Button HorizontalAlignment="Center"
+					IsEnabled="{Binding IsEnabled}"
+					Command="{Binding StartAgainCommand}">
+				Start new upload
+			</Button>
+		</StackPanel>
+		
+	</Grid>
 </UserControl>

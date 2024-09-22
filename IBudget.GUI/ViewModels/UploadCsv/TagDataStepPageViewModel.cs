@@ -17,7 +17,8 @@ namespace IBudget.GUI.ViewModels.UploadCsv
         private readonly ICSVParserService _csvParserService;
         private readonly IUserDictionaryService _userDictionaryService;
         private readonly StepViewModel _stepViewModel;
-
+        private readonly CompleteStepPageViewModel _completeStepPageViewModel;
+        private static int USER_ID = -1;
         public Uri FileUriFromService
         {
             get { return _csvService.FileUri; }
@@ -27,49 +28,19 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             StepViewModel stepViewModel,
             CsvService csvService, 
             ICSVParserService csvParserService, 
-            IUserDictionaryService userDictionaryService
+            IUserDictionaryService userDictionaryService,
+            CompleteStepPageViewModel completeStepPageViewModel
         )
         {
             _csvService = csvService;
             _csvParserService = csvParserService;
             _userDictionaryService = userDictionaryService;
             _stepViewModel = stepViewModel;
+            _completeStepPageViewModel = completeStepPageViewModel;
         }
 
         [ObservableProperty]
         private string? _fileUri = null;
-        public async void UpdateFileUri()
-        {
-            IsLoading = true;
-            FileUri = FileUriFromService.ToString();
-            var formatted = await Task.Run(() => _csvParserService.ParseCSV(FileUriFromService.LocalPath.Replace("%20", " ")));
-            var untagged = await Task.Run(() => _csvParserService.FindUntagged(formatted));
-            var distinctUntaggedRecords = new HashSet<string>();
-            foreach (var untaggedRecord in untagged)
-            {
-                if (!distinctUntaggedRecords.Contains(untaggedRecord.Description))
-                {
-                    UntaggedItems.Add(new TagListItemTemplate(untaggedRecord.Description));
-                    distinctUntaggedRecords.Add(untaggedRecord.Description);
-                }
-            }
-            if (distinctUntaggedRecords.Count == 0)
-            {
-                ClearAllProperties();
-                _stepViewModel.StepOver();
-                OnSteppingOver();
-                return;
-            }
-            IsLoading = false;
-            RemainingUntaggedRecords = $"{distinctUntaggedRecords.Count} entries left";
-        }
-
-        // Untagged side
-        [ObservableProperty]
-        private TagListItemTemplate? _selectedUntaggedItem;
-
-        [ObservableProperty]
-        private string _selectedUntaggedItemName = "Unselected";
 
         partial void OnSelectedUntaggedItemChanged(TagListItemTemplate? value)
         {
@@ -77,11 +48,17 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             if (value is null) return;
             SelectedUntaggedItemName = value.Label;
         }
+        // Untagged side
+        [ObservableProperty]
+        private TagListItemTemplate? _selectedUntaggedItem;
+
+        public ObservableCollection<TagListItemTemplate> UntaggedItems { get; } = new();
+
+        [ObservableProperty]
+        private string _selectedUntaggedItemName = "Unselected";
 
         [ObservableProperty]
         private bool _isLoading = false;
-        public ObservableCollection<TagListItemTemplate> UntaggedItems { get; } = new();
-
         // Tagging side
         [ObservableProperty]
         private bool _isCreatingRule = false;
@@ -104,12 +81,12 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             {
                 ClearAllProperties();
                 _stepViewModel.StepOver();
+                _completeStepPageViewModel.ProcessCsv();
                 OnSteppingOver();
                 return;
             }
             RemainingUntaggedRecords = $"{UntaggedItems.Count} entries left";
         }
-
         [RelayCommand]
         private void Reset()
         {
@@ -118,8 +95,32 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             _csvService.FileUri = null;
             OnSteppingBack();
         }
-
-        private static int USER_ID = -1;
+        public async void UpdateFileUri()
+        {
+            IsLoading = true;
+            FileUri = FileUriFromService.ToString();
+            var formatted = await Task.Run(() => _csvParserService.ParseCSV(FileUriFromService.LocalPath.Replace("%20", " ")));
+            var untagged = await Task.Run(() => _csvParserService.FindUntagged(formatted));
+            var distinctUntaggedRecords = new HashSet<string>();
+            foreach (var untaggedRecord in untagged)
+            {
+                if (!distinctUntaggedRecords.Contains(untaggedRecord.Description))
+                {
+                    UntaggedItems.Add(new TagListItemTemplate(untaggedRecord.Description));
+                    distinctUntaggedRecords.Add(untaggedRecord.Description);
+                }
+            }
+            if (distinctUntaggedRecords.Count == 0)
+            {
+                ClearAllProperties();
+                _stepViewModel.StepOver();
+                _completeStepPageViewModel.ProcessCsv();
+                OnSteppingOver();
+                return;
+            }
+            IsLoading = false;
+            RemainingUntaggedRecords = $"{distinctUntaggedRecords.Count} entries left";
+        }
         private void HandleCreateRule(string rule, string tag)
         {
             var removeFromCollection = UntaggedItems.Where(item => item.Label.Contains(rule, StringComparison.InvariantCultureIgnoreCase)).ToList();
@@ -134,7 +135,6 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             };
             _userDictionaryService.AddRuleDictionary(USER_ID, ruleDictionary);
         }
-
         private void HandleCreateEntry(string entryName, string tag)
         {
             if (SelectedUntaggedItemName == "Unselected") return;
@@ -147,7 +147,6 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             };
             _userDictionaryService.AddExpenseDictionary(USER_ID, entry);
         }
-
         private void ClearAllProperties()
         {
             FileUri = null;

@@ -13,5 +13,7 @@ namespace IBudget.Core.Interfaces
         Task<string> GetBatchHash(string hash);
         Task StoreBatchHash(string hash);
         Task<List<string>> GetAllKeys<T>();
+        Task InsertFinance(FormattedFinancialCSV finance);
+        Task<List<FormattedFinancialCSV>> GetMonthsFinancialData(string key);
     }
 }

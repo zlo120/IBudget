@@ -1,6 +1,7 @@
 ﻿using Akavache;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
+using System.Globalization;
 using System.Reactive.Linq;
 
 namespace IBudget.Infrastructure.Repositories
@@ -20,7 +21,6 @@ namespace IBudget.Infrastructure.Repositories
                 return new List<string>();
             }
         }
-
         public async Task SaveTag(string tag)
         {
             var allTags = await GetAllTags();
@@ -43,29 +43,24 @@ namespace IBudget.Infrastructure.Repositories
             var allHashes = await GetAllBatchHashes();
             return allHashes.Where(h => h == hash).First();
         }
-
         public async Task StoreBatchHash(string hash)
         {
             var allBatchHashes = await GetAllBatchHashes();
             allBatchHashes.Add(hash);
             await BlobCache.UserAccount.InsertObject(BATCH_HASHES_KEY, allBatchHashes);
         }
-
         public async Task<ExpenseDictionary> GetExpenseDictionary(string description)
         {
             return await GetItemFromDb<ExpenseDictionary>(description);
         }
-
         public async Task<RuleDictionary> GetRuleDictionary(string rule)
         {
             return await GetItemFromDb<RuleDictionary>(rule);
         }
-
         public async Task SaveToExpenseDictionary(ExpenseDictionary expenseDictionary)
         {
             await SaveToDb(expenseDictionary, expenseDictionary.title);
         }
-
         public async Task SaveToRuleDictionary(RuleDictionary ruleDictionary)
         {
             await SaveToDb(ruleDictionary, ruleDictionary.rule);
@@ -76,10 +71,23 @@ namespace IBudget.Infrastructure.Repositories
             {
                 return await BlobCache.UserAccount.GetObject<List<string>>(typeof(T).Name);
             }
-            catch (Exception)
+            catch (KeyNotFoundException)
             {
                 return null;
             }
+        }
+        public async Task InsertFinance(FormattedFinancialCSV finance)
+        {
+            var monthString = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(finance.Date.Month);
+            var year = finance.Date.Year;
+            var key = $"{monthString}-{year}";
+            var existingFinanceList = await GetItemFromDb<List<FormattedFinancialCSV>>(key) ?? new List<FormattedFinancialCSV>();
+            existingFinanceList.Add(finance);
+            await SaveToDb(existingFinanceList, key);
+        }
+        public async Task<List<FormattedFinancialCSV>> GetMonthsFinancialData(string key)
+        {
+            return await GetItemFromDb<List<FormattedFinancialCSV>>(key);
         }
         private async Task SaveKey<T>(string key)
         {
