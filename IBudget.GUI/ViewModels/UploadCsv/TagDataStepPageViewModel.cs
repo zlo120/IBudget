@@ -16,19 +16,25 @@ namespace IBudget.GUI.ViewModels.UploadCsv
         private readonly CsvService _csvService;
         private readonly ICSVParserService _csvParserService;
         private readonly IUserDictionaryService _userDictionaryService;
+        private readonly StepViewModel _stepViewModel;
 
         public Uri FileUriFromService
         {
             get { return _csvService.FileUri; }
         }
 
-        public TagDataStepPageViewModel(CsvService csvService, ICSVParserService csvParserService, IUserDictionaryService userDictionaryService)
+        public TagDataStepPageViewModel(
+            StepViewModel stepViewModel,
+            CsvService csvService, 
+            ICSVParserService csvParserService, 
+            IUserDictionaryService userDictionaryService
+        )
         {
             _csvService = csvService;
             _csvParserService = csvParserService;
             _userDictionaryService = userDictionaryService;
+            _stepViewModel = stepViewModel;
         }
-
 
         [ObservableProperty]
         private string? _fileUri = null;
@@ -46,6 +52,13 @@ namespace IBudget.GUI.ViewModels.UploadCsv
                     UntaggedItems.Add(new TagListItemTemplate(untaggedRecord.Description));
                     distinctUntaggedRecords.Add(untaggedRecord.Description);
                 }
+            }
+            if (distinctUntaggedRecords.Count == 0)
+            {
+                ClearAllProperties();
+                _stepViewModel.StepOver();
+                OnSteppingOver();
+                return;
             }
             IsLoading = false;
             RemainingUntaggedRecords = $"{distinctUntaggedRecords.Count} entries left";
@@ -74,7 +87,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
         private bool _isCreatingRule = false;
 
         [ObservableProperty]
-        private string _remainingUntaggedRecords = "0 entries left";
+        private string _remainingUntaggedRecords = string.Empty;
 
         [ObservableProperty]
         private string _rule = string.Empty;
@@ -87,7 +100,23 @@ namespace IBudget.GUI.ViewModels.UploadCsv
         {
             if (IsCreatingRule) HandleCreateRule(Rule, Tag);
             else HandleCreateEntry(SelectedUntaggedItemName, Tag);
+            if (UntaggedItems.Count == 0)
+            {
+                ClearAllProperties();
+                _stepViewModel.StepOver();
+                OnSteppingOver();
+                return;
+            }
             RemainingUntaggedRecords = $"{UntaggedItems.Count} entries left";
+        }
+
+        [RelayCommand]
+        private void Reset()
+        {
+            ClearAllProperties();
+            _stepViewModel.StepBack();
+            _csvService.FileUri = null;
+            OnSteppingBack();
         }
 
         private static int USER_ID = -1;
@@ -117,6 +146,18 @@ namespace IBudget.GUI.ViewModels.UploadCsv
                 tags = [tag]
             };
             _userDictionaryService.AddExpenseDictionary(USER_ID, entry);
+        }
+
+        private void ClearAllProperties()
+        {
+            FileUri = null;
+            UntaggedItems.Clear();
+            IsCreatingRule = false;
+            RemainingUntaggedRecords = string.Empty;
+            SelectedUntaggedItemName = "Unselected";
+            Tag = string.Empty;
+            Rule = string.Empty;
+            IsLoading = false;
         }
     }
 

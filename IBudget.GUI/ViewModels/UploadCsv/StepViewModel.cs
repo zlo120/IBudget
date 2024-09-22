@@ -27,6 +27,11 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             Step = (Step + 1) % 3;
             return Step;
         }
+        public int StepBack()
+        {
+            Step = (Step - 1) % 3;
+            return Step;
+        }
         partial void OnStepChanged(int value)
         {
             UpdateState();

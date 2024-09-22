@@ -5,30 +5,28 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using IBudget.GUI.Utils;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace IBudget.GUI.ViewModels
 {
     public partial class MainWindowViewModel : ViewModelBase
     {
-        private readonly List<ViewModelBase> _viewModels;
+        private readonly HomePageViewModel _homePageViewModel;
+        private readonly UploadCsvPageViewModel _uploadCsvPageViewModel;
+        private readonly ThisMonthPageViewModel _thisMonthPageViewModel;
+        private readonly DictionariesPageViewModel _dictionariesPageViewModel;
+
         public MainWindowViewModel(
             HomePageViewModel homePageViewModel,
             UploadCsvPageViewModel uploadCsvPageViewModel,
             ThisMonthPageViewModel thisMonthPageViewModel,
-            TagsPageViewModel tagsPageViewModel,
             DictionariesPageViewModel dictionariesPageViewModel
         )
         {
-            _viewModels = new List<ViewModelBase>() 
-            { 
-                homePageViewModel, 
-                uploadCsvPageViewModel, 
-                thisMonthPageViewModel, 
-                tagsPageViewModel,
-                dictionariesPageViewModel
-            };
+            _homePageViewModel = homePageViewModel;
+            _uploadCsvPageViewModel = uploadCsvPageViewModel;
+            _thisMonthPageViewModel = thisMonthPageViewModel;
+            _dictionariesPageViewModel = dictionariesPageViewModel;
         }
 
         [ObservableProperty]
@@ -39,11 +37,21 @@ namespace IBudget.GUI.ViewModels
 
         [ObservableProperty]
         private ListItemTemplate? _selectedListItem;
-
         partial void OnSelectedListItemChanged(ListItemTemplate? value)
         {
             if (value is null) return;
-            var instance = _viewModels.ResolveViewModel(value.ModelType);
+
+            ViewModelBase? instance = null;
+            if (value.ModelType == typeof(HomePageViewModel))
+                instance = _homePageViewModel;
+            if (value.ModelType == typeof(UploadCsvPageViewModel))
+                instance = _uploadCsvPageViewModel;
+            if (value.ModelType == typeof(ThisMonthPageViewModel))
+                instance = _thisMonthPageViewModel;
+            if (value.ModelType == typeof(DictionariesPageViewModel))
+                instance = _dictionariesPageViewModel;
+
+            if (instance is null) return;
             CurrentPage = instance;
         }
 
@@ -52,7 +60,6 @@ namespace IBudget.GUI.ViewModels
             new ListItemTemplate(typeof(HomePageViewModel), "HomeRegular"),
             new ListItemTemplate(typeof(UploadCsvPageViewModel), "DocumentRegular"),
             new ListItemTemplate(typeof(ThisMonthPageViewModel), "CalendarStar"),
-            new ListItemTemplate(typeof(TagsPageViewModel), "TagRegular"),
             new ListItemTemplate(typeof(DictionariesPageViewModel), "BookDbRegular"),
         };
 

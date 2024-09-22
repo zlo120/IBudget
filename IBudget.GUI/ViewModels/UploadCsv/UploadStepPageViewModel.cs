@@ -54,6 +54,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
         private void Clear()
         {
             UploadMessage = "No file has been uploaded yet...";
+            IsError = false;
             CanProceed = false;
         }
         [RelayCommand]
@@ -62,6 +63,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             _csvService.FileUri = DroppedFilePath;
             _tagDataStepPageViewModel.UpdateFileUri();
             _stepViewModel.StepOver();
+            Clear();
             OnSteppingOver();
         }
         [ObservableProperty]

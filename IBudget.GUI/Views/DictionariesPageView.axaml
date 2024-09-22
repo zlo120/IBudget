@@ -8,7 +8,8 @@
 			 x:DataType="vm:DictionariesPageViewModel"
 			 x:CompileBindings="True">
 
-	<Grid ColumnDefinitions="*, *">
+	<Grid ColumnDefinitions="*, *"
+		  Margin="10">
 		<!-- Expense Dictionary column -->
 		<Grid RowDefinitions="Auto, *"
 			  Grid.Column="0">
@@ -32,7 +33,10 @@
 					<DataGrid Margin="20 40 20 0" 
 							  ItemsSource="{Binding ExpenseDictionariesInfo}"
 							  GridLinesVisibility="All"
-							  BorderThickness="1" BorderBrush="Gray">
+							  BorderThickness="1" 
+							  BorderBrush="Gray"
+							  VerticalAlignment="Stretch"
+							  IsReadOnly="True">
 						<DataGrid.Columns>
 							<DataGridTextColumn Header="Expense" Width="2*"
 												Binding="{Binding Key}" />
@@ -69,7 +73,10 @@
 					<DataGrid Margin="20 40 20 0"
 							  ItemsSource="{Binding RuleDictionariesInfo}"
 							  GridLinesVisibility="All"
-							  BorderThickness="1" BorderBrush="Gray">
+							  BorderThickness="1"
+							  BorderBrush="Gray"
+							  VerticalAlignment="Stretch"
+							  IsReadOnly="True">
 						<DataGrid.Columns>
 							<DataGridTextColumn Header="Expense" Width="2*"
 												Binding="{Binding Key}" />

@@ -32,8 +32,15 @@ namespace IBudget.GUI.ViewModels
             InitaliseDbSearch();
         }
 
+        public void RefreshView()
+        {
+            InitaliseDbSearch();
+        }
+
         private async void InitaliseDbSearch()
         {
+            ExpenseDictionariesInfo.Clear();
+            RuleDictionariesInfo.Clear();
             try
             {
                 var expenseDictionariesTask = GetExpenseDictionariesAsync();
@@ -52,6 +59,13 @@ namespace IBudget.GUI.ViewModels
             }
             catch (Exception)
             {
+            }
+
+            // Dummy data
+            for (int i = 0; i < 30; i++)
+            {
+                ExpenseDictionariesInfo.Add(new InfoContainer() { Key = $"Sample_Expense_{i + 1}", Value = $"Sample_Value_{i + 1}" });
+                RuleDictionariesInfo.Add(new InfoContainer() { Key = $"Sample_Rule_{i + 1}", Value = $"Sample_Value_{i + 1}" });
             }
         }
 

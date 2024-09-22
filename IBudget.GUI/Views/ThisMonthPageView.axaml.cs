@@ -1,4 +1,7 @@
 using Avalonia.Controls;
+using Avalonia.Interactivity;
+using IBudget.GUI.ViewModels;
+using System;
 
 namespace IBudget.GUI.Views;
 

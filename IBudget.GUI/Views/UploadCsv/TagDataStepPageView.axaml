@@ -8,7 +8,8 @@
 			 x:DataType="vm:TagDataStepPageViewModel"
 			 x:CompileBindings="True">
 
-	<Grid ColumnDefinitions="*, *">
+	<Grid ColumnDefinitions="*, *"
+		  Margin="15 0 15 0">
 		<Grid RowDefinitions="Auto, *"
 			  Grid.Column="0">
 			<StackPanel>
@@ -44,73 +45,84 @@
 				</StackPanel>
 			</ScrollViewer>
 			</Grid>
-		<StackPanel Orientation="Vertical"
-					Grid.Column="1">
-			<Grid RowDefinitions="Auto, Auto, *">
-				<StackPanel Orientation="Horizontal"
-							Grid.Row="0">
-					<CheckBox IsChecked="{Binding IsCreatingRule}" />
-					<TextBlock Margin="0 0 5 0"
-							   VerticalAlignment="Center"
-							   FontSize="16">
-						Create Rule
-					</TextBlock>
-					<Border Padding="5"
-							CornerRadius="50"
-							ToolTip.Tip="You can create a rule to capture more than one expense/income entry. Note: this is feature does not support regular expressions yet.">
-						<PathIcon Data="{StaticResource QuestionRegular}" VerticalAlignment="Top"/>
-					</Border>
+		<Grid RowDefinitions="Auto, Auto, *, Auto"
+			  VerticalAlignment="Stretch"
+			  Grid.Column="1">
+			<StackPanel Orientation="Horizontal"
+						Grid.Row="0">
+				<CheckBox IsChecked="{Binding IsCreatingRule}" />
+				<TextBlock Margin="0 0 5 0"
+						   VerticalAlignment="Center"
+						   FontSize="16">
+					Create Rule
+				</TextBlock>
+				<Border Padding="5"
+						CornerRadius="50"
+						ToolTip.Tip="You can create a rule to capture more than one expense/income entry. Note: this is feature does not support regular expressions yet.">
+					<PathIcon Data="{StaticResource QuestionRegular}" VerticalAlignment="Top"/>
+				</Border>
+			</StackPanel>
+			<!--Start Tagging entries-->
+			<StackPanel Grid.Row="1"
+						IsVisible="{Binding !IsCreatingRule}">
+				<TextBlock FontSize="26">
+					Tagging Entry
+				</TextBlock>
+				<StackPanel Margin="0 5 0 0"
+							Grid.Row="2">
+					<TextBlock FontSize="20">Capturing</TextBlock>
+					<TextBlock Margin="0 5 0 0"
+							   FontSize="16"
+							   Text="{Binding SelectedUntaggedItemName}"/>
+					<TextBlock>Tag</TextBlock>
+					<AutoCompleteBox Margin="0 5 0 0"
+									 x:Name="entriesTags"
+									 FilterMode="Contains"
+									 Text="{Binding Tag}"/>
 				</StackPanel>
-				<!--Start Tagging entries-->
-				<StackPanel Grid.Row="1"
-							IsVisible="{Binding !IsCreatingRule}">
-					<TextBlock FontSize="26">
-						Tagging Entry
-					</TextBlock>
-					<StackPanel Margin="0 5 0 0"
-								Grid.Row="2">
-						<TextBlock FontSize="20">Capturing</TextBlock>
-						<TextBlock Margin="0 5 0 0"
-								   FontSize="16"
-								   Text="{Binding SelectedUntaggedItemName}"/>
-						<TextBlock>Tag</TextBlock>
-						<AutoCompleteBox Margin="0 5 0 0" 
-										 x:Name="entriesTags" 
-										 FilterMode="Contains" 
-										 Text="{Binding Tag}"/>
-					</StackPanel>
+			</StackPanel>
+			<!--End Tagging entries-->
+			<!--Start Creating rules-->
+			<StackPanel Grid.Row="1"
+						IsVisible="{Binding IsCreatingRule}">
+				<TextBlock FontSize="26">
+					Create Rule
+				</TextBlock>
+				<StackPanel Margin="0 5 0 0"
+							Grid.Row="2">
+					<TextBlock FontSize="20">Rule</TextBlock>
+					<TextBox Margin="0 5 0 0"
+							 Text="{Binding Rule}"/>
+					<TextBlock>Tag</TextBlock>
+					<AutoCompleteBox Margin="0 5 0 0"
+									 x:Name="rulesTags"
+									 FilterMode="Contains"
+									 Text="{Binding Tag}"/>
 				</StackPanel>
-				<!--End Tagging entries-->				
-				<!--Start Creating rules-->
-				<StackPanel Grid.Row="1"
-							IsVisible="{Binding IsCreatingRule}">
-					<TextBlock FontSize="26">
-						Create Rule
-					</TextBlock>
-					<StackPanel Margin="0 5 0 0"
-								Grid.Row="2">
-						<TextBlock FontSize="20">Rule</TextBlock>
-						<TextBox Margin="0 5 0 0"
-								 Text="{Binding Rule}"/>
-						<TextBlock>Tag</TextBlock>
-						<AutoCompleteBox Margin="0 5 0 0" 
-										 x:Name="rulesTags" 
-										 FilterMode="Contains" 
-										 Text="{Binding Tag}"/>
-					</StackPanel>
-				</StackPanel>
-				<!--End Creating rules-->
+			</StackPanel>
+			<!--End Creating rules-->
+
+
+			<!--Submitting-->
+			<StackPanel Grid.Row="2"
+						Orientation="Horizontal"
+						HorizontalAlignment="Right"
+						VerticalAlignment="Top">
+				<TextBlock Text="{Binding RemainingUntaggedRecords}"
+						   Margin="5 0 5 0"/>
 				
-				
-				<!--Submitting-->
-				<StackPanel Grid.Row="2"
-							Orientation="Horizontal"
-							HorizontalAlignment="Right">
-					<TextBlock Text="{Binding RemainingUntaggedRecords}"
-							   Margin="5 0 5 0"/>
-					<Button IsDefault="True" Command="{Binding SubmitTaggingCommand}">Submit</Button>
-				</StackPanel>
-			</Grid>
-		</StackPanel>
+				<Button IsDefault="True" 
+						Command="{Binding SubmitTaggingCommand}">
+					Submit
+				</Button>
+			</StackPanel>
+
+			<!--Resetting-->
+			<StackPanel Grid.Row="3"
+						Margin="0 0 0 10">
+				<Button HorizontalAlignment="Right"
+						Command="{Binding ResetCommand}">Reset</Button>
+			</StackPanel>
+		</Grid>
 	</Grid>
 </UserControl>

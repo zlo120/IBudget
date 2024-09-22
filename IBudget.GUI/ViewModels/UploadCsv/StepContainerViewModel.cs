@@ -25,6 +25,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             foreach(StepBase step in _views)
             {
                 step.RequestStepOver += OnStepOverRequest!;
+                step.RequestStepBack += OnStepBackRequest!;
             }
             _currentViewIndex = 0;
             _stepViewModel = stepViewModel;
@@ -39,10 +40,19 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             _currentViewIndex = (_currentViewIndex + 1) % 3;
             CurrentView = GetCurrentView;
         }
+        private void StepBackAView()
+        {
+            _currentViewIndex = (_currentViewIndex - 1) % 3;
+            CurrentView = GetCurrentView;
+        }
 
         private void OnStepOverRequest(object sender, EventArgs e)
         {
             StepThroughView();
+        }
+        private void OnStepBackRequest(object sender, EventArgs e)
+        {
+            StepBackAView();
         }
     }
 }
