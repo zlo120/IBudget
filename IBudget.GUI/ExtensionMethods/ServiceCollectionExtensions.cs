@@ -2,6 +2,7 @@
 using IBudget.Core.Services;
 using IBudget.GUI.Services.Impl;
 using IBudget.GUI.ViewModels;
+using IBudget.GUI.ViewModels.DataView;
 using IBudget.GUI.ViewModels.UploadCsv;
 using IBudget.Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,8 +25,11 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddTransient<MainWindowViewModel>();
             collection.AddTransient<HomePageViewModel>();
             collection.AddTransient<TagsPageViewModel>();
-            collection.AddTransient<ThisMonthPageViewModel>();
+            collection.AddTransient<DataPageViewModel>();
             collection.AddTransient<DictionariesPageViewModel>();
+            collection.AddTransient<YearlyViewModel>();
+            collection.AddTransient<MonthlyViewModel>();
+            collection.AddTransient<WeeklyViewModel>();
 
             collection.AddTransient<IAkavacheService, AkavacheService>();
             collection.AddTransient<IAkavacheRepository, AkavacheRepository>();

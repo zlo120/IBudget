@@ -13,19 +13,19 @@ namespace IBudget.GUI.ViewModels
     {
         private readonly HomePageViewModel _homePageViewModel;
         private readonly UploadCsvPageViewModel _uploadCsvPageViewModel;
-        private readonly ThisMonthPageViewModel _thisMonthPageViewModel;
+        private readonly DataPageViewModel _dataPageViewModel;
         private readonly DictionariesPageViewModel _dictionariesPageViewModel;
 
         public MainWindowViewModel(
             HomePageViewModel homePageViewModel,
             UploadCsvPageViewModel uploadCsvPageViewModel,
-            ThisMonthPageViewModel thisMonthPageViewModel,
+            DataPageViewModel dataPageViewModel,
             DictionariesPageViewModel dictionariesPageViewModel
         )
         {
             _homePageViewModel = homePageViewModel;
             _uploadCsvPageViewModel = uploadCsvPageViewModel;
-            _thisMonthPageViewModel = thisMonthPageViewModel;
+            _dataPageViewModel = dataPageViewModel;
             _dictionariesPageViewModel = dictionariesPageViewModel;
         }
 
@@ -46,8 +46,8 @@ namespace IBudget.GUI.ViewModels
                 instance = _homePageViewModel;
             if (value.ModelType == typeof(UploadCsvPageViewModel))
                 instance = _uploadCsvPageViewModel;
-            if (value.ModelType == typeof(ThisMonthPageViewModel))
-                instance = _thisMonthPageViewModel;
+            if (value.ModelType == typeof(DataPageViewModel))
+                instance = _dataPageViewModel;
             if (value.ModelType == typeof(DictionariesPageViewModel))
                 instance = _dictionariesPageViewModel;
 
@@ -59,7 +59,7 @@ namespace IBudget.GUI.ViewModels
         {
             new ListItemTemplate(typeof(HomePageViewModel), "HomeRegular"),
             new ListItemTemplate(typeof(UploadCsvPageViewModel), "DocumentRegular"),
-            new ListItemTemplate(typeof(ThisMonthPageViewModel), "CalendarStar"),
+            new ListItemTemplate(typeof(DataPageViewModel), "DataRegular"),
             new ListItemTemplate(typeof(DictionariesPageViewModel), "BookDbRegular"),
         };
 

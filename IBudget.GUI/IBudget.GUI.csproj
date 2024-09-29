@@ -44,8 +44,5 @@
     <Compile Update="Views\DictionariesPageView.axaml.cs">
       <DependentUpon>DictionariesPageView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\ThisMonthPageView.axaml.cs">
-      <DependentUpon>ThisMonthPageView.axaml</DependentUpon>
-    </Compile>
   </ItemGroup>
 </Project>
