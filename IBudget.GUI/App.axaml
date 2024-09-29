@@ -13,5 +13,6 @@
     <Application.Styles>
 		<sty:FluentAvaloniaTheme PreferUserAccentColor="True"/>
 		<StyleInclude Source="avares://IBudget.GUI/Assets/Icons.axaml"/>
+		<StyleInclude Source="avares://CalendarControl/Themes/Default.axaml" />
 	</Application.Styles>
 </Application>
