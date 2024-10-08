@@ -3,6 +3,47 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="IBudget.GUI.Views.DataView.MonthlyView">
-  Month
+             x:Class="IBudget.GUI.Views.DataView.MonthlyView"
+			 xmlns:vm="using:IBudget.GUI.ViewModels.DataView"
+			 x:DataType="vm:MonthlyViewModel"
+			 x:CompileBindings="True">
+	<Grid RowDefinitions="Auto, *">
+		<TextBlock HorizontalAlignment="Center" FontSize="26" Grid.Row="0" Text="{Binding ThisMonth}"/>
+
+		<ScrollViewer VerticalScrollBarVisibility="Auto" 
+					  Grid.Row="1"
+					  Margin="0 0 0 50">
+			<ItemsControl ItemsSource="{Binding SummaryItems}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<WrapPanel/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+
+						<Border Background="Gray"
+								Width="250"
+								Height="100"
+								Margin="5"
+								CornerRadius="5"
+								Padding="5 10 5 5">
+							<StackPanel HorizontalAlignment="Center">
+								<TextBlock Text="{Binding SummaryTitle}"
+										   Foreground="White"
+										   HorizontalAlignment="Center"
+										   FontSize="22"/>
+								<TextBlock Text="{Binding SummaryValue}"
+										   Foreground="White"
+										   HorizontalAlignment="Center"
+										   FontSize="16"/>
+							</StackPanel>
+						</Border>
+
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</ScrollViewer>
+
+	</Grid>
 </UserControl>

@@ -27,7 +27,6 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddTransient<TagsPageViewModel>();
             collection.AddTransient<DataPageViewModel>();
             collection.AddTransient<DictionariesPageViewModel>();
-            collection.AddTransient<YearlyViewModel>();
             collection.AddTransient<MonthlyViewModel>();
             collection.AddTransient<WeeklyViewModel>();
 

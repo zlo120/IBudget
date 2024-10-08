@@ -21,7 +21,6 @@
 					  VerticalAlignment="Bottom"
 					  Grid.Column="2"
 					  Margin="15 0 0 0">
-				<ComboBoxItem>Year's Data</ComboBoxItem>
 				<ComboBoxItem>Monthly Data</ComboBoxItem>
 				<ComboBoxItem>Weekly Data</ComboBoxItem>
 			</ComboBox>
