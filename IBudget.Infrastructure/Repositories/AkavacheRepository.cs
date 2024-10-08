@@ -23,7 +23,7 @@ namespace IBudget.Infrastructure.Repositories
         }
         public async Task SaveTag(string tag)
         {
-            var allTags = await GetAllTags();
+            var allTags = (await GetAllTags()).Distinct().ToList();
             allTags.Add(tag);
             await BlobCache.UserAccount.InsertObject(TAGS_KEY, allTags);
         }
@@ -59,10 +59,18 @@ namespace IBudget.Infrastructure.Repositories
         }
         public async Task SaveToExpenseDictionary(ExpenseDictionary expenseDictionary)
         {
+            foreach(var tag in expenseDictionary.tags)
+            {
+                await SaveTag(tag);
+            }
             await SaveToDb(expenseDictionary, expenseDictionary.title);
         }
         public async Task SaveToRuleDictionary(RuleDictionary ruleDictionary)
         {
+            foreach (var tag in ruleDictionary.tags)
+            {
+                await SaveTag(tag);
+            }
             await SaveToDb(ruleDictionary, ruleDictionary.rule);
         }
         public async Task<List<string>?> GetAllKeys<T>()
