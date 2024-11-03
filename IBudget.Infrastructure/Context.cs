@@ -10,19 +10,26 @@ namespace IBudget.Infrastructure
         public DbSet<Income> Income { get; set; }
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<Tag> Tags { get; set; }
-        private readonly IConfiguration _config;
-        private readonly ILogger _logger;
+        private readonly IConfiguration? _config;
+        private readonly ILogger? _logger;
 
         public Context(IConfiguration configuration, ILogger<Context> logger)
         {
             _config = configuration;
             _logger = logger;
         }
+        public Context() // empty constructor used when there is no configuration
+        {
+        }
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            var connString = _config.GetConnectionString("SQLite");
+            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string stacksPath = Path.Combine(appDataPath, "Stacks");
+            string stacksDbString = $"Data Source={stacksPath}\\Stacks.db";
+
+            var connString = _config?.GetConnectionString("SQLite") ?? stacksDbString; // TO DO: add a secondary option if the config is null
             options.UseSqlite(connString);
-            _logger.LogInformation($"Starting connection to db at: {connString}");
+            _logger?.LogInformation($"Starting connection to db at: {connString}");
             options.UseLazyLoadingProxies();
             options.EnableSensitiveDataLogging();
         }

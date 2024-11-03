@@ -6,7 +6,15 @@ using Avalonia.Markup.Xaml;
 using IBudget.GUI.ExtensionMethods;
 using IBudget.GUI.ViewModels;
 using IBudget.GUI.Views;
+using IBudget.Infrastructure;
+using Microsoft.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations.Design;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.IO;
 
 namespace IBudget.GUI
 {
@@ -28,7 +36,15 @@ namespace IBudget.GUI
             // Register all the services needed for the application to run
             var collection = new ServiceCollection();
             collection.AddCommonServices();
-            var services = collection.BuildServiceProvider();
+            collection.AddEntityFrameworkDesignTimeServices();
+            var services = collection.BuildServiceProvider(); 
+            using (var context = services.GetService<Context>())
+            {
+                string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                string stacksPath = Path.Combine(appDataPath, "Stacks");
+                if (!File.Exists(stacksPath + "\\Stacks.db"))
+                    context!.Database.Migrate();
+            }
             var mainViewModel = services.GetRequiredService<MainWindowViewModel>();
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

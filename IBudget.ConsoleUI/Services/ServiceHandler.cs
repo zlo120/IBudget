@@ -1,14 +1,11 @@
-﻿using Castle.Core.Configuration;
-using IBudget.ConsoleUI.UserInterface;
+﻿using IBudget.ConsoleUI.UserInterface;
 using IBudget.ConsoleUI.UserInterface.MenuOptions;
 using IBudget.ConsoleUI.Utils;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Services;
-using IBudget.Infrastructure;
 using IBudget.Infrastructure.Repositories;
 using IBudget.Spreadsheet;
 using IBudget.Spreadsheet.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace IBudget.ConsoleUI.Services
