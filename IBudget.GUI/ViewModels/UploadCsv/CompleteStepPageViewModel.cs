@@ -2,13 +2,10 @@
 using CommunityToolkit.Mvvm.Input;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
-using IBudget.Core.Services;
 using IBudget.Core.Utils;
-using IBudget.GUI.ExtensionMethods;
 using IBudget.GUI.Services.Impl;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace IBudget.GUI.ViewModels.UploadCsv
 {
@@ -74,7 +71,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
         public async void ProcessCsv()
         {
             IsLoading = true;
-            if (_csvService.FileUri is null) return; 
+            if (_csvService.FileUri is null) return;
             var csvFile = _csvService.FileUri!.LocalPath;
             var formattedFinancialDataList = await _csvParserService.ParseCSV(csvFile.Replace("%20", " "));
             // verify hash doesn't exist yet

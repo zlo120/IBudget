@@ -1,6 +1,5 @@
 ﻿using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
-using IBudget.Core.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -46,10 +45,10 @@ namespace IBudget.Infrastructure.Repositories
             int userId = int.Parse(_config?["MongoDbUserId"] ?? "-1");
             var userExpenseDictionary = await _userDictionaryService.GetExpenseDictionaries(userId);
             var userRulesDictionary = await _userDictionaryService.GetRuleDictionaries(userId);
-            
+
             // title should be the same as the description (both should be formatted descriptions)
             var tags = userExpenseDictionary
-                .Where(uED => uED.title.Equals(description, StringComparison.InvariantCultureIgnoreCase))? 
+                .Where(uED => uED.title.Equals(description, StringComparison.InvariantCultureIgnoreCase))?
                 .Select(uED => uED.tags)?
                 .FirstOrDefault()?
                 .ToList();

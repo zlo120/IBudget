@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.Input;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
-using IBudget.Core.Services;
 using IBudget.GUI.Services.Impl;
 using System;
 using System.Collections.Generic;
@@ -28,8 +27,8 @@ namespace IBudget.GUI.ViewModels.UploadCsv
 
         public TagDataStepPageViewModel(
             StepViewModel stepViewModel,
-            CsvService csvService, 
-            ICSVParserService csvParserService, 
+            CsvService csvService,
+            ICSVParserService csvParserService,
             IUserDictionaryService userDictionaryService,
             CompleteStepPageViewModel completeStepPageViewModel,
             ITagService tagsService
@@ -43,7 +42,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             _tagsService = tagsService;
 
             var allTags = _tagsService.GetAll().Result;
-            foreach(var tag in allTags)
+            foreach (var tag in allTags)
             {
                 ExistingTags.Add(tag.Name);
             }
@@ -137,7 +136,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
         private void HandleCreateRule(string rule, string tag)
         {
             var removeFromCollection = UntaggedItems.Where(item => item.Label.Contains(rule, StringComparison.InvariantCultureIgnoreCase)).ToList();
-            foreach(var removeItem in removeFromCollection)
+            foreach (var removeItem in removeFromCollection)
             {
                 UntaggedItems.Remove(removeItem);
             }
