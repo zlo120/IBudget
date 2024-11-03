@@ -96,6 +96,11 @@ namespace IBudget.Infrastructure.Repositories
             }
         }
 
+        public Task<string?> GetBatchHash(string hash)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<List<ExpenseDictionary>> GetExpenseDictionaries(int userId)
         {
             try
@@ -125,6 +130,11 @@ namespace IBudget.Infrastructure.Repositories
         public async Task<UserDictionary> GetUser(int userId)
         {
             return await _userDictionaries.Find(uD => uD.userId.Equals(userId)).FirstOrDefaultAsync();
+        }
+
+        public Task InitialiseDB()
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<bool> RemoveExpenseDictionary(int userId, string title)

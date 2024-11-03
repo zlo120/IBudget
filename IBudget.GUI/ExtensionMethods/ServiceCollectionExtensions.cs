@@ -31,13 +31,19 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddTransient<MonthlyViewModel>();
             collection.AddTransient<WeeklyViewModel>();
 
-            collection.AddDbContext<Context>();
+            collection.AddTransient<Context>();
 
-            // collection.AddTransient<IAkavacheService, AkavacheService>(); // remove this
-            // collection.AddTransient<IAkavacheRepository, AkavacheRepository>(); // remove this
             collection.AddTransient<IUserDictionaryService, UserDictionaryService>();
-            collection.AddTransient<IUserDictionaryRepository, UserDictionaryAkavacheRepository>(); // edit this class
+            collection.AddTransient<IUserDictionaryRepository, UserDictionaryAkavacheRepository>();
             collection.AddTransient<ICSVParserService, CSVParserService>();
+            collection.AddScoped<IIncomeService, IncomeService>();
+            collection.AddScoped<IIncomeRepository, IncomeRepository>();
+            collection.AddScoped<IExpenseService, ExpenseService>();
+            collection.AddScoped<IExpenseRepository, ExpenseRepository>();
+            collection.AddScoped<ISummaryRepository, SummaryRepository>();
+            collection.AddScoped<ITagService, TagService>();
+            collection.AddScoped<ITagRepository, TagRepository>();
+
         }
     }
 }

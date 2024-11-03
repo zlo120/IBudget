@@ -55,7 +55,7 @@ namespace IBudget.Infrastructure
                 new Tag()
                 {
                     ID = 1,
-                    Name = "Ignored",
+                    Name = "ignored",
                     IsTracked = false
                 }
             );

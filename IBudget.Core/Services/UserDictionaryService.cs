@@ -27,6 +27,12 @@ namespace IBudget.Core.Services
             return await _userDictionaryRepository.AddUser(userId);
         }
 
+        public async Task<bool> BatchHashExists(string hash)
+        {
+            var hashResult = await _userDictionaryRepository.GetBatchHash(hash);
+            return hashResult == null;
+        }
+
         public async Task CreateBatchHash(int userId, string hash)
         {
             await _userDictionaryRepository.CreateBatchHash(userId, hash);

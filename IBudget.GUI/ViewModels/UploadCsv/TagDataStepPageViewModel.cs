@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
+using IBudget.Core.Services;
 using IBudget.GUI.Services.Impl;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
         private readonly IUserDictionaryService _userDictionaryService;
         private readonly StepViewModel _stepViewModel;
         private readonly CompleteStepPageViewModel _completeStepPageViewModel;
+        private readonly ITagService _tagsService;
         private static int USER_ID = -1;
         public Uri FileUriFromService
         {
@@ -29,7 +31,8 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             CsvService csvService, 
             ICSVParserService csvParserService, 
             IUserDictionaryService userDictionaryService,
-            CompleteStepPageViewModel completeStepPageViewModel
+            CompleteStepPageViewModel completeStepPageViewModel,
+            ITagService tagsService
         )
         {
             _csvService = csvService;
@@ -37,6 +40,13 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             _userDictionaryService = userDictionaryService;
             _stepViewModel = stepViewModel;
             _completeStepPageViewModel = completeStepPageViewModel;
+            _tagsService = tagsService;
+
+            var allTags = _tagsService.GetAll().Result;
+            foreach(var tag in allTags)
+            {
+                ExistingTags.Add(tag.Name);
+            }
         }
 
         [ObservableProperty]
@@ -53,6 +63,8 @@ namespace IBudget.GUI.ViewModels.UploadCsv
         private TagListItemTemplate? _selectedUntaggedItem;
 
         public ObservableCollection<TagListItemTemplate> UntaggedItems { get; } = new();
+
+        public ObservableCollection<string> ExistingTags { get; } = new();
 
         [ObservableProperty]
         private string _selectedUntaggedItemName = "Unselected";
@@ -77,6 +89,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
         {
             if (IsCreatingRule) HandleCreateRule(Rule, Tag);
             else HandleCreateEntry(SelectedUntaggedItemName, Tag);
+            _tagsService.CreateTag(new Tag() { Name = Tag });
             if (UntaggedItems.Count == 0)
             {
                 ClearAllProperties();

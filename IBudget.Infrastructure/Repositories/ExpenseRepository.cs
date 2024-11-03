@@ -11,11 +11,10 @@ namespace IBudget.Infrastructure.Repositories
             _context = context;
         }
         public async Task<bool> AddExpense(Expense expense)
-        {
-            
+        {            
             try
             {
-                var tags = expense.Tags.ToArray();
+                var tags = expense.Tags!.ToArray();
                 foreach(var tag in tags)
                 {
                     var existingTag = _context.Tags.FirstOrDefault(t => t.Name == tag.Name);
@@ -51,7 +50,6 @@ namespace IBudget.Infrastructure.Repositories
                     Console.WriteLine($"{ex.Message}");
                 }
 
-                Console.ReadKey();
                 return false;
             }
         }

@@ -11,17 +11,14 @@ namespace IBudget.GUI.ViewModels.DataView
 {
     public partial class MonthlyViewModel : ViewModelBase
     {
-        private readonly IAkavacheService _akavacheService;
-
         [ObservableProperty]
         private string _thisMonth = string.Empty;
 
         [ObservableProperty]
         private ObservableCollection<SummaryItem> _summaryItems = new ObservableCollection<SummaryItem>();
 
-        public MonthlyViewModel(IAkavacheService akavacheService)
+        public MonthlyViewModel()
         {
-            _akavacheService = akavacheService;
             ThisMonth = DateTime.Now.ToString("MMMM");
 
             // PREDICTION: when adding new data to the db, this view will not update
@@ -36,7 +33,6 @@ namespace IBudget.GUI.ViewModels.DataView
 
         public async Task<List<FormattedFinancialCSV>> UpdateMonthDataView()
         {
-            var tags = await _akavacheService.GetAllTags();
             return new List<FormattedFinancialCSV>();
         }
     }

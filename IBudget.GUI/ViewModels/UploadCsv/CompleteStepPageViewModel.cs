@@ -3,7 +3,10 @@ using CommunityToolkit.Mvvm.Input;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
 using IBudget.Core.Services;
+using IBudget.Core.Utils;
+using IBudget.GUI.ExtensionMethods;
 using IBudget.GUI.Services.Impl;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,9 +16,10 @@ namespace IBudget.GUI.ViewModels.UploadCsv
     {
         private readonly CsvService _csvService;
         private readonly ICSVParserService _csvParserService;
-        private readonly IAkavacheService _akavacheService;
         private readonly StepViewModel _stepViewModel;
-
+        private readonly IExpenseService _expenseService;
+        private readonly IIncomeService _incomeService;
+        private readonly ITagService _tagService;
         [ObservableProperty]
         private string _headerMessage = string.Empty;
         [ObservableProperty]
@@ -29,13 +33,17 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             StepViewModel stepViewModel,
             CsvService csvService,
             ICSVParserService csvParserService,
-            IAkavacheService akavacheService
+            IExpenseService expenseService,
+            IIncomeService incomeService,
+            ITagService tagService
         )
         {
             _csvService = csvService;
             _csvParserService = csvParserService;
-            _akavacheService = akavacheService;
             _stepViewModel = stepViewModel;
+            _expenseService = expenseService;
+            _incomeService = incomeService;
+            _tagService = tagService;
             ProcessCsv();
         }
 
@@ -69,10 +77,42 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             if (_csvService.FileUri is null) return; 
             var csvFile = _csvService.FileUri!.LocalPath;
             var formattedFinancialDataList = await _csvParserService.ParseCSV(csvFile.Replace("%20", " "));
-            Parallel.ForEach(formattedFinancialDataList, async item =>
+            // verify hash doesn't exist yet
+            // TO  DO
+
+            // receive all the data without tags,
+            // then tag all the data
+            foreach (var formattedFinancialCSV in formattedFinancialDataList)
             {
-                await _akavacheService.InsertFinance(item);
-            });
+                if (formattedFinancialCSV.Description is null) continue;
+                var tags = await _tagService.FindTagByDescription(formattedFinancialCSV.Description!);
+                var formattedTags = new List<Tag>();
+                foreach (var tag in tags)
+                    formattedTags.Add(new Tag { Name = tag });
+                var formattedDescription = CsvFormatter.FormatDescription(formattedFinancialCSV.Description!);
+                if (formattedFinancialCSV.Amount > 0)
+                {
+                    var income = new Income()
+                    {
+                        Amount = formattedFinancialCSV.Amount,
+                        Source = formattedDescription,
+                        Date = formattedFinancialCSV.Date.ToDateTime(new TimeOnly(0, 0)),
+                        Tags = formattedTags
+                    };
+                    await _incomeService.AddIncome(income);
+                }
+                else
+                {
+                    var expense = new Expense()
+                    {
+                        Amount = formattedFinancialCSV.Amount,
+                        Notes = formattedDescription,
+                        Date = formattedFinancialCSV.Date.ToDateTime(new TimeOnly(0, 0)),
+                        Tags = formattedTags
+                    };
+                    await _expenseService.AddExpense(expense);
+                }
+            }
             IsLoading = false;
         }
         private void Reset()

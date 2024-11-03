@@ -10,7 +10,7 @@ namespace IBudget.Infrastructure.Repositories
     {
         private readonly Context _context;
         private readonly IUserDictionaryService _userDictionaryService;
-        private readonly IConfiguration _config;
+        private readonly IConfiguration? _config;
 
         public TagRepository(Context context, IUserDictionaryService userDictionaryService, IConfiguration config)
         {
@@ -18,6 +18,13 @@ namespace IBudget.Infrastructure.Repositories
             _userDictionaryService = userDictionaryService;
             _config = config;
         }
+
+        public TagRepository(Context context, IUserDictionaryService userDictionaryService)
+        {
+            _context = context;
+            _userDictionaryService = userDictionaryService;
+        }
+
 
         public async Task CreateTag(Tag tag)
         {
@@ -36,8 +43,9 @@ namespace IBudget.Infrastructure.Repositories
 
         public async Task<List<string>> FindTagByDescription(string description)
         {
-            var userExpenseDictionary = await _userDictionaryService.GetExpenseDictionaries(int.Parse(_config["MongoDbUserId"]!));
-            var userRulesDictionary = await _userDictionaryService.GetRuleDictionaries(int.Parse(_config["MongoDbUserId"]!));
+            int userId = int.Parse(_config?["MongoDbUserId"] ?? "-1");
+            var userExpenseDictionary = await _userDictionaryService.GetExpenseDictionaries(userId);
+            var userRulesDictionary = await _userDictionaryService.GetRuleDictionaries(userId);
             
             // title should be the same as the description (both should be formatted descriptions)
             var tags = userExpenseDictionary

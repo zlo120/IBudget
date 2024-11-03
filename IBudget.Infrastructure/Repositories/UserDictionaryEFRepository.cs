@@ -269,5 +269,15 @@ namespace IBudget.Infrastructure.Repositories
         {
             throw new NotImplementedException();
         }
+
+        public Task<string?> GetBatchHash(string hash)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task InitialiseDB()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

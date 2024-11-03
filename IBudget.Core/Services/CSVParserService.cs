@@ -35,7 +35,6 @@ namespace IBudget.Core.Services
                 var formattedRecords = new List<FormattedFinancialCSV>();
                 foreach (var record in records)
                 {
-                    if (record.Amount >= 0) continue;
                     formattedRecords.Add(new FormattedFinancialCSV()
                     {
                         Date = CsvFormatter.FormatDate(record.Date),

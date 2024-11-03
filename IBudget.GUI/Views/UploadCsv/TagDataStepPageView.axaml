@@ -45,7 +45,7 @@
 				</StackPanel>
 			</ScrollViewer>
 			</Grid>
-		<Grid RowDefinitions="Auto, Auto, *, Auto"
+		<Grid RowDefinitions="Auto, Auto, Auto, *, Auto"
 			  VerticalAlignment="Stretch"
 			  Grid.Column="1">
 			<StackPanel Orientation="Horizontal"
@@ -76,9 +76,10 @@
 							   Text="{Binding SelectedUntaggedItemName}"/>
 					<TextBlock>Tag</TextBlock>
 					<AutoCompleteBox Margin="0 5 0 0"
-									 x:Name="entriesTags"
+									 ItemsSource="{Binding ExistingTags}"
 									 FilterMode="Contains"
 									 Text="{Binding Tag}"/>
+					
 				</StackPanel>
 			</StackPanel>
 			<!--End Tagging entries-->
@@ -95,16 +96,15 @@
 							 Text="{Binding Rule}"/>
 					<TextBlock>Tag</TextBlock>
 					<AutoCompleteBox Margin="0 5 0 0"
-									 x:Name="rulesTags"
+									 ItemsSource="{Binding ExistingTags}"
 									 FilterMode="Contains"
 									 Text="{Binding Tag}"/>
 				</StackPanel>
 			</StackPanel>
 			<!--End Creating rules-->
-
-
+			
 			<!--Submitting-->
-			<StackPanel Grid.Row="2"
+			<StackPanel Grid.Row="3"
 						Orientation="Horizontal"
 						HorizontalAlignment="Right"
 						VerticalAlignment="Top">
@@ -118,7 +118,7 @@
 			</StackPanel>
 
 			<!--Resetting-->
-			<StackPanel Grid.Row="3"
+			<StackPanel Grid.Row="4"
 						Margin="0 0 0 10">
 				<Button HorizontalAlignment="Right"
 						Command="{Binding ResetCommand}">Reset</Button>
