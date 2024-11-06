@@ -7,6 +7,7 @@ namespace IBudget.Infrastructure
 {
     public class Context : DbContext
     {
+        public DbSet<BatchHash> BatchHashes { get; set; }
         public DbSet<Income> Income { get; set; }
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<Tag> Tags { get; set; }
@@ -36,6 +37,11 @@ namespace IBudget.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<BatchHash>()
+                .Property(i => i.ID)
+                .HasColumnName("ID")
+                .IsRequired();
 
             modelBuilder.Entity<Income>()
                 .Property(i => i.ID)

@@ -1,11 +1,17 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CsvHelper;
+using CsvHelper.Configuration;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
 using IBudget.Core.Utils;
 using IBudget.GUI.Services.Impl;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace IBudget.GUI.ViewModels.UploadCsv
 {
@@ -17,6 +23,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
         private readonly IExpenseService _expenseService;
         private readonly IIncomeService _incomeService;
         private readonly ITagService _tagService;
+        private readonly IBatchHashService _batchHashService;
         [ObservableProperty]
         private string _headerMessage = string.Empty;
         [ObservableProperty]
@@ -25,6 +32,8 @@ namespace IBudget.GUI.ViewModels.UploadCsv
         private bool _isEnabled = false; // is button enabled
         [ObservableProperty]
         private bool _isLoading = false;
+        [ObservableProperty]
+        private bool _batchHashAlreadyExists;
 
         public CompleteStepPageViewModel(
             StepViewModel stepViewModel,
@@ -32,7 +41,8 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             ICSVParserService csvParserService,
             IExpenseService expenseService,
             IIncomeService incomeService,
-            ITagService tagService
+            ITagService tagService,
+            IBatchHashService batchHashService
         )
         {
             _csvService = csvService;
@@ -41,6 +51,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             _expenseService = expenseService;
             _incomeService = incomeService;
             _tagService = tagService;
+            _batchHashService = batchHashService;
             ProcessCsv();
         }
 
@@ -55,12 +66,26 @@ namespace IBudget.GUI.ViewModels.UploadCsv
                     break;
 
                 case false: // finished loading
-                    IsEnabled = true;
-                    HeaderMessage = "All done!";
-                    BodyMessage = "Your data has been saved, you can view your information on the view data page.";
+                    if (BatchHashAlreadyExists) ToggleBatchExistsView();
+                    else ToggleParsingSuccessView();
                     break;
             }
         }
+
+        private void ToggleParsingSuccessView()
+        {
+            IsEnabled = true;
+            HeaderMessage = "All done!";
+            BodyMessage = "Your data has been saved, you can view your information on the view data page.";
+        }
+
+        private void ToggleBatchExistsView()
+        {
+            IsEnabled = true;
+            HeaderMessage = "All done!";
+            BodyMessage = "This csv file had already been provided, so we did not add it into the database.";
+        }
+
         [RelayCommand]
         private void StartAgain()
         {
@@ -72,10 +97,36 @@ namespace IBudget.GUI.ViewModels.UploadCsv
         {
             IsLoading = true;
             if (_csvService.FileUri is null) return;
-            var csvFile = _csvService.FileUri!.LocalPath;
-            var formattedFinancialDataList = await _csvParserService.ParseCSV(csvFile.Replace("%20", " "));
+            var csvFile = _csvService.FileUri!.LocalPath.Replace("%20", " ");
+            var formattedFinancialDataList = await _csvParserService.ParseCSV(csvFile);
+
             // verify hash doesn't exist yet
-            // TO  DO
+            var batchHash = string.Empty;
+
+            using (var reader = new StreamReader(csvFile))
+            {
+                var content = reader.ReadToEnd();
+                using (var sha256 = SHA256.Create())
+                {
+                    var bytes = Encoding.UTF8.GetBytes(content);
+                    var hashBytes = sha256.ComputeHash(bytes);
+                    StringBuilder hashStringBuilder = new StringBuilder();
+                    foreach (var b in hashBytes)
+                    {
+                        hashStringBuilder.Append(b.ToString("x2"));
+                    }
+                    batchHash = hashStringBuilder.ToString();
+                }
+            }
+            if (batchHash == string.Empty) throw new Exception("Creation of batch hash was not successful");
+            if (await _batchHashService.HashExists(batchHash))
+            {
+                BatchHashAlreadyExists = true;
+                IsLoading = false;
+                return;
+            }
+
+            await _batchHashService.InsertBatchHash(batchHash);
 
             // receive all the data without tags,
             // then tag all the data
@@ -118,6 +169,6 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             IsEnabled = false;
             HeaderMessage = string.Empty;
             BodyMessage = string.Empty;
-        }
+        }    
     }
 }

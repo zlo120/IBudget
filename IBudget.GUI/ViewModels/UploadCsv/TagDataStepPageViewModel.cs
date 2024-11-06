@@ -134,8 +134,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
                     distinctUntaggedRecords.Add(untaggedRecord.Description);
                 }
             }
-            SelectedUntaggedItem = UntaggedItems[0];
-            SelectedUntaggedItemName = SelectedUntaggedItem.Label;
+            
             if (distinctUntaggedRecords.Count == 0)
             {
                 ClearAllProperties();
@@ -144,6 +143,8 @@ namespace IBudget.GUI.ViewModels.UploadCsv
                 OnSteppingOver();
                 return;
             }
+            SelectedUntaggedItem = UntaggedItems[0];
+            SelectedUntaggedItemName = SelectedUntaggedItem.Label;
             IsLoading = false;
             RemainingUntaggedRecords = $"{distinctUntaggedRecords.Count} entries left";
         }

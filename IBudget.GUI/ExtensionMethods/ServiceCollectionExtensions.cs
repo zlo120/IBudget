@@ -45,6 +45,8 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddScoped<ISummaryRepository, SummaryRepository>();
             collection.AddScoped<ITagService, TagService>();
             collection.AddScoped<ITagRepository, TagRepository>();
+            collection.AddScoped<IBatchHashService, BatchHashService>();
+            collection.AddScoped<IBatchHashRepository, BatchHashRepository>();
             collection.AddScoped<ICalendarService, CalendarService>();
             collection.AddScoped<IGenerator, Generator>();
             collection.AddScoped<IPopulator, Populator>();
