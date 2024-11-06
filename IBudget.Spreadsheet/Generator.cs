@@ -11,11 +11,17 @@ namespace IBudget.Spreadsheet
     {
         private readonly IPopulator _populator;
         private readonly ITagService _tagService;
+        private readonly string[] _trackedTags;
 
         public Generator(IPopulator populator, ITagService tagService)
         {
             _populator = populator;
             _tagService = tagService;
+            _trackedTags = tagService.GetAll().Result
+                .Where(tag => tag.IsTracked)
+                .Select(tag => tag.Name)
+                .OrderBy(s => s)
+                .ToArray();
         }
         public async void GenerateSpreadsheet()
         {
@@ -31,7 +37,7 @@ namespace IBudget.Spreadsheet
 
             int nextFreeCell = 2;
 
-            GenerateMonths(calendar, workbook, tableOfContentsWS, ref nextFreeCell, _tagService);
+            GenerateMonths(calendar, workbook, tableOfContentsWS, ref nextFreeCell);
 
             string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + $"\\{calendar.YearNumber} - IBudgetSheet.xlsx";
 
@@ -60,7 +66,7 @@ namespace IBudget.Spreadsheet
             return;
         }
 
-        private static void GenerateCharts(string path, string[] monthNames, string[] weekLabels)
+        private void GenerateCharts(string path, string[] monthNames, string[] weekLabels)
         {
             var workBook = new Aspose.Cells.Workbook(path);
 
@@ -69,7 +75,6 @@ namespace IBudget.Spreadsheet
             foreach (var month in monthNames)
             {
                 var workSheet = workBook.Worksheets.Where(s => s.Name == month).FirstOrDefault();
-
                 int chartIndex = workSheet.Charts.Add(ChartType.Column, 3, 3, 20, 12);
 
                 var chart = workSheet.Charts[chartIndex];
@@ -99,7 +104,11 @@ namespace IBudget.Spreadsheet
             {
                 var workSheet = workBook.Worksheets.Where(s => s.Name == week).FirstOrDefault();
 
-                int chartIndex = workSheet.Charts.Add(ChartType.Column, 7, 11, 20, 15);
+                var startCellColumn = _trackedTags.Length + 6;
+                var endCelColumn = startCellColumn + 2;
+
+                int chartIndex = workSheet.Charts.Add(ChartType.Column, 8, startCellColumn, 20, endCelColumn); // 8: because we have a fixed number of cells from the top, *: determined by the number of tracked tags,
+                                                                                        // 20: because we have a fixed height for the chart, *: determined by the number of tracked tags
 
                 var chart = workSheet.Charts[chartIndex];
 
@@ -126,7 +135,7 @@ namespace IBudget.Spreadsheet
             workBook.Save(path);
         }
     
-        private static void GenerateMonths(Year calendar, XLWorkbook workbook, IXLWorksheet tableOfContentsWS, ref int nextFreeCell, ITagService tagService)
+        private void GenerateMonths(Year calendar, XLWorkbook workbook, IXLWorksheet tableOfContentsWS, ref int nextFreeCell)
         {
             foreach (var month in calendar.Months)
             {
@@ -214,13 +223,13 @@ namespace IBudget.Spreadsheet
 
                 nextFreeCell++;
 
-                GenerateWeeks(month, workbook, tableOfContentsWS, ref nextFreeCell, tagService);
+                GenerateWeeks(month, workbook, tableOfContentsWS, ref nextFreeCell);
 
                 nextFreeCell++;
             }
         }
 
-        private static void GenerateWeeks(Core.Model.Month month, XLWorkbook workbook, IXLWorksheet tableOfContentsWS, ref int nextFreeCell, ITagService tagService)
+        private void GenerateWeeks(Core.Model.Month month, XLWorkbook workbook, IXLWorksheet tableOfContentsWS, ref int nextFreeCell)
         {
             foreach (var week in month.Weeks)
             {
@@ -241,20 +250,15 @@ namespace IBudget.Spreadsheet
                 weekWorksheet.Cell(1, 6).Value = "Go back to Table of Contents";
                 weekWorksheet.Cell(1, 6).SetHyperlink(new XLHyperlink($"'Table of Contents'!A1"));
 
-                var trackedTags = tagService.GetAll().Result
-                    .Where(tag => tag.IsTracked)
-                    .Select(tag => tag.Name)
-                    .ToArray();
-
-                for (int columnCounter = 1; columnCounter <= trackedTags.Length; columnCounter++)
+                for (int columnCounter = 1; columnCounter <= _trackedTags.Length; columnCounter++)
                 {
-                    weekWorksheet.Cell(2, columnCounter).Value = trackedTags[columnCounter - 1];
+                    weekWorksheet.Cell(2, columnCounter).Value = _trackedTags[columnCounter - 1];
                 }
 
-                var otherColumn = trackedTags.Length + 1;
+                var otherColumn = _trackedTags.Length + 1;
                 weekWorksheet.Cell(2, otherColumn).Value = "Other";
                 weekWorksheet.Cell(2, otherColumn + 1).Value = "Description of other";
-                weekWorksheet.Column(8).Width = 3 * weekWorksheet.Column(6).Width;
+                weekWorksheet.Column(otherColumn + 1).Width = 3 * weekWorksheet.Column(6).Width;
 
                 var incomeColumn = otherColumn + 3;
                 weekWorksheet.Cell(2, incomeColumn).Value = "Income";
