@@ -62,11 +62,11 @@ namespace IBudget.GUI.ViewModels
             }
 
             // Dummy data
-            for (int i = 0; i < 30; i++)
-            {
-                ExpenseDictionariesInfo.Add(new InfoContainer() { Key = $"Sample_Expense_{i + 1}", Value = $"Sample_Value_{i + 1}" });
-                RuleDictionariesInfo.Add(new InfoContainer() { Key = $"Sample_Rule_{i + 1}", Value = $"Sample_Value_{i + 1}" });
-            }
+            //for (int i = 0; i < 30; i++)
+            //{
+            //    ExpenseDictionariesInfo.Add(new InfoContainer() { Key = $"Sample_Expense_{i + 1}", Value = $"Sample_Value_{i + 1}" });
+            //    RuleDictionariesInfo.Add(new InfoContainer() { Key = $"Sample_Rule_{i + 1}", Value = $"Sample_Value_{i + 1}" });
+            //}
         }
 
         private async Task<List<ExpenseDictionary>> GetExpenseDictionariesAsync()
