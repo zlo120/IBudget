@@ -35,5 +35,10 @@ namespace IBudget.Core.Services
         {
             return await _tagRepository.GetTag(name);
         }
+
+        public async Task UpdateTag(Tag tag)
+        {
+            await _tagRepository.UpdateTag(tag);
+        }
     }
 }

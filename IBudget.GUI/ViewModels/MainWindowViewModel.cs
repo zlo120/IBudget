@@ -15,18 +15,21 @@ namespace IBudget.GUI.ViewModels
         private readonly UploadCsvPageViewModel _uploadCsvPageViewModel;
         private readonly DataPageViewModel _dataPageViewModel;
         private readonly DictionariesPageViewModel _dictionariesPageViewModel;
+        private readonly TagsPageViewModel _tagsPageViewModel;
 
         public MainWindowViewModel(
             HomePageViewModel homePageViewModel,
             UploadCsvPageViewModel uploadCsvPageViewModel,
             DataPageViewModel dataPageViewModel,
-            DictionariesPageViewModel dictionariesPageViewModel
+            DictionariesPageViewModel dictionariesPageViewModel,
+            TagsPageViewModel tagsPageViewModel
         )
         {
             _homePageViewModel = homePageViewModel;
             _uploadCsvPageViewModel = uploadCsvPageViewModel;
             _dataPageViewModel = dataPageViewModel;
             _dictionariesPageViewModel = dictionariesPageViewModel;
+            _tagsPageViewModel = tagsPageViewModel;
         }
 
         [ObservableProperty]
@@ -50,6 +53,8 @@ namespace IBudget.GUI.ViewModels
                 instance = _dataPageViewModel;
             if (value.ModelType == typeof(DictionariesPageViewModel))
                 instance = _dictionariesPageViewModel;
+            if (value.ModelType == typeof(TagsPageViewModel))
+                instance = _tagsPageViewModel;
 
             if (instance is null) return;
             CurrentPage = instance;
@@ -61,6 +66,7 @@ namespace IBudget.GUI.ViewModels
             new ListItemTemplate(typeof(UploadCsvPageViewModel), "DocumentRegular"),
             new ListItemTemplate(typeof(DataPageViewModel), "DataRegular"),
             new ListItemTemplate(typeof(DictionariesPageViewModel), "BookDbRegular"),
+            new ListItemTemplate(typeof(TagsPageViewModel), "TagRegular"),
         };
 
         [RelayCommand]

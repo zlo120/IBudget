@@ -9,5 +9,6 @@ namespace IBudget.Core.Interfaces
         Task CreateTag(Tag tag);
         Task DeleteTag(string name);
         Task<List<string>> FindTagByDescription(string description);
+        Task UpdateTag(Tag tag);
     }
 }

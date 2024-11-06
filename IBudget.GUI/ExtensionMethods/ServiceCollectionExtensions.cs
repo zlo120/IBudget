@@ -6,6 +6,8 @@ using IBudget.GUI.ViewModels.DataView;
 using IBudget.GUI.ViewModels.UploadCsv;
 using IBudget.Infrastructure;
 using IBudget.Infrastructure.Repositories;
+using IBudget.Spreadsheet;
+using IBudget.Spreadsheet.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace IBudget.GUI.ExtensionMethods
@@ -43,7 +45,10 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddScoped<ISummaryRepository, SummaryRepository>();
             collection.AddScoped<ITagService, TagService>();
             collection.AddScoped<ITagRepository, TagRepository>();
-
+            collection.AddScoped<ICalendarService, CalendarService>();
+            collection.AddScoped<IGenerator, Generator>();
+            collection.AddScoped<IPopulator, Populator>();
+            collection.AddScoped<ICSVParserService, CSVParserService>();
         }
     }
 }

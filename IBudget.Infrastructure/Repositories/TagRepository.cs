@@ -74,5 +74,11 @@ namespace IBudget.Infrastructure.Repositories
         {
             return await _context.Tags.FirstOrDefaultAsync(x => x.Name == name);
         }
+
+        public async Task UpdateTag(Tag tag)
+        {
+            _context.Tags.Update(tag);
+            _context.SaveChanges();
+        }
     }
 }
