@@ -65,12 +65,8 @@
 			<!--Start Tagging entries-->
 			<StackPanel Grid.Row="1"
 						IsVisible="{Binding !IsCreatingRule}">
-				<TextBlock FontSize="26">
-					Tagging Entry
-				</TextBlock>
 				<StackPanel Margin="0 5 0 0"
 							Grid.Row="2">
-					<TextBlock FontSize="20">Capturing</TextBlock>
 					<TextBlock Margin="0 5 0 0"
 							   FontSize="16"
 							   Text="{Binding SelectedUntaggedItemName}"/>
@@ -86,12 +82,9 @@
 			<!--Start Creating rules-->
 			<StackPanel Grid.Row="1"
 						IsVisible="{Binding IsCreatingRule}">
-				<TextBlock FontSize="26">
-					Create Rule
-				</TextBlock>
 				<StackPanel Margin="0 5 0 0"
 							Grid.Row="2">
-					<TextBlock FontSize="20">Rule</TextBlock>
+					<TextBlock>Rule</TextBlock>
 					<TextBox Margin="0 5 0 0"
 							 Text="{Binding Rule}"/>
 					<TextBlock>Tag</TextBlock>

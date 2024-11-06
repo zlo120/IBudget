@@ -41,10 +41,16 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             _completeStepPageViewModel = completeStepPageViewModel;
             _tagsService = tagsService;
 
+            GetAllTags();
+        }
+
+        private void GetAllTags()
+        {
             var allTags = _tagsService.GetAll().Result;
             foreach (var tag in allTags)
             {
-                ExistingTags.Add(tag.Name);
+                if (!ExistingTags.Contains(tag.Name))
+                    ExistingTags.Add(tag.Name);
             }
         }
 
@@ -53,8 +59,8 @@ namespace IBudget.GUI.ViewModels.UploadCsv
 
         partial void OnSelectedUntaggedItemChanged(TagListItemTemplate? value)
         {
-            if (IsCreatingRule) IsCreatingRule = false;
             if (value is null) return;
+            //if (IsCreatingRule) IsCreatingRule = false;
             SelectedUntaggedItemName = value.Label;
         }
         // Untagged side
@@ -66,7 +72,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
         public ObservableCollection<string> ExistingTags { get; } = new();
 
         [ObservableProperty]
-        private string _selectedUntaggedItemName = "Unselected";
+        private string _selectedUntaggedItemName;
 
         [ObservableProperty]
         private bool _isLoading = false;
@@ -86,9 +92,10 @@ namespace IBudget.GUI.ViewModels.UploadCsv
         [RelayCommand]
         private void SubmitTagging()
         {
-            if (IsCreatingRule) HandleCreateRule(Rule, Tag);
-            else HandleCreateEntry(SelectedUntaggedItemName, Tag);
-            _tagsService.CreateTag(new Tag() { Name = Tag });
+            if (Tag == string.Empty) return;
+            if (IsCreatingRule) HandleCreateRule(Rule, Tag.ToLower());
+            else HandleCreateEntry(SelectedUntaggedItemName, Tag.ToLower());
+            _tagsService.CreateTag(new Tag() { Name = Tag.ToLower() });
             if (UntaggedItems.Count == 0)
             {
                 ClearAllProperties();
@@ -97,7 +104,12 @@ namespace IBudget.GUI.ViewModels.UploadCsv
                 OnSteppingOver();
                 return;
             }
+            Tag = string.Empty;
+            SelectedUntaggedItem = UntaggedItems[0];
+            SelectedUntaggedItemName = SelectedUntaggedItem.Label;
             RemainingUntaggedRecords = $"{UntaggedItems.Count} entries left";
+
+            GetAllTags();
         }
         [RelayCommand]
         private void Reset()
@@ -122,6 +134,8 @@ namespace IBudget.GUI.ViewModels.UploadCsv
                     distinctUntaggedRecords.Add(untaggedRecord.Description);
                 }
             }
+            SelectedUntaggedItem = UntaggedItems[0];
+            SelectedUntaggedItemName = SelectedUntaggedItem.Label;
             if (distinctUntaggedRecords.Count == 0)
             {
                 ClearAllProperties();
@@ -146,6 +160,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
                 tags = [tag]
             };
             _userDictionaryService.AddRuleDictionary(USER_ID, ruleDictionary);
+            Rule = string.Empty;
         }
         private void HandleCreateEntry(string entryName, string tag)
         {
