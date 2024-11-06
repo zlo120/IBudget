@@ -11,7 +11,12 @@ namespace IBudget.GUI.ViewModels
     {
         private readonly ITagService _tagService;
         public ObservableCollection<AllTagsListItemTemplate> Tags { get; } = new();
-
+        [ObservableProperty]
+        private string _tagName = string.Empty;
+        [ObservableProperty]
+        private string _message = string.Empty;
+        [ObservableProperty]
+        private bool _isTracked = false;
         public TagsPageViewModel(ITagService tagService)
         {
             _tagService = tagService;
@@ -20,6 +25,26 @@ namespace IBudget.GUI.ViewModels
             {
                 Tags.Add(new AllTagsListItemTemplate(tag.Name, tag.IsTracked, _tagService));
             }
+        }
+        [RelayCommand]
+        private void CreateTag()
+        {
+            if (TagName == string.Empty) return;
+            var tagName = TagName.ToLower();
+            var tag = new Core.Model.Tag() { Name = tagName, IsTracked = IsTracked };
+            var tagTemplate = new AllTagsListItemTemplate(tag.Name, tag.IsTracked, _tagService);
+            if (Tags.Contains(tagTemplate))
+            {
+                Message = $"\"{TagName}\" already exists";
+                TagName = string.Empty;
+                IsTracked = false;
+                return;
+            }
+            _tagService.CreateTag(tag);
+            Message = $"\"{TagName}\" created successfully!";
+            TagName = string.Empty;
+            IsTracked = false;
+            RefreshView();
         }
 
         public void RefreshView()
