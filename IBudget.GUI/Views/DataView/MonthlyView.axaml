@@ -8,42 +8,67 @@
 			 x:DataType="vm:MonthlyViewModel"
 			 x:CompileBindings="True">
 	<Grid RowDefinitions="Auto, *">
-		<TextBlock HorizontalAlignment="Center" FontSize="26" Grid.Row="0" Text="{Binding ThisMonth}"/>
+		<ComboBox SelectedIndex="{Binding SelectedIndex}"
+				  FontSize="20"
+				  Margin="5 10 0 5"
+				  Grid.Row="0"
+				  HorizontalAlignment="Left">
+			<ComboBoxItem Content="January" FontSize="16"/> 
+			<ComboBoxItem Content="February"  FontSize="16"/> 
+			<ComboBoxItem Content="March"  FontSize="16"/>
+			<ComboBoxItem Content="April" FontSize="16" /> 
+			<ComboBoxItem Content="May" FontSize="16" /> 
+			<ComboBoxItem Content="June" FontSize="16" />
+			<ComboBoxItem Content="July" FontSize="16" /> 
+			<ComboBoxItem Content="August" FontSize="16" /> 
+			<ComboBoxItem Content="September" FontSize="16" />
+			<ComboBoxItem Content="October" FontSize="16"/>
+			<ComboBoxItem Content="November"  FontSize="16"/> 
+			<ComboBoxItem Content="December" FontSize="16" />
+		</ComboBox>
 
-		<ScrollViewer VerticalScrollBarVisibility="Auto" 
-					  Grid.Row="1"
-					  Margin="0 0 0 50">
-			<ItemsControl ItemsSource="{Binding SummaryItems}">
-				<ItemsControl.ItemsPanel>
-					<ItemsPanelTemplate>
-						<WrapPanel/>
-					</ItemsPanelTemplate>
-				</ItemsControl.ItemsPanel>
-				<ItemsControl.ItemTemplate>
-					<DataTemplate>
+		<Grid Grid.Row="1"
+			  ColumnDefinitions="*, *">
+			<!-- Data summary -->
+			<ScrollViewer VerticalScrollBarVisibility="Auto"
+					  Grid.Column="0">
+				<ItemsControl ItemsSource="{Binding SummaryItems}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<WrapPanel/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<Border Background="Gray"
+									Width="180"
+									Height="180"
+									Margin="5"
+									CornerRadius="5"
+									Padding="5 10 5 5">
+								<StackPanel HorizontalAlignment="Center">
+									<TextBlock Text="{Binding SummaryTitle}"
+											   Foreground="White"
+											   HorizontalAlignment="Center"
+											   FontSize="20"/>
+									<TextBlock Text="{Binding SummaryValue}"
+											   Foreground="White"
+											   HorizontalAlignment="Center"
+											   FontSize="15"/>
+								</StackPanel>
+							</Border>
 
-						<Border Background="Gray"
-								Width="250"
-								Height="100"
-								Margin="5"
-								CornerRadius="5"
-								Padding="5 10 5 5">
-							<StackPanel HorizontalAlignment="Center">
-								<TextBlock Text="{Binding SummaryTitle}"
-										   Foreground="White"
-										   HorizontalAlignment="Center"
-										   FontSize="22"/>
-								<TextBlock Text="{Binding SummaryValue}"
-										   Foreground="White"
-										   HorizontalAlignment="Center"
-										   FontSize="16"/>
-							</StackPanel>
-						</Border>
-
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
-		</ScrollViewer>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</ScrollViewer>
+			
+			<!-- Data charts -->
+			<Grid Grid.Column="1"
+				  RowDefinitions="Auto, *">
+				<TextBlock Grid.Row="0">Summary Spending</TextBlock>
+			</Grid>
+		</Grid>
 
 	</Grid>
 </UserControl>

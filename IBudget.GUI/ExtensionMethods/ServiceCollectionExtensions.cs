@@ -42,6 +42,7 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddScoped<IIncomeRepository, IncomeRepository>();
             collection.AddScoped<IExpenseService, ExpenseService>();
             collection.AddScoped<IExpenseRepository, ExpenseRepository>();
+            collection.AddScoped<ISummaryService, SummaryService>();
             collection.AddScoped<ISummaryRepository, SummaryRepository>();
             collection.AddScoped<ITagService, TagService>();
             collection.AddScoped<ITagRepository, TagRepository>();
