@@ -2,7 +2,6 @@
 using IBudget.Core.Exceptions;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
-using IBudget.ConsoleUI.Utils;
 using System.Globalization;
 
 namespace IBudget.ConsoleUI.UserInterface.MenuOptions
