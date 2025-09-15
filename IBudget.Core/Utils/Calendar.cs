@@ -1,4 +1,4 @@
-﻿using IBudget.Core.Model;
+﻿using IBudget.Core.DTO;
 using System.Globalization;
 
 namespace IBudget.Core.Utils
@@ -20,18 +20,18 @@ namespace IBudget.Core.Utils
     }
     public static class Calendar
     {
-        public static Year InitiateCalendar()
+        public static YearDTO InitiateCalendar()
         {
             int yearNum;
             Console.Write("Please enter the year: ");
             int.TryParse(Console.ReadLine(), out yearNum);
 
-            var months = new List<Month>();
-            var year = new Year(yearNum);
+            var months = new List<MonthDTO>();
+            var year = new YearDTO(yearNum);
 
             for (int i = 1; i <= 12; i++)
             {
-                months.Add(new Month(i, yearNum));
+                months.Add(new MonthDTO(i, yearNum));
             }
 
             year.Months = months;
@@ -120,7 +120,7 @@ namespace IBudget.Core.Utils
             var d2 = date2.Date.AddDays(-1 * (int)cal.GetDayOfWeek(date2));
             return d1 == d2;
         }
-        public static void DisplayWeek(Week week)
+        public static void DisplayWeek(WeekDTO week)
         {
             var border = new String('=', week.Label.Length);
             Console.WriteLine(border);

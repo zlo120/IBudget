@@ -1,22 +1,18 @@
+using System;
+using System.IO;
 using Akavache;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
-using IBudget.Core.Interfaces;
 using IBudget.Core.RepositoryInterfaces;
 using IBudget.GUI.ExtensionMethods;
 using IBudget.GUI.ViewModels;
 using IBudget.GUI.Views;
-using IBudget.Infrastructure;
-using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations.Design;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.IO;
 
 namespace IBudget.GUI
 {
@@ -40,7 +36,7 @@ namespace IBudget.GUI
             collection.AddCommonServices();
             //collection.AddDbContext<Context>();
             collection.AddEntityFrameworkDesignTimeServices();
-            var services = collection.BuildServiceProvider(); 
+            var services = collection.BuildServiceProvider();
             using (var context = services.GetService<Context>())
             {
                 string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);

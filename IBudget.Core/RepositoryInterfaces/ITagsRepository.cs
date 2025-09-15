@@ -1,9 +1,9 @@
 ﻿using IBudget.Core.Model;
 using MongoDB.Bson;
 
-namespace IBudget.Core.Interfaces
+namespace IBudget.Core.RepositoryInterfaces
 {
-    public interface ITagService
+    public interface ITagsRepository
     {
         Task<List<Tag>> GetAll();
         Task<Tag> GetTagByName(string name);

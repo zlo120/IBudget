@@ -15,7 +15,7 @@ namespace IBudget.GUI.ViewModels
         public ObservableCollection<InfoContainer> ExpenseDictionariesInfo { get; } = new();
         public ObservableCollection<InfoContainer> RuleDictionariesInfo { get; } = new();
 
-        public List<ExpenseDictionary> ExpenseDictionaries { get; set; }
+        public List<ExpenseTag> ExpenseDictionaries { get; set; }
         public List<RuleDictionary> RuleDictionaries { get; set; }
 
         [ObservableProperty]
@@ -69,7 +69,7 @@ namespace IBudget.GUI.ViewModels
             //}
         }
 
-        private async Task<List<ExpenseDictionary>> GetExpenseDictionariesAsync()
+        private async Task<List<ExpenseTag>> GetExpenseDictionariesAsync()
         {
             return await _userDictionaryService.GetExpenseDictionaries(-1);
         }

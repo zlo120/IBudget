@@ -1,6 +1,7 @@
 ﻿using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
 using IBudget.Core.RepositoryInterfaces;
+using MongoDB.Bson;
 
 namespace IBudget.Core.Services
 {
@@ -12,7 +13,7 @@ namespace IBudget.Core.Services
             _expenseRepository = expenseRepository;
         }
 
-        public async Task<bool> AddExpense(Expense expense)
+        public async Task AddExpense(Expense expense)
         {
             for (int i = 0; i < expense.Tags.Count; i++)
             {
@@ -21,15 +22,15 @@ namespace IBudget.Core.Services
                 expense.Tags[i] = tag;
             }
 
-            return await _expenseRepository.AddExpense(expense);
+            await _expenseRepository.AddExpense(expense);
         }
 
-        public async Task<bool> DeleteExpense(Expense expense)
+        public async Task DeleteExpense(ObjectId id)
         {
-            return await _expenseRepository.DeleteExpense(expense);
+            await _expenseRepository.DeleteExpense(id);
         }
 
-        public async Task<Expense> GetExpense(int id)
+        public async Task<Expense> GetExpense(ObjectId id)
         {
             return await _expenseRepository.GetExpense(id);
         }
@@ -44,9 +45,9 @@ namespace IBudget.Core.Services
             return await _expenseRepository.GetExpensesByMonth(month);
         }
 
-        public async Task<bool> UpdateExpense(Expense expense)
+        public async Task UpdateExpense(Expense expense)
         {
-            return await _expenseRepository.UpdateExpense(expense);
+            await _expenseRepository.UpdateExpense(expense);
         }
     }
 }

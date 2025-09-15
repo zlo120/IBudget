@@ -1,19 +1,23 @@
-﻿namespace IBudget.Core.Model
+﻿using IBudget.Core.Utils;
+
+namespace IBudget.Core.Model
 {
     public class Tag : BaseModel
     {
-        public string Name { get; set; }
-        public bool IsTracked { get; set; }
-        public virtual List<Income>? Incomes { get; set; }
-        public virtual List<Expense>? Expenses { get; set; }
+        public required string Name { get; set; }
+        public required bool IsTracked { get; set; }
+        public required DateTime CreatedAt { get; set; }
 
         public override bool Equals(object? obj)
         {
-            if (obj == null) return false;
-            if (obj is not Tag) return false;
+            if (obj is null || obj is not Tag) return false;
             var other = obj as Tag;
-            if (other.Name != Name) return false;
-            return true;
+            if (other?.Name == Name) return true;
+            return false;
         }
+
+        public int GetHashCode(Tag obj) => (obj.Name, obj.IsTracked).GetHashCode();
+        public override int GetHashCode() => (Name, IsTracked).GetHashCode();
+        public override string ToString() => WriteObject.ToJsonString(this);
     }
 }

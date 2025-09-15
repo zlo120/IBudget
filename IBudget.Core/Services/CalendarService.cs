@@ -1,5 +1,5 @@
-﻿using IBudget.Core.Interfaces;
-using IBudget.Core.Model;
+﻿using IBudget.Core.DTO;
+using IBudget.Core.Interfaces;
 
 namespace IBudget.Core.Services
 {
@@ -14,7 +14,7 @@ namespace IBudget.Core.Services
             _expenseService = expenseService;
         }
 
-        public async Task<Month> RetrieveMonthData(Month month)
+        public async Task<MonthDTO> RetrieveMonthData(MonthDTO month)
         {
             month.AllIncome = _incomeService.GetIncomeByMonth(month.MonthNum).Result;
             month.AllExpenses = _expenseService.GetExpensesByMonth(month.MonthNum).Result;
@@ -22,7 +22,7 @@ namespace IBudget.Core.Services
             return month;
         }
 
-        public async Task<Week> RetrieveWeekData(Week week)
+        public async Task<WeekDTO> RetrieveWeekData(WeekDTO week)
         {
             week.Income = _incomeService.GetIncomeByWeek(week.Start).Result;
             week.Expenses = _expenseService.GetExpenseByWeek(week.Start).Result;

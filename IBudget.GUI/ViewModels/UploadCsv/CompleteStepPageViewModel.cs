@@ -1,17 +1,14 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CsvHelper;
-using CsvHelper.Configuration;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
 using IBudget.Core.Utils;
 using IBudget.GUI.Services.Impl;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace IBudget.GUI.ViewModels.UploadCsv
 {
@@ -169,6 +166,6 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             IsEnabled = false;
             HeaderMessage = string.Empty;
             BodyMessage = string.Empty;
-        }    
+        }
     }
 }

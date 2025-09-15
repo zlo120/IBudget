@@ -41,11 +41,11 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddScoped<IIncomeService, IncomeService>();
             collection.AddScoped<IIncomeRepository, IncomeRepository>();
             collection.AddScoped<IExpenseService, ExpenseService>();
-            collection.AddScoped<IExpenseRepository, ExpenseRepository>();
+            collection.AddScoped<IExpenseRepository, ExpensesRepository>();
             collection.AddScoped<ISummaryService, SummaryService>();
             collection.AddScoped<ISummaryRepository, SummaryRepository>();
             collection.AddScoped<ITagService, TagService>();
-            collection.AddScoped<ITagRepository, TagRepository>();
+            collection.AddScoped<ITagsRepository, TagsRepository>();
             collection.AddScoped<IBatchHashService, BatchHashService>();
             collection.AddScoped<IBatchHashRepository, BatchHashRepository>();
             collection.AddScoped<ICalendarService, CalendarService>();

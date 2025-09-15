@@ -9,7 +9,7 @@ namespace IBudget.Core.Interfaces
         /// </summary>
         /// <param name="csvFilePath"></param>
         /// <returns>List of FormattedFinancialCSV</returns>
-        public Task<List<FormattedFinancialCSV>> ParseCSV(string csvFilePath);
+        public List<FormattedFinancialCSV> ParseCSV(string csvFilePath);
 
         /// <summary>
         /// Finds untagged ExpenseDictionaries

@@ -2,7 +2,6 @@
 {
     public interface IBatchHashService
     {
-        Task<bool> HashExists(string hash);
-        Task InsertBatchHash(string hash);
+        string ComputeBatchHash(string input);
     }
 }

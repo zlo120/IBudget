@@ -2,6 +2,6 @@
 {
     public class BatchHash : BaseModel
     {
-        public string Hash { get; set; }
+        public required string Hash { get; set; }
     }
 }

@@ -17,11 +17,11 @@ namespace IBudget.ConsoleUI.Services
             services.AddScoped<IIncomeService, IncomeService>();
             services.AddScoped<IIncomeRepository, IncomeRepository>();
             services.AddScoped<IExpenseService, ExpenseService>();
-            services.AddScoped<IExpenseRepository, ExpenseRepository>();
+            services.AddScoped<IExpenseRepository, ExpensesRepository>();
             services.AddScoped<ISummaryService, SummaryService>();
             services.AddScoped<ISummaryRepository, SummaryRepository>();
             services.AddScoped<ITagService, TagService>();
-            services.AddScoped<ITagRepository, TagRepository>();
+            services.AddScoped<ITagsRepository, TagsRepository>();
             services.AddScoped<ICalendarService, CalendarService>();
             services.AddScoped<IRecordUtility, RecordUtility>();
             services.AddScoped<ISpreadSheetGeneratorService, SpreadSheetGeneratorService>();

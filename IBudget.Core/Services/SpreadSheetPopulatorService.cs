@@ -54,10 +54,10 @@ namespace IBudget.Core.Services
 
                 // populate the income
                 var incomeQueue = new Queue<Income>(week.Income);
-                PopulateColumn(new Queue<DataEntry>(incomeQueue.ToList()), ref worksheet, _incomeColumn);
+                PopulateColumn(new Queue<FinancialRecord>(incomeQueue.ToList()), ref worksheet, _incomeColumn);
 
                 // populate the expenses that fall into the "other" category
-                var otherExpenses = new Queue<DataEntry>(remainingExpenses
+                var otherExpenses = new Queue<FinancialRecord>(remainingExpenses
                                                             .Where(expense => expense.Tags!.Count == 0 || expense.Tags.Any(tag => !tag.IsTracked))
                                                             .ToList());
                 PopulateColumn(otherExpenses, ref worksheet, _otherColumn);
@@ -67,7 +67,7 @@ namespace IBudget.Core.Services
                 {
                     // using all the data that exists in the db for this week and for this category
                     //   populate this column
-                    var remainingExpenseInColumn = new Queue<DataEntry>(
+                    var remainingExpenseInColumn = new Queue<FinancialRecord>(
                         remainingExpenses
                             .Where(e => e.Tags!
                             .Any(t => t.Name.ToLower().Contains(_trackedTags[columnCounter - 1].ToLower())))
@@ -95,7 +95,7 @@ namespace IBudget.Core.Services
             return workbook;
         }
 
-        private void PopulateColumn(Queue<DataEntry> remainingDataRecords, ref IXLWorksheet worksheet, int columnNum)
+        private void PopulateColumn(Queue<FinancialRecord> remainingDataRecords, ref IXLWorksheet worksheet, int columnNum)
         {
             var rowCounter = 3;
             while (remainingDataRecords.Any())

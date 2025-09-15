@@ -1,10 +1,10 @@
-﻿using IBudget.Core.Model;
+﻿using IBudget.Core.DTO;
 
 namespace IBudget.Core.Interfaces
 {
     public interface ICalendarService
     {
-        Task<Month> RetrieveMonthData(Month month);
-        Task<Week> RetrieveWeekData(Week week);
+        Task<MonthDTO> RetrieveMonthData(MonthDTO month);
+        Task<WeekDTO> RetrieveWeekData(WeekDTO week);
     }
 }

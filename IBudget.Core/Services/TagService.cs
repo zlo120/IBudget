@@ -1,13 +1,14 @@
 ﻿using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
 using IBudget.Core.RepositoryInterfaces;
+using MongoDB.Bson;
 
 namespace IBudget.Core.Services
 {
     public class TagService : ITagService
     {
-        private readonly ITagRepository _tagRepository;
-        public TagService(ITagRepository tagRepository)
+        private readonly ITagsRepository _tagRepository;
+        public TagService(ITagsRepository tagRepository)
         {
             _tagRepository = tagRepository;
         }
@@ -17,14 +18,19 @@ namespace IBudget.Core.Services
             await _tagRepository.CreateTag(tag);
         }
 
-        public async Task DeleteTag(string name)
+        public async Task DeleteTagByName(string name)
         {
-            await _tagRepository.DeleteTag(name);
+            await _tagRepository.DeleteTagByName(name);
         }
 
-        public async Task<List<string>> FindTagByDescription(string description)
+        public async Task DeleteTagById(ObjectId id)
         {
-            return await _tagRepository.FindTagByDescription(description);
+            await _tagRepository.DeleteTagById(id);
+        }
+
+        public async Task<List<string>> FindTagsByDescription(string description)
+        {
+            return await _tagRepository.FindTagsByDescription(description);
         }
 
         public async Task<List<Tag>> GetAll()
@@ -32,9 +38,9 @@ namespace IBudget.Core.Services
             return await _tagRepository.GetAll();
         }
 
-        public async Task<Tag> GetTag(string name)
+        public async Task<Tag> GetTagByName(string name)
         {
-            return await _tagRepository.GetTag(name);
+            return await _tagRepository.GetTagByName(name);
         }
 
         public async Task UpdateTag(Tag tag)

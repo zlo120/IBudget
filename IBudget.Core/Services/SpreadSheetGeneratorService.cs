@@ -1,5 +1,6 @@
 ﻿using Aspose.Cells.Charts;
 using ClosedXML.Excel;
+using IBudget.Core.DTO;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
 using IBudget.Core.Utils;
@@ -140,7 +141,7 @@ namespace IBudget.Core.Services
             workBook.Save(path);
         }
     
-        private void GenerateMonths(Year calendar, XLWorkbook workbook, IXLWorksheet tableOfContentsWS, ref int nextFreeCell)
+        private void GenerateMonths(YearDTO calendar, XLWorkbook workbook, IXLWorksheet tableOfContentsWS, ref int nextFreeCell)
         {
             foreach (var month in calendar.Months)
             {
@@ -234,7 +235,7 @@ namespace IBudget.Core.Services
             }
         }
 
-        private void GenerateWeeks(Core.Model.Month month, XLWorkbook workbook, IXLWorksheet tableOfContentsWS, ref int nextFreeCell)
+        private void GenerateWeeks(MonthDTO month, XLWorkbook workbook, IXLWorksheet tableOfContentsWS, ref int nextFreeCell)
         {
             foreach (var week in month.Weeks)
             {

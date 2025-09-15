@@ -1,10 +1,10 @@
-﻿using IBudget.Core.Model;
+﻿using IBudget.Core.DTO;
 
 namespace IBudget.Core.Interfaces
 {
     public interface ISummaryService
     {
-        Task<Week> ReadWeek(DateTime date);
-        Task<Month> ReadMonth(int month);
+        Task<WeekDTO> ReadWeek(DateTime date);
+        Task<MonthDTO> ReadMonth(int month);
     }
 }

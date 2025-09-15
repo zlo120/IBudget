@@ -1,13 +1,14 @@
 ﻿using IBudget.Core.Model;
+using MongoDB.Bson;
 
 namespace IBudget.Core.Interfaces
 {
     public interface IIncomeService
     {
-        Task<bool> AddIncome(Income income);
-        Task<bool> DeleteIncome(Income income);
-        Task<bool> UpdateIncome(Income income);
-        Task<Income> GetIncome(int id);
+        Task AddIncome(Income income);
+        Task DeleteIncome(ObjectId id);
+        Task UpdateIncome(Income income);
+        Task<Income> GetIncome(ObjectId id);
         Task<List<Income>> GetIncomeByMonth(int month);
         Task<List<Income>> GetIncomeByWeek(DateTime startDate);
     }

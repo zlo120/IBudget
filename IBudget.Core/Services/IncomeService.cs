@@ -1,6 +1,7 @@
 ﻿using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
 using IBudget.Core.RepositoryInterfaces;
+using MongoDB.Bson;
 
 namespace IBudget.Core.Services
 {
@@ -12,7 +13,7 @@ namespace IBudget.Core.Services
             _incomeRepository = incomeRepository;
         }
 
-        public async Task<bool> AddIncome(Income income)
+        public async Task AddIncome(Income income)
         {
             for (int i = 0; i < income.Tags.Count; i++)
             {
@@ -21,15 +22,15 @@ namespace IBudget.Core.Services
                 income.Tags[i] = tag;
             }
 
-            return await _incomeRepository.AddIncome(income);
+            await _incomeRepository.AddIncome(income);
         }
 
-        public async Task<bool> DeleteIncome(Income income)
+        public async Task DeleteIncome(ObjectId id)
         {
-            return await _incomeRepository.DeleteIncome(income);
+            await _incomeRepository.DeleteIncome(id);
         }
 
-        public async Task<Income> GetIncome(int id)
+        public async Task<Income> GetIncome(ObjectId id)
         {
             return await _incomeRepository.GetIncome(id);
         }
@@ -44,9 +45,9 @@ namespace IBudget.Core.Services
             return await _incomeRepository.GetIncomeByWeek(startDate);
         }
 
-        public async Task<bool> UpdateIncome(Income income)
+        public async Task UpdateIncome(Income income)
         {
-            return await _incomeRepository.UpdateIncome(income);
+            await _incomeRepository.UpdateIncome(income);
         }
     }
 }

@@ -38,7 +38,7 @@ namespace IBudget.ConsoleUI.UserInterface.MenuOptions
                     var newlyTagged = TagRecords(untaggedRecords);
                     foreach (var taggedRecord in newlyTagged)
                     {
-                        var expenseDictionary = new ExpenseDictionary()
+                        var expenseDictionary = new ExpenseTag()
                         {
                             title = taggedRecord.Key,
                             tags = taggedRecord.Value

@@ -1,92 +1,52 @@
 ﻿using IBudget.Core.Model;
 using IBudget.Core.RepositoryInterfaces;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace IBudget.Infrastructure.Repositories
 {
-    public class IncomeRepository : IIncomeRepository
+    public class IncomeRepository(MongoDbContext context) : IIncomeRepository
     {
-        private readonly Context _context;
-        public IncomeRepository(Context context)
+        private readonly IMongoCollection<Income> _incomeCollection = context.GetIncomeCollection();
+        public async Task AddIncome(Income income)
         {
-            _context = context;
+            await _incomeCollection.InsertOneAsync(income);
         }
 
-        public async Task<bool> AddIncome(Income income)
+        public async Task DeleteIncome(ObjectId id)
         {
-            try
-            {
-                var tags = income.Tags.ToArray();
-                foreach (var tag in tags)
-                {
-                    var existingTag = _context.Tags.FirstOrDefault(t => t.Name == tag.Name);
-                    if (existingTag is not null)
-                    {
-                        income.Tags.Remove(tag);
-                        income.Tags.Add(existingTag);
-                    }
-                    else
-                    {
-                        _context.Tags.Add(tag);
-                    }
-                }
-
-                _context.Income.Add(income);
-
-                _context.SaveChanges();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                try
-                {
-                    if (ex.InnerException.Message.Contains("19"))
-                    {
-                        Console.WriteLine("Unique constraint has been triggered.");
-                    }
-                    else
-                        Console.WriteLine($"{ex.Message} {ex.InnerException.Message}");
-                }
-                catch (NullReferenceException)
-                {
-                    Console.WriteLine($"{ex.Message}");
-                }
-
-                Console.ReadKey();
-                return false;
-            }
+            await _incomeCollection.DeleteOneAsync(e => e.Id == id);
         }
 
-        public async Task<bool> DeleteIncome(Income income)
+        public async Task<Income> GetIncome(ObjectId id)
         {
-            _context.Income.Remove(income);
-            _context.SaveChanges();
-            return true;
-        }
-
-        public Task<Income> GetIncome(int id)
-        {
-            throw new NotImplementedException();
+            return await _incomeCollection.Find(e => e.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<List<Income>> GetIncomeByMonth(int month)
         {
             var startDate = new DateTime(DateTime.Today.Year, month, 1);
             var endDate = startDate.AddMonths(1).AddDays(-1);
-
-            return _context.Income.Where(i => i.Date >= startDate && i.Date <= endDate).ToList();
+            var filter = Builders<Income>.Filter.And(
+                Builders<Income>.Filter.Gte(e => e.Date, startDate),
+                Builders<Income>.Filter.Lte(e => e.Date, endDate)
+            );
+            return await _incomeCollection.Find(filter).ToListAsync();
         }
 
         public async Task<List<Income>> GetIncomeByWeek(DateTime startDate)
         {
             var endDate = startDate.AddDays(6);
-            return _context.Income.Where(i => i.Date >= startDate && i.Date <= endDate).ToList();
+            var filter = Builders<Income>.Filter.And(
+                Builders<Income>.Filter.Gte(e => e.Date, startDate),
+                Builders<Income>.Filter.Lte(e => e.Date, endDate)
+            );
+            return await _incomeCollection.Find(filter).ToListAsync();
         }
 
-        public async Task<bool> UpdateIncome(Income income)
+        public async Task UpdateIncome(Income income)
         {
-            _context.Income.Update(income);
-            _context.SaveChanges();
-            return true;
+            await _incomeCollection.ReplaceOneAsync(e => e.Id == income.Id, income);
         }
     }
 }

@@ -1,74 +1,62 @@
-﻿using CsvHelper;
+﻿using System.Globalization;
+using CsvHelper;
 using CsvHelper.Configuration;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
 using IBudget.Core.Utils;
-using Microsoft.Extensions.Configuration;
-using System.Globalization;
 
 namespace IBudget.Core.Services
 {
-    public class CSVParserService : ICSVParserService
+    public class CSVParserService(IExpenseTagService expenseTagService, IExpenseRuleTagService expenseRuleTagService) : ICSVParserService
     {
-        private readonly IUserDictionaryService? _userDictionaryService;
-        private readonly int? _userId;
-        public CSVParserService(IUserDictionaryService userDictionaryService)
-        {
-            _userDictionaryService = userDictionaryService;
-        }
-        public CSVParserService(IUserDictionaryService userDictionaryService, IConfiguration config)
-        {
-            _userDictionaryService = userDictionaryService;
-            _userId = int.Parse(config["MongoDbUserId"]!);
-        }
-        public async Task<List<FormattedFinancialCSV>> ParseCSV(string csvFilePath)
+        private readonly IExpenseTagService _expenseTagService = expenseTagService;
+        private readonly IExpenseRuleTagService _expenseRuleTagService = expenseRuleTagService;
+        public List<FormattedFinancialCSV> ParseCSV(string csvFilePath)
         {
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = true
             };
 
-            using (var reader = new StreamReader(csvFilePath))
-            using (var csv = new CsvReader(reader, config))
+            using var reader = new StreamReader(csvFilePath);
+            using var csv = new CsvReader(reader, config);
+            var records = csv.GetRecords<FinancialCSV>();
+            var formattedRecords = new List<FormattedFinancialCSV>();
+            foreach (var record in records)
             {
-                var records = csv.GetRecords<FinancialCSV>();
-                var formattedRecords = new List<FormattedFinancialCSV>();
-                foreach (var record in records)
+                formattedRecords.Add(new FormattedFinancialCSV()
                 {
-                    formattedRecords.Add(new FormattedFinancialCSV()
-                    {
-                        Date = CsvFormatter.FormatDate(record.Date),
-                        Description = CsvFormatter.FormatDescription(record.Description),
-                        Amount = record.Amount
-                    });
-                }
-                return formattedRecords;
+                    Date = CsvFormatter.FormatDate(record.Date),
+                    Description = CsvFormatter.FormatDescription(record.Description),
+                    Amount = record.Amount
+                });
             }
+            return formattedRecords;
         }
         public async Task<List<FormattedFinancialCSV>> FindUntagged(List<FormattedFinancialCSV> records)
         {
             records = records.Distinct().ToList();
-            List<ExpenseDictionary>? expenseDictionaries = await _userDictionaryService!.GetExpenseDictionaries(_userId ?? -1) ?? new List<ExpenseDictionary>();
-            List<RuleDictionary>? ruleDictionaries = await _userDictionaryService.GetRuleDictionaries(_userId ?? -1) ?? new List<RuleDictionary>();
+            List<ExpenseTag> expenseTags = await _expenseTagService.GetAllExpenseTags();
+            List<ExpenseRuleTag> expenseRuleTags = await _expenseRuleTagService.GetAllExpenseRuleTags();
 
             var untaggedRecords = new List<FormattedFinancialCSV>();
             foreach (var record in records)
             {
-                var expenseDictionaryMatch = expenseDictionaries
-                    .Where(expenseDictionary => expenseDictionary.title.Equals(record.Description, StringComparison.InvariantCultureIgnoreCase))
+                var expenseTagsMatch = expenseTags
+                    .Where(expenseDictionary => expenseDictionary.Title.Equals(record.Description, StringComparison.InvariantCultureIgnoreCase))
                     .FirstOrDefault();
 
-                var ruleDictionaryMatch = ruleDictionaries
+                var expenseRuleTagsMatch = expenseRuleTags
                     .Where(ruleDictionary =>
-                        record.Description.Contains(ruleDictionary.rule, StringComparison.InvariantCultureIgnoreCase)
+                        record.Description.Contains(ruleDictionary.Rule, StringComparison.InvariantCultureIgnoreCase)
                         )
                     .FirstOrDefault();
 
-                if (expenseDictionaryMatch is null && ruleDictionaryMatch is null)
+                if (expenseRuleTagsMatch is null && expenseRuleTagsMatch is null)
                     untaggedRecords.Add(record);
             }
 
-            return untaggedRecords.Distinct().ToList();
+            return [.. untaggedRecords.Distinct()];
         }
     }
 }

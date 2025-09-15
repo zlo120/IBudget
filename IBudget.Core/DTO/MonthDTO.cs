@@ -1,9 +1,10 @@
 ﻿using IBudget.Core.Interfaces;
+using IBudget.Core.Model;
 using System.Globalization;
 
-namespace IBudget.Core.Model
+namespace IBudget.Core.DTO
 {
-    public class Month
+    public class MonthDTO
     {
         private readonly int? _year;
 
@@ -12,15 +13,15 @@ namespace IBudget.Core.Model
         public List<Income> AllIncome { get; set; } = new List<Income>();   
         public List<Expense> AllExpenses { get; set; } = new List<Expense>();   
         public List<DateTime[]> WeekRanges { get; private set; } = new List<DateTime[]>();
-        public List<Week> Weeks { get; set; } = new List<Week>();
-        public Month(int month)
+        public List<WeekDTO> Weeks { get; set; } = new List<WeekDTO>();
+        public MonthDTO(int month)
         {
             MonthName = DateTimeFormatInfo.CurrentInfo.GetMonthName(month);
             MonthNum = month;
             GenerateAllWeeks();
         }
 
-        public Month(int month, int year)
+        public MonthDTO(int month, int year)
         {
             MonthName = DateTimeFormatInfo.CurrentInfo.GetMonthName(month);
             MonthNum = month;
@@ -71,7 +72,7 @@ namespace IBudget.Core.Model
 
             foreach (var range in WeekRanges)
             {
-                var week = new Week(range[0], range[1], Utils.Calendar.GetWeekLabel(range[0]));
+                var week = new WeekDTO(range[0], range[1], Utils.Calendar.GetWeekLabel(range[0]));
                 Weeks.Add(week);
             }
         }

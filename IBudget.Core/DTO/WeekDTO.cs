@@ -1,8 +1,9 @@
 ﻿using IBudget.Core.Interfaces;
+using IBudget.Core.Model;
 
-namespace IBudget.Core.Model
+namespace IBudget.Core.DTO
 {
-    public class Week
+    public class WeekDTO
     {
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
@@ -10,7 +11,7 @@ namespace IBudget.Core.Model
         public List<Expense> Expenses { get; set; } = new List<Expense>();
         public List<Income> Income { get; set; } = new List<Income>();
         private readonly ICalendarService _calendarService;
-        public Week(DateTime start, DateTime end, string label)
+        public WeekDTO(DateTime start, DateTime end, string label)
         {
             Label = label;
             Start = start;

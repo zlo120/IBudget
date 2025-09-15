@@ -1,25 +1,21 @@
-﻿using IBudget.Core.Interfaces;
-using IBudget.Core.RepositoryInterfaces;
+﻿using System.Security.Cryptography;
+using System.Text;
+using IBudget.Core.Interfaces;
 
 namespace IBudget.Core.Services
 {
     public class BatchHashService : IBatchHashService
     {
-        private readonly IBatchHashRepository _batchHashRepository;
-
-        public BatchHashService(IBatchHashRepository batchHashRepository)
+        public string ComputeBatchHash(string input)
         {
-            _batchHashRepository = batchHashRepository;
-        }
-
-        public async Task<bool> HashExists(string hash)
-        {
-            return await _batchHashRepository.HashExists(hash);
-        }
-
-        public async Task InsertBatchHash(string hash)
-        {
-            await _batchHashRepository.InsertBatchHash(hash);
+            var bytes = Encoding.UTF8.GetBytes(input);
+            var hashBytes = SHA256.HashData(bytes);
+            StringBuilder hashStringBuilder = new StringBuilder();
+            foreach (var b in hashBytes)
+            {
+                hashStringBuilder.Append(b.ToString("x2"));
+            }
+            return hashStringBuilder.ToString();
         }
     }
 }

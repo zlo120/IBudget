@@ -39,7 +39,6 @@
   <ItemGroup>
     <ProjectReference Include="..\IBudget.Core\IBudget.Core.csproj" />
     <ProjectReference Include="..\IBudget.Infrastructure\IBudget.Infrastructure.csproj" />
-    <ProjectReference Include="..\IBudget.Spreadsheet\IBudget.Spreadsheet.csproj" />
   </ItemGroup>
 
   <ItemGroup>

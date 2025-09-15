@@ -168,7 +168,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             if (SelectedUntaggedItemName == "Unselected") return;
             var entryFromCollection = UntaggedItems.Where(item => item.Label == entryName).First();
             UntaggedItems.Remove(entryFromCollection);
-            var entry = new ExpenseDictionary()
+            var entry = new ExpenseTag()
             {
                 title = entryName,
                 tags = [tag]
