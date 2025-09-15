@@ -3,6 +3,7 @@ using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
 using IBudget.ConsoleUI.Utils;
 using System.Globalization;
+using IBudget.Core.DTO;
 
 namespace IBudget.ConsoleUI.Utils
 {
@@ -15,7 +16,7 @@ namespace IBudget.ConsoleUI.Utils
             _calendarService = calendarService;
         }
 
-        public async Task<DataEntry> FindRecord()
+        public async Task<FinancialRecord> FindRecord()
         {
             string[] options = { "Income", "Expense" };
             var searchForIncome = true && UserInput.MultipleChoicePrompt(options) == 1;
@@ -27,7 +28,7 @@ namespace IBudget.ConsoleUI.Utils
             var monthDecision = UserInput.MultipleChoicePrompt(months);
 
             Console.Clear();
-            Month result = new Month(monthDecision);
+            MonthDTO result = new MonthDTO(monthDecision);
             result = await _calendarService.RetrieveMonthData(result);
             result.PopulateAllWeeks(_calendarService);
             ConsoleStyler.PrintTitle(result.MonthName);

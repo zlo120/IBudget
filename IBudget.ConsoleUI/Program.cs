@@ -12,7 +12,6 @@ internal class Program
         hostBuilder.ConfigureServices(conf =>
         {
             ServiceHandler.RegisterServices(ref conf);
-            conf.AddDbContext<Context>();
         });
         hostBuilder.UseConsoleLifetime();
 

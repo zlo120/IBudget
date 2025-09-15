@@ -4,6 +4,6 @@ namespace IBudget.ConsoleUI.Utils
 {
     public interface IRecordUtility
     {
-        Task<DataEntry> FindRecord();
+        Task<FinancialRecord> FindRecord();
     }
 }
