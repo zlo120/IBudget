@@ -161,7 +161,7 @@ def setup_sqlite() -> None:
 
 # MONGODB SECTION
 
-def create_backup(collection: Collection) -> None:   
+def create_backup(collection: Collection) -> None:
     timestamp = datetime.now().strftime("%d_%m_%Y__%H_%M_%S") 
     filename = f"mongo_backup_{timestamp}.json"
     dir = f"{BACKUP_DIR}\\{filename}"
