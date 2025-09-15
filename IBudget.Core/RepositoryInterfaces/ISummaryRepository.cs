@@ -1,6 +1,6 @@
 ﻿using IBudget.Core.Model;
 
-namespace IBudget.Core.Interfaces
+namespace IBudget.Core.RepositoryInterfaces
 {
     public interface ISummaryRepository
     {

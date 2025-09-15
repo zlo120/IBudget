@@ -5,15 +5,15 @@ using IBudget.Core.Model;
 using IBudget.Core.Utils;
 using IBudget.Spreadsheet.Interfaces;
 
-namespace IBudget.Spreadsheet
+namespace IBudget.Core.Services
 {
-    public class Generator : IGenerator
+    public class SpreadSheetGeneratorService : ISpreadSheetGeneratorService
     {
         private readonly IPopulator _populator;
         private readonly ITagService _tagService;
         private readonly List<string> _trackedTags;
 
-        public Generator(IPopulator populator, ITagService tagService)
+        public SpreadSheetGeneratorService(IPopulator populator, ITagService tagService)
         {
             _populator = populator;
             _tagService = tagService;

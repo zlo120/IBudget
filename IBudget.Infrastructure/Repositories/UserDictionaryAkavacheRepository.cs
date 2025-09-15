@@ -1,6 +1,7 @@
 ﻿using Akavache;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
+using IBudget.Core.RepositoryInterfaces;
 using System.Reactive.Linq;
 using System.Security.Policy;
 

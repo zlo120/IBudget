@@ -1,4 +1,5 @@
 ﻿using IBudget.Core.Interfaces;
+using IBudget.Core.RepositoryInterfaces;
 using IBudget.Core.Services;
 using IBudget.GUI.Services.Impl;
 using IBudget.GUI.ViewModels;
@@ -6,7 +7,6 @@ using IBudget.GUI.ViewModels.DataView;
 using IBudget.GUI.ViewModels.UploadCsv;
 using IBudget.Infrastructure;
 using IBudget.Infrastructure.Repositories;
-using IBudget.Spreadsheet;
 using IBudget.Spreadsheet.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -49,8 +49,8 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddScoped<IBatchHashService, BatchHashService>();
             collection.AddScoped<IBatchHashRepository, BatchHashRepository>();
             collection.AddScoped<ICalendarService, CalendarService>();
-            collection.AddScoped<IGenerator, Generator>();
-            collection.AddScoped<IPopulator, Populator>();
+            collection.AddScoped<ISpreadSheetGeneratorService, SpreadSheetGeneratorService>();
+            collection.AddScoped<IPopulator, SpreadSheetPopulatorService>();
             collection.AddScoped<ICSVParserService, CSVParserService>();
         }
     }

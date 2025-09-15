@@ -1,6 +1,6 @@
 ﻿namespace IBudget.Spreadsheet.Interfaces
 {
-    public interface IGenerator
+    public interface ISpreadSheetGeneratorService
     {
         void GenerateSpreadsheet();
     }

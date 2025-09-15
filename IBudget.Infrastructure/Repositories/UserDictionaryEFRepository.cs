@@ -1,6 +1,6 @@
 ﻿using IBudget.Core.Exceptions;
-using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
+using IBudget.Core.RepositoryInterfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;

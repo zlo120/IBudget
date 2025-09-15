@@ -4,6 +4,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using IBudget.Core.Interfaces;
+using IBudget.Core.RepositoryInterfaces;
 using IBudget.GUI.ExtensionMethods;
 using IBudget.GUI.ViewModels;
 using IBudget.GUI.Views;

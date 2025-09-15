@@ -2,9 +2,9 @@
 using IBudget.ConsoleUI.UserInterface.MenuOptions;
 using IBudget.ConsoleUI.Utils;
 using IBudget.Core.Interfaces;
+using IBudget.Core.RepositoryInterfaces;
 using IBudget.Core.Services;
 using IBudget.Infrastructure.Repositories;
-using IBudget.Spreadsheet;
 using IBudget.Spreadsheet.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,8 +24,8 @@ namespace IBudget.ConsoleUI.Services
             services.AddScoped<ITagRepository, TagRepository>();
             services.AddScoped<ICalendarService, CalendarService>();
             services.AddScoped<IRecordUtility, RecordUtility>();
-            services.AddScoped<IGenerator, Generator>();
-            services.AddScoped<IPopulator, Populator>();
+            services.AddScoped<ISpreadSheetGeneratorService, SpreadSheetGeneratorService>();
+            services.AddScoped<IPopulator, SpreadSheetPopulatorService>();
             services.AddScoped<ICSVParserService, CSVParserService>();
 
             services.AddTransient<IUserDictionaryService, UserDictionaryService>();

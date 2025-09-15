@@ -1,5 +1,5 @@
-﻿using IBudget.Core.Interfaces;
-using IBudget.Core.Model;
+﻿using IBudget.Core.Model;
+using IBudget.Core.RepositoryInterfaces;
 using IBudget.Core.Utils;
 using Microsoft.EntityFrameworkCore;
 

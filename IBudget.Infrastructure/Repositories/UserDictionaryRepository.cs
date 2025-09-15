@@ -1,6 +1,6 @@
 ﻿using IBudget.Core.Exceptions;
-using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
+using IBudget.Core.RepositoryInterfaces;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 
@@ -108,7 +108,7 @@ namespace IBudget.Infrastructure.Repositories
                 var user = await GetUser(userId);
                 return user.ExpenseDictionaries;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new MongoCRUDException(ex.Message);
             }

@@ -1,5 +1,5 @@
-﻿using IBudget.Core.Interfaces;
-using IBudget.Core.Model;
+﻿using IBudget.Core.Model;
+using IBudget.Core.RepositoryInterfaces;
 
 namespace IBudget.Infrastructure.Repositories
 {
@@ -9,7 +9,7 @@ namespace IBudget.Infrastructure.Repositories
 
         public BatchHashRepository(Context context)
         {
-            _context = context;   
+            _context = context;
         }
         public async Task<bool> HashExists(string hash)
         {

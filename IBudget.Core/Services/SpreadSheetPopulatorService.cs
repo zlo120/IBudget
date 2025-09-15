@@ -4,9 +4,9 @@ using IBudget.Core.Model;
 using IBudget.Core.Utils;
 using IBudget.Spreadsheet.Interfaces;
 
-namespace IBudget.Spreadsheet
+namespace IBudget.Core.Services
 {
-    public class Populator : IPopulator
+    public class SpreadSheetPopulatorService : IPopulator
     {
         private readonly ISummaryService _summaryService;
         private readonly ITagService _tagService;
@@ -14,7 +14,7 @@ namespace IBudget.Spreadsheet
         private readonly int _incomeColumn;
         private readonly string[] _trackedTags;
 
-        public Populator(ISummaryService summaryService, ITagService tagService)
+        public SpreadSheetPopulatorService(ISummaryService summaryService, ITagService tagService)
         {
             _summaryService = summaryService;
             _tagService = tagService;
@@ -37,7 +37,7 @@ namespace IBudget.Spreadsheet
 
                 // Ignore month sheets
                 string lowerCaseName = worksheet.Name.ToLower();
-                if ( lowerCaseName == "january" || lowerCaseName == "february" || lowerCaseName == "march" ||
+                if (lowerCaseName == "january" || lowerCaseName == "february" || lowerCaseName == "march" ||
                      lowerCaseName == "april" || lowerCaseName == "may" || lowerCaseName == "june" ||
                      lowerCaseName == "july" || lowerCaseName == "august" || lowerCaseName == "september" ||
                      lowerCaseName == "october" || lowerCaseName == "november" || lowerCaseName == "december"

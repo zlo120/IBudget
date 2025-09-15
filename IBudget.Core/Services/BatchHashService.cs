@@ -1,4 +1,5 @@
 ﻿using IBudget.Core.Interfaces;
+using IBudget.Core.RepositoryInterfaces;
 
 namespace IBudget.Core.Services
 {

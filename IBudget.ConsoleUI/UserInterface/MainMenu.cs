@@ -5,13 +5,12 @@ using IBudget.Core.Interfaces;
 using IBudget.Spreadsheet.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System.Globalization;
 
 namespace IBudget.ConsoleUI.UserInterface
 {
     public class MainMenu : IMainMenu
     {
-        private readonly IGenerator _spreadsheetGenerator;
+        private readonly ISpreadSheetGeneratorService _spreadsheetGenerator;
         private readonly IConfiguration _config;
         private readonly IUserDictionaryService _userDictionaryService;
         private readonly AddExpenseOption _addExpenseOption;
@@ -23,7 +22,7 @@ namespace IBudget.ConsoleUI.UserInterface
         private readonly ParseCSVOption _parseCSVOption;
         private readonly AddRuleDictionaryOption _addExpenseDictionaryOption;
         private readonly List<string> MENU_LABELS = ["Add income", "Add expense", "Read week", "Read month", "Update record", "Delete record", "Generate spreadsheet", "Parse CSV", "Add Dictionary Rule"];
-        public MainMenu(IEnumerable<IMenuOption> menuOptions, IGenerator spreadsheetGenerator, IConfiguration config, IUserDictionaryService userExpenseDictionaryService)
+        public MainMenu(IEnumerable<IMenuOption> menuOptions, ISpreadSheetGeneratorService spreadsheetGenerator, IConfiguration config, IUserDictionaryService userExpenseDictionaryService)
         {
             _spreadsheetGenerator = spreadsheetGenerator;
             _config = config;
@@ -228,7 +227,7 @@ namespace IBudget.ConsoleUI.UserInterface
                 if (await _userDictionaryService.GetUser(userId) is null)
                     await _userDictionaryService.AddUser(userId);
             }
-            catch(Exception ex) { }
+            catch (Exception ex) { }
         }
         public async Task Execute()
         {

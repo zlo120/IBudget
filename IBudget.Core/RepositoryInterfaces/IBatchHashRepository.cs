@@ -1,4 +1,4 @@
-﻿namespace IBudget.Core.Interfaces
+﻿namespace IBudget.Core.RepositoryInterfaces
 {
     public interface IBatchHashRepository
     {
