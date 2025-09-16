@@ -30,13 +30,15 @@ namespace IBudget.GUI.ViewModels
             _dataPageViewModel = dataPageViewModel;
             _dictionariesPageViewModel = dictionariesPageViewModel;
             _tagsPageViewModel = tagsPageViewModel;
+
+            CurrentPage = _homePageViewModel;
         }
 
         [ObservableProperty]
         private bool _isPaneOpen = true;
 
         [ObservableProperty]
-        private ViewModelBase _currentPage = new HomePageViewModel();
+        private ViewModelBase _currentPage = null;
 
         [ObservableProperty]
         private ListItemTemplate? _selectedListItem;

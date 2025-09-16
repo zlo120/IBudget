@@ -3,6 +3,16 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="IBudget.GUI.Views.HomePageView">
-  Home page
+             x:Class="IBudget.GUI.Views.HomePageView"
+			 xmlns:vm="using:IBudget.GUI.ViewModels"
+			 x:DataType="vm:HomePageViewModel"
+			 x:CompileBindings="True">
+
+    <Grid>
+        <Button Content="Generate Excel"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Command="{Binding GenerateExcelCommand}" />
+    </Grid>
+
 </UserControl>
