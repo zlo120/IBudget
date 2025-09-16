@@ -15,7 +15,7 @@ namespace IBudget.Core.RepositoryInterfaces
         /// </summary>
         /// <param name="description"></param>
         /// <returns>Returns a List of tags from the expense name/rule match.</returns>
-        Task<List<string>> FindTagsByDescription(string description);
+        Task<List<Tag>> FindTagsByDescription(string description);
         Task UpdateTag(Tag tag);
     }
 }

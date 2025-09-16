@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using IBudget.Core.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace IBudget.GUI.ViewModels
         {
             if (TagName == string.Empty) return;
             var tagName = TagName.ToLower();
-            var tag = new Core.Model.Tag() { Name = tagName, IsTracked = IsTracked };
+            var tag = new Core.Model.Tag() { Name = tagName, IsTracked = IsTracked, CreatedAt = DateTime.Now };
             var tagTemplate = new AllTagsListItemTemplate(tag.Name, tag.IsTracked, _tagService);
             if (Tags.Contains(tagTemplate))
             {
@@ -85,7 +86,7 @@ namespace IBudget.GUI.ViewModels
                 IsTracked = false;
                 return;
             }
-            var updatedTag = await _tagService.GetTag(TagName);
+            var updatedTag = await _tagService.GetTagByName(TagName);
             updatedTag.IsTracked = IsTracked;
             await _tagService.UpdateTag(updatedTag);
 

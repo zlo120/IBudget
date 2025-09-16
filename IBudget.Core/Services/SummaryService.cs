@@ -6,7 +6,6 @@ namespace IBudget.Core.Services
 {
     public class SummaryService : ISummaryService
     {
-
         public Task<MonthDTO> ReadMonth(int month)
         {
             throw new NotImplementedException();

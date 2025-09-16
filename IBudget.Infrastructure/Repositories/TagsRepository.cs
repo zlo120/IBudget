@@ -28,14 +28,30 @@ namespace IBudget.Infrastructure.Repositories
             await _tagsCollection.DeleteOneAsync(e => e.Name == name);
         }
 
-        public async Task<List<string>> FindTagsByDescription(string description)
+        public async Task<List<Tag>> FindTagsByDescription(string description)
         {
-            var tags = (await _expenseRuleTagsRepository.GetExpenseRuleTagByRule(description)).Tags;
-            if (tags.Count > 0) return tags;
-            var allExpenseTags = await _expenseTagsRepository.GetAllExpenseTags();
-            return [.. allExpenseTags.Where(e => e.Title.Contains(description, StringComparison.InvariantCultureIgnoreCase))
+            var tags = new List<Tag>();
+            var tagNames = (await _expenseRuleTagsRepository.GetExpenseRuleTagByRule(description)).Tags;
+            if (tagNames.Count > 0)
+            {
+                foreach (var tagName in tagNames)
+                {
+                    var tag = await GetTagByName(tagName);
+                    if (tag != null) tags.Add(tag);
+                }
+                return tags;
+            }
+            
+            tagNames = [.. (await _expenseTagsRepository.GetAllExpenseTags()).Where(e => e.Title.Contains(description, StringComparison.InvariantCultureIgnoreCase))
                 .SelectMany(e => e.Tags)
                 .Distinct()];
+            if (tagNames.Count == 0) return [];
+            foreach(var tagName in tagNames)
+            {
+                var tag = await GetTagByName(tagName);
+                if (tag != null) tags.Add(tag);
+            }   
+            return tags;
         }
 
         public async Task<List<Tag>> GetAll()

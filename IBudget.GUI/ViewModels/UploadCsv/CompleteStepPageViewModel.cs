@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using IBudget.Core.DTO;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
 using IBudget.Core.Utils;
@@ -95,45 +96,16 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             IsLoading = true;
             if (_csvService.FileUri is null) return;
             var csvFile = _csvService.FileUri!.LocalPath.Replace("%20", " ");
-            var formattedFinancialDataList = await _csvParserService.ParseCSV(csvFile);
+            var formattedFinancialDataList = _csvParserService.ParseCSV(csvFile);
 
-            // verify hash doesn't exist yet
-            var batchHash = string.Empty;
-
-            using (var reader = new StreamReader(csvFile))
-            {
-                var content = reader.ReadToEnd();
-                using (var sha256 = SHA256.Create())
-                {
-                    var bytes = Encoding.UTF8.GetBytes(content);
-                    var hashBytes = sha256.ComputeHash(bytes);
-                    StringBuilder hashStringBuilder = new StringBuilder();
-                    foreach (var b in hashBytes)
-                    {
-                        hashStringBuilder.Append(b.ToString("x2"));
-                    }
-                    batchHash = hashStringBuilder.ToString();
-                }
-            }
-            if (batchHash == string.Empty) throw new Exception("Creation of batch hash was not successful");
-            if (await _batchHashService.HashExists(batchHash))
-            {
-                BatchHashAlreadyExists = true;
-                IsLoading = false;
-                return;
-            }
-
-            await _batchHashService.InsertBatchHash(batchHash);
+            var batchHash = _batchHashService.ComputeBatchHash(File.ReadAllText(csvFile));
 
             // receive all the data without tags,
             // then tag all the data
             foreach (var formattedFinancialCSV in formattedFinancialDataList)
             {
                 if (formattedFinancialCSV.Description is null) continue;
-                var tags = await _tagService.FindTagByDescription(formattedFinancialCSV.Description!);
-                var formattedTags = new List<Tag>();
-                foreach (var tag in tags)
-                    formattedTags.Add(new Tag { Name = tag });
+                var tags = await _tagService.FindTagsByDescription(formattedFinancialCSV.Description!);
                 var formattedDescription = CsvFormatter.FormatDescription(formattedFinancialCSV.Description!);
                 if (formattedFinancialCSV.Amount > 0)
                 {
@@ -142,7 +114,9 @@ namespace IBudget.GUI.ViewModels.UploadCsv
                         Amount = formattedFinancialCSV.Amount,
                         Source = formattedDescription,
                         Date = formattedFinancialCSV.Date.ToDateTime(new TimeOnly(0, 0)),
-                        Tags = formattedTags
+                        Tags = tags,
+                        BatchHash = batchHash,
+                        CreatedAt = DateTime.UtcNow
                     };
                     await _incomeService.AddIncome(income);
                 }
@@ -153,7 +127,9 @@ namespace IBudget.GUI.ViewModels.UploadCsv
                         Amount = formattedFinancialCSV.Amount,
                         Notes = formattedDescription,
                         Date = formattedFinancialCSV.Date.ToDateTime(new TimeOnly(0, 0)),
-                        Tags = formattedTags
+                        Tags = tags,
+                        BatchHash = batchHash,
+                        CreatedAt = DateTime.UtcNow
                     };
                     await _expenseService.AddExpense(expense);
                 }

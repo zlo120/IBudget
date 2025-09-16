@@ -31,7 +31,7 @@
                               VerticalAlignment="Stretch"
                               Margin="0,0,0,20">
 					<DataGrid Margin="20 40 20 0"
-                              ItemsSource="{Binding ExpenseDictionariesInfo}"
+                              ItemsSource="{Binding ExpenseTagsInfo}"
                               GridLinesVisibility="All"
                               BorderThickness="1"
                               BorderBrush="Gray"
@@ -70,7 +70,7 @@
                               VerticalAlignment="Stretch"
                               Margin="0,0,0,20">
 					<DataGrid Margin="20 40 20 0"
-                              ItemsSource="{Binding RuleDictionariesInfo}"
+                              ItemsSource="{Binding ExpenseRuleTagsInfo}"
                               GridLinesVisibility="All"
                               BorderThickness="1"
                               BorderBrush="Gray"

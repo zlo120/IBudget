@@ -15,10 +15,11 @@ namespace IBudget.GUI.ViewModels.UploadCsv
     {
         private readonly CsvService _csvService;
         private readonly ICSVParserService _csvParserService;
-        private readonly IUserDictionaryService _userDictionaryService;
         private readonly StepViewModel _stepViewModel;
         private readonly CompleteStepPageViewModel _completeStepPageViewModel;
         private readonly ITagService _tagsService;
+        private readonly IExpenseTagService _expenseTagService;
+        private readonly IExpenseRuleTagService _expenseRuleTagService;
         private static int USER_ID = -1;
         public Uri FileUriFromService
         {
@@ -29,17 +30,19 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             StepViewModel stepViewModel,
             CsvService csvService,
             ICSVParserService csvParserService,
-            IUserDictionaryService userDictionaryService,
             CompleteStepPageViewModel completeStepPageViewModel,
-            ITagService tagsService
+            ITagService tagsService,
+            IExpenseRuleTagService expenseRuleTagService,
+            IExpenseTagService expenseTagService
         )
         {
             _csvService = csvService;
             _csvParserService = csvParserService;
-            _userDictionaryService = userDictionaryService;
             _stepViewModel = stepViewModel;
             _completeStepPageViewModel = completeStepPageViewModel;
             _tagsService = tagsService;
+            _expenseRuleTagService = expenseRuleTagService;
+            _expenseTagService = expenseTagService;
 
             GetAllTags();
         }
@@ -95,7 +98,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             if (Tag == string.Empty) return;
             if (IsCreatingRule) HandleCreateRule(Rule, Tag.ToLower());
             else HandleCreateEntry(SelectedUntaggedItemName, Tag.ToLower());
-            _tagsService.CreateTag(new Tag() { Name = Tag.ToLower() });
+            _tagsService.CreateTag(new Tag() { Name = Tag.ToLower(), IsTracked = false, CreatedAt = DateTime.Now });
             if (UntaggedItems.Count == 0)
             {
                 ClearAllProperties();
@@ -155,12 +158,13 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             {
                 UntaggedItems.Remove(removeItem);
             }
-            var ruleDictionary = new RuleDictionary()
+            var expenseRuleTags = new ExpenseRuleTag()
             {
-                rule = rule,
-                tags = [tag]
+                Rule = rule,
+                Tags = [tag],
+                CreatedAt = DateTime.Now
             };
-            _userDictionaryService.AddRuleDictionary(USER_ID, ruleDictionary);
+            _expenseRuleTagService.CreateExpenseRuleTag(expenseRuleTags);
             Rule = string.Empty;
         }
         private void HandleCreateEntry(string entryName, string tag)
@@ -168,12 +172,13 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             if (SelectedUntaggedItemName == "Unselected") return;
             var entryFromCollection = UntaggedItems.Where(item => item.Label == entryName).First();
             UntaggedItems.Remove(entryFromCollection);
-            var entry = new ExpenseTag()
+            var expenseTag = new ExpenseTag()
             {
-                title = entryName,
-                tags = [tag]
+                Title = entryName,
+                Tags = [tag],
+                CreatedAt = DateTime.Now
             };
-            _userDictionaryService.AddExpenseDictionary(USER_ID, entry);
+            _expenseTagService.CreateExpenseTag(expenseTag);
         }
         private void ClearAllProperties()
         {

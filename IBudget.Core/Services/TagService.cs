@@ -28,7 +28,7 @@ namespace IBudget.Core.Services
             await _tagRepository.DeleteTagById(id);
         }
 
-        public async Task<List<string>> FindTagsByDescription(string description)
+        public async Task<List<Tag>> FindTagsByDescription(string description)
         {
             return await _tagRepository.FindTagsByDescription(description);
         }

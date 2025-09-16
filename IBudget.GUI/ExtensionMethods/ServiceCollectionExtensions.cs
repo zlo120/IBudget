@@ -33,25 +33,23 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddTransient<MonthlyViewModel>();
             collection.AddTransient<WeeklyViewModel>();
 
-            collection.AddTransient<Context>();
-
-            collection.AddTransient<IUserDictionaryService, UserDictionaryService>();
-            collection.AddTransient<IUserDictionaryRepository, UserDictionaryAkavacheRepository>();
             collection.AddTransient<ICSVParserService, CSVParserService>();
             collection.AddScoped<IIncomeService, IncomeService>();
             collection.AddScoped<IIncomeRepository, IncomeRepository>();
             collection.AddScoped<IExpenseService, ExpenseService>();
             collection.AddScoped<IExpenseRepository, ExpensesRepository>();
             collection.AddScoped<ISummaryService, SummaryService>();
-            collection.AddScoped<ISummaryRepository, SummaryRepository>();
             collection.AddScoped<ITagService, TagService>();
             collection.AddScoped<ITagsRepository, TagsRepository>();
             collection.AddScoped<IBatchHashService, BatchHashService>();
-            collection.AddScoped<IBatchHashRepository, BatchHashRepository>();
             collection.AddScoped<ICalendarService, CalendarService>();
             collection.AddScoped<ISpreadSheetGeneratorService, SpreadSheetGeneratorService>();
             collection.AddScoped<IPopulator, SpreadSheetPopulatorService>();
             collection.AddScoped<ICSVParserService, CSVParserService>();
+            collection.AddScoped<IExpenseTagService, ExpenseTagService>();
+            collection.AddScoped<IExpenseTagsRepository, ExpenseTagsRepository>();
+            collection.AddScoped<IExpenseRuleTagService, ExpenseRuleTagService>();
+            collection.AddScoped<IExpenseRuleTagsRepository, ExpenseRuleTagsRepository>();
         }
     }
 }

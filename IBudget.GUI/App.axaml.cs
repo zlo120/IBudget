@@ -37,15 +37,7 @@ namespace IBudget.GUI
             //collection.AddDbContext<Context>();
             collection.AddEntityFrameworkDesignTimeServices();
             var services = collection.BuildServiceProvider();
-            using (var context = services.GetService<Context>())
-            {
-                string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                string stacksPath = Path.Combine(appDataPath, "Stacks");
-                if (!File.Exists(stacksPath + "\\Stacks.db"))
-                    context!.Database.Migrate();
-            }
-            var akavacheRepository = services.GetService<IUserDictionaryRepository>();
-            akavacheRepository!.InitialiseDB();
+
             var mainViewModel = services.GetRequiredService<MainWindowViewModel>();
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

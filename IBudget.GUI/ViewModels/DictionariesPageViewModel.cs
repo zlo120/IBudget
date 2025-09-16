@@ -1,34 +1,34 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using IBudget.Core.Interfaces;
-using IBudget.Core.Model;
-using IBudget.Core.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using IBudget.Core.Interfaces;
+using IBudget.Core.Model;
 
 namespace IBudget.GUI.ViewModels
 {
     public partial class DictionariesPageViewModel : ViewModelBase
     {
-        public ObservableCollection<InfoContainer> ExpenseDictionariesInfo { get; } = new();
-        public ObservableCollection<InfoContainer> RuleDictionariesInfo { get; } = new();
+        public ObservableCollection<InfoContainer> ExpenseTagsInfo { get; } = new();
+        public ObservableCollection<InfoContainer> ExpenseRuleTagsInfo { get; } = new();
 
-        public List<ExpenseTag> ExpenseDictionaries { get; set; }
-        public List<RuleDictionary> RuleDictionaries { get; set; }
+        public List<ExpenseTag> ExpenseTags { get; set; }
+        public List<ExpenseRuleTag> ExpenseRuleTags { get; set; }
 
         [ObservableProperty]
         private bool _isLoadingED = true;
 
         [ObservableProperty]
         private bool _isLoadingRD = true;
+        private readonly IExpenseTagService _expenseTagService;
+        private readonly IExpenseRuleTagService _expenseRuleTagService;
 
-        private readonly IUserDictionaryService _userDictionaryService;
-
-        public DictionariesPageViewModel(IUserDictionaryService userDictionaryService)
+        public DictionariesPageViewModel(IExpenseTagService expenseTagService, IExpenseRuleTagService expenseRuleTagService)
         {
-            _userDictionaryService = userDictionaryService;
+            _expenseTagService = expenseTagService;
+            _expenseRuleTagService = expenseRuleTagService;
             InitaliseDbSearch();
         }
 
@@ -39,17 +39,17 @@ namespace IBudget.GUI.ViewModels
 
         private async void InitaliseDbSearch()
         {
-            ExpenseDictionariesInfo.Clear();
-            RuleDictionariesInfo.Clear();
+            ExpenseTagsInfo.Clear();
+            ExpenseRuleTagsInfo.Clear();
             try
             {
-                var expenseDictionariesTask = GetExpenseDictionariesAsync();
-                var ruleDictionariesTask = GetRuleDictionariesAsync();
+                var expenseTagsTask = GetExpenseTagsAsync();
+                var expenseRuleTagsTask = GetExpenseRuleTagsAsync();
 
-                await Task.WhenAll(expenseDictionariesTask, ruleDictionariesTask);
+                await Task.WhenAll(expenseTagsTask, expenseRuleTagsTask);
 
-                ExpenseDictionaries = await expenseDictionariesTask;
-                RuleDictionaries = await ruleDictionariesTask;
+                ExpenseTags = await expenseTagsTask;
+                ExpenseRuleTags = await expenseRuleTagsTask;
 
                 FinishEdDbSearch();
                 IsLoadingED = false;
@@ -64,39 +64,39 @@ namespace IBudget.GUI.ViewModels
             // Dummy data
             //for (int i = 0; i < 30; i++)
             //{
-            //    ExpenseDictionariesInfo.Add(new InfoContainer() { Key = $"Sample_Expense_{i + 1}", Value = $"Sample_Value_{i + 1}" });
-            //    RuleDictionariesInfo.Add(new InfoContainer() { Key = $"Sample_Rule_{i + 1}", Value = $"Sample_Value_{i + 1}" });
+            //    ExpenseTagsInfo.Add(new InfoContainer() { Key = $"Sample_Expense_{i + 1}", Value = $"Sample_Value_{i + 1}" });
+            //    ExpenseRuleTagsInfo.Add(new InfoContainer() { Key = $"Sample_Rule_{i + 1}", Value = $"Sample_Value_{i + 1}" });
             //}
         }
 
-        private async Task<List<ExpenseTag>> GetExpenseDictionariesAsync()
+        private async Task<List<ExpenseTag>> GetExpenseTagsAsync()
         {
-            return await _userDictionaryService.GetExpenseDictionaries(-1);
+            return await _expenseTagService.GetAllExpenseTags();
         }
 
-        private async Task<List<RuleDictionary>> GetRuleDictionariesAsync()
+        private async Task<List<ExpenseRuleTag>> GetExpenseRuleTagsAsync()
         {
-            return await _userDictionaryService.GetRuleDictionaries(-1);
+            return await _expenseRuleTagService.GetAllExpenseRuleTags();
         }
 
         private void FinishEdDbSearch()
         {
-            if (ExpenseDictionaries is not null)
+            if (ExpenseTags is not null)
             {
-                foreach (var eD in ExpenseDictionaries)
+                foreach (var eD in ExpenseTags)
                 {
-                    ExpenseDictionariesInfo.Add(new InfoContainer() { Key = eD.title, Value = eD.tags.First() });
+                    ExpenseTagsInfo.Add(new InfoContainer() { Key = eD.Title, Value = eD.Tags.First() });
                 }
             }
         }
 
         private void FinishRdDbSearch()
         {
-            if (RuleDictionaries is not null)
+            if (ExpenseRuleTags is not null)
             {
-                foreach (var rD in RuleDictionaries)
+                foreach (var rD in ExpenseRuleTags)
                 {
-                    RuleDictionariesInfo.Add(new InfoContainer() { Key = rD.rule, Value = rD.tags.First() });
+                    ExpenseRuleTagsInfo.Add(new InfoContainer() { Key = rD.Rule, Value = rD.Tags.First() });
                 }
             }
         }
