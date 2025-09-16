@@ -401,3 +401,4 @@ FodyWeavers.xsd
 /IBudget.ConsoleUI/appsettings.json
 /IBudget.API/appsettings.Development.json
 
+/IBudget.GUI/appsettings.json
