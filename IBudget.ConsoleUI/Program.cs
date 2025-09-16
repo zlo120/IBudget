@@ -1,6 +1,5 @@
 ﻿using IBudget.ConsoleUI.Services;
 using IBudget.ConsoleUI.UserInterface;
-using IBudget.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 

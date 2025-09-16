@@ -11,7 +11,8 @@ namespace IBudget.Infrastructure
         private readonly IMongoDatabase _database;
         public MongoDbContext(IConfiguration config)
         {
-            var client = new MongoClient(config.GetConnectionString("MongoDB"));
+            var connectionString = config.GetConnectionString("MongoDB");
+            var client = new MongoClient(connectionString);
             _database = client.GetDatabase("Stacks");
         }
 
@@ -22,6 +23,7 @@ namespace IBudget.Infrastructure
 
         public IMongoCollection<ExpenseTag> GetExpenseTagsCollection()
         {
+
             return _database.GetCollection<ExpenseTag>("expenseTags");
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -29,15 +30,10 @@ namespace IBudget.GUI.ViewModels
         {
             _expenseTagService = expenseTagService;
             _expenseRuleTagService = expenseRuleTagService;
-            InitaliseDbSearch();
+            _ = InitializeDbSearchAsync(); // Change to async Task
         }
 
-        public void RefreshView()
-        {
-            InitaliseDbSearch();
-        }
-
-        private async void InitaliseDbSearch()
+        private async Task InitializeDbSearchAsync() // Changed from async void
         {
             ExpenseTagsInfo.Clear();
             ExpenseRuleTagsInfo.Clear();
@@ -57,16 +53,17 @@ namespace IBudget.GUI.ViewModels
                 FinishRdDbSearch();
                 IsLoadingRD = false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Debug.WriteLine($"Error initializing dictionary data: {ex.Message}");
+                IsLoadingED = false;
+                IsLoadingRD = false;
             }
+        }
 
-            // Dummy data
-            //for (int i = 0; i < 30; i++)
-            //{
-            //    ExpenseTagsInfo.Add(new InfoContainer() { Key = $"Sample_Expense_{i + 1}", Value = $"Sample_Value_{i + 1}" });
-            //    ExpenseRuleTagsInfo.Add(new InfoContainer() { Key = $"Sample_Rule_{i + 1}", Value = $"Sample_Value_{i + 1}" });
-            //}
+        public void RefreshView()
+        {
+            _ = InitializeDbSearchAsync(); // Use the async version
         }
 
         private async Task<List<ExpenseTag>> GetExpenseTagsAsync()

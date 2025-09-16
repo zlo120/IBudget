@@ -1,10 +1,10 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using IBudget.Core.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace IBudget.GUI.ViewModels
 {
@@ -12,21 +12,37 @@ namespace IBudget.GUI.ViewModels
     {
         private readonly ITagService _tagService;
         public ObservableCollection<AllTagsListItemTemplate> Tags { get; } = new();
+
         [ObservableProperty]
         private string _tagName = string.Empty;
         [ObservableProperty]
         private string _message = string.Empty;
         [ObservableProperty]
         private bool _isTracked = false;
+
         public TagsPageViewModel(ITagService tagService)
         {
             _tagService = tagService;
-            var tags = _tagService.GetAll().Result;
-            foreach (var tag in tags)
+            // Remove blocking call from constructor
+            _ = InitializeTagsAsync();
+        }
+
+        private async Task InitializeTagsAsync()
+        {
+            try
             {
-                Tags.Add(new AllTagsListItemTemplate(tag.Name, tag.IsTracked, _tagService));
+                var tags = await _tagService.GetAll();
+                foreach (var tag in tags)
+                {
+                    Tags.Add(new AllTagsListItemTemplate(tag.Name, tag.IsTracked, _tagService));
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error loading tags: {ex.Message}");
             }
         }
+
         [RelayCommand]
         private void CreateTag()
         {
@@ -45,17 +61,30 @@ namespace IBudget.GUI.ViewModels
             Message = $"\"{TagName}\" created successfully!";
             TagName = string.Empty;
             IsTracked = false;
-            RefreshView();
+            _ = RefreshViewAsync();
         }
 
+        public async Task RefreshViewAsync()
+        {
+            try
+            {
+                var tags = await _tagService.GetAll();
+                foreach (var tag in tags)
+                {
+                    var tagTemplate = new AllTagsListItemTemplate(tag.Name, tag.IsTracked, _tagService);
+                    if (!Tags.Contains(tagTemplate)) Tags.Add(tagTemplate);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error refreshing tags: {ex.Message}");
+            }
+        }
+
+        // Keep for backward compatibility
         public void RefreshView()
         {
-            var tags = _tagService.GetAll().Result;
-            foreach (var tag in tags)
-            {
-                var tagTemplate = new AllTagsListItemTemplate(tag.Name, tag.IsTracked, _tagService);
-                if (!Tags.Contains(tagTemplate)) Tags.Add(tagTemplate);
-            }
+            _ = RefreshViewAsync();
         }
     }
 

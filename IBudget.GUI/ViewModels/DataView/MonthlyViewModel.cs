@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace IBudget.GUI.ViewModels.DataView
 {
@@ -32,6 +34,7 @@ namespace IBudget.GUI.ViewModels.DataView
             ThisMonth = DateTime.Now.ToString("MMMM");
             var thisMonthInt = DateTime.ParseExact(ThisMonth, "MMMM", CultureInfo.InvariantCulture, DateTimeStyles.None).Month;
             SelectedIndex = thisMonthInt - 1;
+            
             for (int i = 0; i < 50; i++)
             {
                 SummaryItems.Add(new SummaryItem($"Summary value {i + 1}", 22.22));
@@ -39,22 +42,37 @@ namespace IBudget.GUI.ViewModels.DataView
 
             _tagService = tagService;
             _summaryService = summaryService;
+            
+            _ = InitializeDataAsync();
+        }
 
-            var trackedTags = tagService.GetAll().Result
-                .Where(tag => tag.IsTracked)
-                .Select(tag => tag.Name)
-                .OrderBy(s => s)
-                .ToList();
-
-            var monthsData = summaryService.ReadMonth(thisMonthInt).Result;
-            foreach (var tag in trackedTags)
+        private async Task InitializeDataAsync()
+        {
+            try
             {
-                TrackedTags.Add(tag);
-                double totalMoneySpent = monthsData.AllExpenses
-                    .Where(e => e.Tags!.Select(t => t.Name).Contains(tag))
-                    .Select(e => e.Amount)
-                    .Sum();
-                SummaryChartData.Add(tag, totalMoneySpent);
+                var thisMonthInt = DateTime.ParseExact(ThisMonth, "MMMM", CultureInfo.InvariantCulture, DateTimeStyles.None).Month;
+                
+                var trackedTags = (await _tagService.GetAll())
+                    .Where(tag => tag.IsTracked)
+                    .Select(tag => tag.Name)
+                    .OrderBy(s => s)
+                    .ToList();
+
+                var monthsData = await _summaryService.ReadMonth(thisMonthInt);
+                
+                foreach (var tag in trackedTags)
+                {
+                    TrackedTags.Add(tag);
+                    double totalMoneySpent = monthsData.AllExpenses
+                        .Where(e => e.Tags!.Select(t => t.Name).Contains(tag))
+                        .Select(e => e.Amount)
+                        .Sum();
+                    SummaryChartData.Add(tag, totalMoneySpent);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error initializing monthly data: {ex.Message}");
             }
         }
     }

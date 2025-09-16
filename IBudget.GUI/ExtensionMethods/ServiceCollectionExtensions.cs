@@ -1,4 +1,5 @@
-﻿using IBudget.Core.Interfaces;
+﻿using System.IO;
+using IBudget.Core.Interfaces;
 using IBudget.Core.RepositoryInterfaces;
 using IBudget.Core.Services;
 using IBudget.GUI.Services.Impl;
@@ -8,6 +9,7 @@ using IBudget.GUI.ViewModels.UploadCsv;
 using IBudget.Infrastructure;
 using IBudget.Infrastructure.Repositories;
 using IBudget.Spreadsheet.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace IBudget.GUI.ExtensionMethods
@@ -50,6 +52,15 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddScoped<IExpenseTagsRepository, ExpenseTagsRepository>();
             collection.AddScoped<IExpenseRuleTagService, ExpenseRuleTagService>();
             collection.AddScoped<IExpenseRuleTagsRepository, ExpenseRuleTagsRepository>();
+
+            collection.AddScoped<MongoDbContext>();
+
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true)
+                .Build();
+
+            collection.AddSingleton<IConfiguration>(configuration);
         }
     }
 }

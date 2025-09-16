@@ -44,12 +44,12 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             _expenseRuleTagService = expenseRuleTagService;
             _expenseTagService = expenseTagService;
 
-            GetAllTags();
+            _ = GetAllTags();
         }
 
-        private void GetAllTags()
+        private async Task GetAllTags()
         {
-            var allTags = _tagsService.GetAll().Result;
+            var allTags = await _tagsService.GetAll();
             foreach (var tag in allTags)
             {
                 if (!ExistingTags.Contains(tag.Name))
