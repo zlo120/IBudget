@@ -13,24 +13,90 @@ namespace IBudget.Core.Services
         private readonly IExpenseRuleTagService _expenseRuleTagService = expenseRuleTagService;
         public List<FormattedFinancialCSV> ParseCSV(string csvFilePath)
         {
+            var hasHeader = false;
+            var userHeaderToPropertyMap = new Dictionary<string, string>
+            {
+                { "UserDateHeader", "Date" },
+                { "UserAmountHeader", "Amount" },
+                { "UserDescriptionHeader", "Description" }
+            };
+
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                HasHeaderRecord = true
+                HasHeaderRecord = hasHeader
             };
 
             using var reader = new StreamReader(csvFilePath);
             using var csv = new CsvReader(reader, config);
-            var records = csv.GetRecords<FinancialCSV>();
             var formattedRecords = new List<FormattedFinancialCSV>();
-            foreach (var record in records)
+
+            if (hasHeader)
             {
-                formattedRecords.Add(new FormattedFinancialCSV()
+                csv.Context.RegisterClassMap(new DynamicFinancialCSVMap(userHeaderToPropertyMap));
+
+                var records = csv.GetRecords<dynamic>();
+                foreach (var record in records)
                 {
-                    Date = CsvFormatter.FormatDate(record.Date),
-                    Description = CsvFormatter.FormatDescription(record.Description),
-                    Amount = record.Amount
-                });
+                    var dict = (IDictionary<string, object>)record;
+                    // Access fields by header name, e.g. dict["Amount"], dict["Date"], etc.
+                    formattedRecords.Add(new FormattedFinancialCSV()
+                    {
+                        Date = CsvFormatter.FormatDate(record.Date),
+                        Description = CsvFormatter.FormatDescription(record.Description),
+                        Amount = record.Amount
+                    });
+                }
             }
+            else
+            {
+                while (csv.Read())
+                {
+                    var row = csv.Parser.Record;
+                    if (row.Length < 3) continue; 
+
+                    // Try parse date
+                    if (!DateTime.TryParseExact(row[0], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+                    {
+                        continue;
+                    }
+
+                    if (!double.TryParse(row[1], NumberStyles.Any, CultureInfo.InvariantCulture, out var amount))
+                    {
+                        continue;
+                    }
+
+                    var description = row[2];
+                    if (string.IsNullOrWhiteSpace(description))
+                    {
+                        continue;
+                    }
+
+                    var record = new FinancialCSV
+                    {
+                        Date = row[0],
+                        Amount = amount,
+                        Description = description
+                    };
+                    formattedRecords.Add(new FormattedFinancialCSV
+                    {
+                        Date = CsvFormatter.FormatDate(record.Date),
+                        Description = CsvFormatter.FormatDescription(record.Description),
+                        Amount = record.Amount
+                    });
+                }
+            }
+
+            //var records = csv.GetRecords<FinancialCSV>();
+            //foreach (var record in records)
+            //{
+            //    formattedRecords.Add(new FormattedFinancialCSV()
+            //    {
+            //        Date = CsvFormatter.FormatDate(record.Date),
+            //        Description = CsvFormatter.FormatDescription(record.Description),
+            //        Amount = record.Amount
+            //    });
+            //}
+
             return formattedRecords;
         }
         public async Task<List<FormattedFinancialCSV>> FindUntagged(List<FormattedFinancialCSV> records)

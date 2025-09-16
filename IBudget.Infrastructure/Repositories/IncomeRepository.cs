@@ -18,6 +18,11 @@ namespace IBudget.Infrastructure.Repositories
             await _incomeCollection.DeleteOneAsync(e => e.Id == id);
         }
 
+        public async Task<bool> DoesBatchHashExist(string batchHash)
+        {
+            return await _incomeCollection.Find(e => e.BatchHash == batchHash).AnyAsync();
+        }
+
         public async Task<Income> GetIncome(ObjectId id)
         {
             return await _incomeCollection.Find(e => e.Id == id).FirstOrDefaultAsync();

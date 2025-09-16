@@ -99,6 +99,13 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             var formattedFinancialDataList = _csvParserService.ParseCSV(csvFile);
 
             var batchHash = _batchHashService.ComputeBatchHash(File.ReadAllText(csvFile));
+            var batchHashExists = await _batchHashService.DoesBatchHashExist(batchHash);
+            if (batchHashExists)
+            {
+                BatchHashAlreadyExists = true;
+                IsLoading = false;
+                return;
+            }
 
             // receive all the data without tags,
             // then tag all the data

@@ -6,6 +6,6 @@ namespace IBudget.Core.Model
     public class BaseModel
     {
         [BsonId]
-        public ObjectId? Id { get; set; }
+        public ObjectId? Id { get; set; } = ObjectId.GenerateNewId();
     }
 }

@@ -30,6 +30,11 @@ namespace IBudget.Core.Services
             await _incomeRepository.DeleteIncome(id);
         }
 
+        public async Task<bool> DoesBatchHashExist(string batchHash)
+        {
+            return await _incomeRepository.DoesBatchHashExist(batchHash);  
+        }
+
         public async Task<Income> GetIncome(ObjectId id)
         {
             return await _incomeRepository.GetIncome(id);

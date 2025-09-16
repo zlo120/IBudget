@@ -9,9 +9,10 @@
 			 x:CompileBindings="True">
 
 	<Grid ColumnDefinitions="*, *"
-		  Margin="15 0 15 0">
+		  Margin="35 15 35 15">
 		<Grid RowDefinitions="Auto, *"
-			  Grid.Column="0">
+			  Grid.Column="0"
+			  Margin="5 0">
 			<StackPanel>
 				<TextBlock FontSize="26"
 					   Grid.Row="0">
@@ -47,7 +48,8 @@
 			</Grid>
 		<Grid RowDefinitions="Auto, Auto, Auto, *, Auto"
 			  VerticalAlignment="Stretch"
-			  Grid.Column="1">
+			  Grid.Column="1"
+			  Margin="5 0">
 			<StackPanel Orientation="Horizontal"
 						Grid.Row="0">
 				<CheckBox IsChecked="{Binding IsCreatingRule}" />

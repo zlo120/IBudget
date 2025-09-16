@@ -81,8 +81,19 @@ namespace IBudget.GUI.ViewModels
         {
             var label = type.Name.Replace("PageViewModel", "");
             ModelType = type;
-            Label = LabelUtils.AddSpacesBeforeCapitals(label);
-            Application.Current!.TryFindResource(iconKey, out var res);
+            if (type == typeof(DataPageViewModel))
+            {
+                Label = "Financial Overview";
+            }
+            else if (type == typeof(DictionariesPageViewModel))
+            {
+                Label = "Tag Dictionary";
+            }
+            else
+            {
+                Label = LabelUtils.AddSpacesBeforeCapitals(label);
+            }
+                Application.Current!.TryFindResource(iconKey, out var res);
             ListItemIcon = (StreamGeometry)res!;
         }
         public string Label { get; }

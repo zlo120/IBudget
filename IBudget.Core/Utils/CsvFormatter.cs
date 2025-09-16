@@ -16,7 +16,11 @@ namespace IBudget.Core.Utils
 
         public static string FormatDescription(string description)
         {
-            return Regex.Replace(description, @" ?Card xx\d{4} Value Date: \d{2}/\d{2}/\d{4}", "");
+            // Remove card info pattern
+            var result = Regex.Replace(description, @" ?Card xx\d{4} Value Date: \d{2}/\d{2}/\d{4}", "");
+            // Replace multiple spaces with a single space
+            result = Regex.Replace(result, @" {2,}", " ");
+            return result.Trim();
         }
     }
 }
