@@ -46,7 +46,7 @@ namespace IBudget.Core.Services
 
             GenerateMonths(calendar, workbook, tableOfContentsWS, ref nextFreeCell, trackedTagsList, financialGoals);
 
-            string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + $"\\{calendar.YearNumber} - IBudgetSheet.xlsx";
+            string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + $"\\Stacks\\{calendar.YearNumber} Budget.xlsx";
 
             workbook.SaveAs(path);
 
@@ -81,7 +81,7 @@ namespace IBudget.Core.Services
             foreach (var month in monthNames)
             {
                 var workSheet = workBook.Worksheets.Where(s => s.Name == month).FirstOrDefault();
-                int chartIndex = workSheet!.Charts.Add(ChartType.Column, 3, 3, 20, 12);
+                int chartIndex = workSheet!.Charts.Add(ChartType.Column, 4, 4, 20, 12);
 
                 var chart = workSheet.Charts[chartIndex];
 
@@ -98,9 +98,11 @@ namespace IBudget.Core.Services
                 chart.ValueAxis.MinorUnit = 100; // Set minor unit for Y-axis
                 chart.ValueAxis.MajorGridLines.IsVisible = true; // Show major gridlines
 
-                chart.NSeries.Add("A11", true); // Replace with your actual cell range
-                chart.NSeries.Add("B11", true); // Replace with your actual cell range
+                var outgoingRowNumber = financialGoals.Count * 2 + 4;
+                var incomingRowNumber = outgoingRowNumber + 2;
 
+                chart.NSeries.Add($"B{outgoingRowNumber}", true); // Replace with your actual cell range
+                chart.NSeries.Add($"A{incomingRowNumber}", true); // Replace with your actual cell range
 
                 chart.NSeries[0].Name = "Total outgoing"; // Replace with your actual series name
                 chart.NSeries[1].Name = "Total income"; // Replace with your actual series name
@@ -153,86 +155,135 @@ namespace IBudget.Core.Services
             foreach (var month in calendar.Months)
             {
                 // calculating formulas
-                var foodFormula = $"_xlfn.SUM(";
-                var totalSpendingFormula = $"_xlfn.SUM(";
-                var totalIncomeFormula = $"_xlfn.SUM(";
-                var totalPublicTransportFormula = $"_xlfn.SUM(";
-                var totalAlcoholFormula = $"_xlfn.SUM(";
-                foreach (var week in month.Weeks)
-                {
-                    if (week == month.Weeks.Last())
-                    {
-                        foodFormula += $"'{week.Label}'!M3";
-                        totalSpendingFormula += $"'{week.Label}'!M7";
-                        totalIncomeFormula += $"'{week.Label}'!N7";
-                        totalPublicTransportFormula += $"'{week.Label}'!N5";
-                        totalAlcoholFormula += $"'{week.Label}'!M5";
-                    }
-                    else
-                    {
-                        foodFormula += $"'{week.Label}'!M3,";
-                        totalSpendingFormula += $"'{week.Label}'!M7,";
-                        totalIncomeFormula += $"'{week.Label}'!N7,";
-                        totalPublicTransportFormula += $"'{week.Label}'!N5,";
-                        totalAlcoholFormula += $"'{week.Label}'!M5,";
-                    }
-                }
-
-                foodFormula += ")";
-                totalSpendingFormula += ")";
-                totalIncomeFormula += ")";
-                totalPublicTransportFormula += ")";
-                totalAlcoholFormula += ")";
-
                 var monthSummaryWorksheet = workbook.Worksheets.Add(month.MonthName);
 
                 // adding this month to the table of contents
                 tableOfContentsWS.Cell(nextFreeCell, 1).Value = month.MonthName;
                 tableOfContentsWS.Cell(nextFreeCell, 1).SetHyperlink(new XLHyperlink($"'{month.MonthName}'!A1"));
 
-                monthSummaryWorksheet.Cell(1, 1).Value = "Total money spent on food";
-                monthSummaryWorksheet.Cell(1, 1).Style.Font.Bold = true;
-                monthSummaryWorksheet.Cell(2, 1).FormulaA1 = foodFormula;
+                var offsetColumn = false;
 
-                monthSummaryWorksheet.Cell(1, 2).Value = "Total money spent on alcohol";
-                monthSummaryWorksheet.Cell(1, 2).Style.Font.Bold = true;
-                monthSummaryWorksheet.Cell(2, 2).FormulaA1 = totalAlcoholFormula;
+                var totalRow = (int)Math.Ceiling((decimal)trackedTagsList.Count / 2) * 2 + 1;
+                var totalOutgoingColumn = trackedTagsList.Count + 7;
+                var totalIncomeColumn = totalOutgoingColumn + 1;
 
-                monthSummaryWorksheet.Cell(4, 1).Value = "Total money spent on public transport";
-                monthSummaryWorksheet.Cell(4, 1).Style.Font.Bold = true;
-                monthSummaryWorksheet.Cell(5, 1).FormulaA1 = totalPublicTransportFormula;
+                var startToSumFormula = "_xlfn.SUM(";
+                var endToSumFormula = ")";
 
-                monthSummaryWorksheet.Cell(4, 2).Value = "Public transport budget balance";
-                monthSummaryWorksheet.Cell(4, 2).Style.Font.Bold = true;
-                monthSummaryWorksheet.Cell(5, 2).FormulaA1 = "='Monthly Budget'!B4 - A5";
+                var spendingDictionary = new Dictionary<string, string>();
+                var remainingDictionary = new Dictionary<string, string>();
 
-                monthSummaryWorksheet.Cell(7, 1).Value = "Monthly budget balance";
-                monthSummaryWorksheet.Cell(7, 1).Style.Font.Bold = true;
-                monthSummaryWorksheet.Cell(8, 1).FormulaA1 = "='Monthly Budget'!D2 - A11";
+                spendingDictionary.Add("Total Outgoing", startToSumFormula);
+                spendingDictionary.Add("Total Income", startToSumFormula);
 
-                monthSummaryWorksheet.Cell(7, 2).Value = "Monthy food/alcohol budget balance";
-                monthSummaryWorksheet.Cell(7, 2).Style.Font.Bold = true;
-                monthSummaryWorksheet.Cell(8, 2).FormulaA1 = "='Monthly Budget'!B2 + 'Monthly Budget'!B3 - B2 - A2";
+                foreach (var financialGoal in financialGoals)
+                {
+                    spendingDictionary.Add(financialGoal.Name, startToSumFormula);
+                }
 
-                monthSummaryWorksheet.Cell(10, 1).Value = "Total money spent this month";
-                monthSummaryWorksheet.Cell(10, 1).Style.Font.Bold = true;
-                monthSummaryWorksheet.Cell(11, 1).FormulaA1 = totalSpendingFormula;
+                foreach (var week in month.Weeks)
+                {
+                    offsetColumn = false;
+                    var currentFormulaRow = 3;
+                    // check is last week
+                    var isLastWeek = week == month.Weeks.Last();
+                    for (int i = 0; i < financialGoals.Count; i++)
+                    {
+                        var financialGoalName = financialGoals[i].Name;
+                        var currentFormulaColumn = totalOutgoingColumn + (offsetColumn ? 1 : 0);
 
-                monthSummaryWorksheet.Cell(10, 2).Value = "Total income this month";
-                monthSummaryWorksheet.Cell(10, 2).Style.Font.Bold = true;
-                monthSummaryWorksheet.Cell(11, 2).FormulaA1 = totalIncomeFormula;
+                        var comma = isLastWeek ? "" : ",";
+                        spendingDictionary[financialGoalName] += $"'{week.Label}'!{CoordinatesToCellReference(currentFormulaRow, currentFormulaColumn)}{comma}";
+
+                        if (offsetColumn)
+                        {
+                            currentFormulaRow += 2;
+                            offsetColumn = false;
+                        }
+                        else
+                        {
+                            offsetColumn = true;
+                        }
+                    }
+
+                    spendingDictionary["Total Outgoing"] += $"'{week.Label}'!{CoordinatesToCellReference(totalRow, totalOutgoingColumn)}{(isLastWeek ? "" : ",")}";
+                    spendingDictionary["Total Income"] += $"'{week.Label}'!{CoordinatesToCellReference(totalRow, totalIncomeColumn)}{(isLastWeek ? "" : ",")}";
+                }
+
+                for (int i = 0; i < financialGoals.Count; i++)
+                {
+                    var financialGoal = financialGoals[i];
+
+                    var monthlyBudgetCredit = $"'Monthly Budget'!B{i+2}";
+
+                    var entireFormula = spendingDictionary[financialGoal.Name] + endToSumFormula;
+                    spendingDictionary[financialGoal.Name] += endToSumFormula;
+                    remainingDictionary[financialGoal.Name] = $"{monthlyBudgetCredit}-{entireFormula}";
+                }
+
+                spendingDictionary["Total Outgoing"] += endToSumFormula;
+                spendingDictionary["Total Income"] += endToSumFormula;
+                var monthlyBudgetRef = $"'Monthly Budget'!D2";
+                remainingDictionary["Total Outgoing"] = $"{monthlyBudgetRef}-{spendingDictionary["Total Outgoing"]}";
+
+                var currentRow = 1;
+                for (int i = 0; i < financialGoals.Count; i++)
+                {
+                    var financialGoal = financialGoals[i];
+                    var monthlyBudgetCredit = $"'Monthly Budget'!B{i + 2}";
+
+                    monthSummaryWorksheet.Cell(currentRow, 1).Value = $"Budget for {financialGoal.Name}";
+                    monthSummaryWorksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+                    monthSummaryWorksheet.Cell(currentRow + 1, 1).FormulaA1 = monthlyBudgetCredit;
+
+                    monthSummaryWorksheet.Cell(currentRow, 2).Value = $"Total spending for {financialGoal.Name}";
+                    monthSummaryWorksheet.Cell(currentRow, 2).Style.Font.Bold = true;
+                    monthSummaryWorksheet.Cell(currentRow + 1, 2).FormulaA1 = spendingDictionary[financialGoal.Name];
+
+
+                    monthSummaryWorksheet.Cell(currentRow, 3).Value = $"Remaining spending for {financialGoal.Name}";
+                    monthSummaryWorksheet.Cell(currentRow, 3).Style.Font.Bold = true;
+                    monthSummaryWorksheet.Cell(currentRow + 1, 3).FormulaA1 = remainingDictionary[financialGoal.Name];
+                    currentRow += 2;
+                }
+
+                currentRow += 2;
+
+                monthSummaryWorksheet.Cell(currentRow, 1).Value = "Total budget for this month";
+                monthSummaryWorksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+                monthSummaryWorksheet.Cell(currentRow + 1, 1).FormulaA1 = monthlyBudgetRef;
+
+                monthSummaryWorksheet.Cell(currentRow, 2).Value = "Total money spent this month";
+                monthSummaryWorksheet.Cell(currentRow, 2).Style.Font.Bold = true;
+                monthSummaryWorksheet.Cell(currentRow + 1, 2).FormulaA1 = spendingDictionary["Total Outgoing"];
+
+                monthSummaryWorksheet.Cell(currentRow, 3).Value = "Remaining spending for this month";
+                monthSummaryWorksheet.Cell(currentRow, 3).Style.Font.Bold = true;
+                monthSummaryWorksheet.Cell(currentRow+1, 3).FormulaA1 = remainingDictionary["Total Outgoing"];
+
+                currentRow += 2;
+
+                monthSummaryWorksheet.Cell(currentRow, 1).Value = "Total income this month";
+                monthSummaryWorksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+                monthSummaryWorksheet.Cell(currentRow + 1, 1).FormulaA1 = spendingDictionary["Total Income"];
+
+                currentRow += 3;
 
                 monthSummaryWorksheet.Column(1).AdjustToContents();
                 monthSummaryWorksheet.Column(2).AdjustToContents();
+                monthSummaryWorksheet.Column(3).AdjustToContents();
 
-                monthSummaryWorksheet.Cell(13, 1).Value = "Go back to Table of Contents";
-                monthSummaryWorksheet.Cell(13, 1).SetHyperlink(new XLHyperlink($"'Table of Contents'!A1"));
+                monthSummaryWorksheet.Cell(currentRow, 1).Value = "Go back to Table of Contents";
+                monthSummaryWorksheet.Cell(currentRow, 1).SetHyperlink(new XLHyperlink($"'Table of Contents'!A1"));
 
                 var col1 = monthSummaryWorksheet.Column(1);
                 col1.Style.NumberFormat.Format = "$#,##0.00";
 
                 var col2 = monthSummaryWorksheet.Column(2);
                 col2.Style.NumberFormat.Format = "$#,##0.00";
+
+                var col3 = monthSummaryWorksheet.Column(3);
+                col3.Style.NumberFormat.Format = "$#,##0.00";
 
                 nextFreeCell++;
 
@@ -379,6 +430,42 @@ namespace IBudget.Core.Services
             {
                 throw new ArgumentOutOfRangeException(nameof(n), "Value must be between 1 and 26.");
             }
+        }
+
+        /// <summary>
+        /// Converts a column number to Excel column letters (1=A, 2=B, 27=AA, etc.)
+        /// </summary>
+        /// <param name="columnNumber">Column number starting from 1</param>
+        /// <returns>Excel column letter(s)</returns>
+        private static string ColumnNumberToLetter(int columnNumber)
+        {
+            if (columnNumber <= 0)
+                throw new ArgumentOutOfRangeException(nameof(columnNumber), "Column number must be greater than 0.");
+
+            string result = string.Empty;
+
+            while (columnNumber > 0)
+            {
+                columnNumber--; // Make it 0-based
+                result = (char)('A' + (columnNumber % 26)) + result;
+                columnNumber /= 26;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Converts row and column coordinates to Excel cell reference (e.g., 2,2 => B2)
+        /// </summary>
+        /// <param name="row">Row number starting from 1</param>
+        /// <param name="column">Column number starting from 1</param>
+        /// <returns>Excel cell reference (e.g., B2, AA100)</returns>
+        private static string CoordinatesToCellReference(int row, int column)
+        {
+            if (row <= 0)
+                throw new ArgumentOutOfRangeException(nameof(row), "Row number must be greater than 0.");
+
+            return $"{ColumnNumberToLetter(column)}{row}";
         }
     }
 }
