@@ -12,11 +12,13 @@ namespace IBudget.Core.Services
     {
         private readonly IPopulator _populator;
         private readonly ITagService _tagService;
+        private readonly IFinancialGoalService _financialGoalService;
 
-        public SpreadSheetGeneratorService(IPopulator populator, ITagService tagService)
+        public SpreadSheetGeneratorService(IPopulator populator, ITagService tagService, IFinancialGoalService financialGoalService)
         {
             _populator = populator;
             _tagService = tagService;
+            _financialGoalService = financialGoalService;
         }
 
         private async Task<List<Tag>> GetAllTrackedTags()
@@ -29,6 +31,7 @@ namespace IBudget.Core.Services
         public async Task<string> GenerateSpreadsheet()
         {
             var trackedTagsList = await GetAllTrackedTags();
+            var financialGoals = await _financialGoalService.GetAll();
             var calendar = Calendar.InitiateCalendar();
             var workbook = new XLWorkbook();
 
@@ -37,11 +40,11 @@ namespace IBudget.Core.Services
             tableOfContentsWS.Cell(1, 1).Style.Font.Bold = true;
             tableOfContentsWS.Column(1).Width = 5 * tableOfContentsWS.Column(1).Width;
 
-            GenerateBudgetSheet(workbook);
+            GenerateBudgetSheet(workbook, financialGoals);
 
             int nextFreeCell = 2;
 
-            GenerateMonths(calendar, workbook, tableOfContentsWS, ref nextFreeCell, trackedTagsList);
+            GenerateMonths(calendar, workbook, tableOfContentsWS, ref nextFreeCell, trackedTagsList, financialGoals);
 
             string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + $"\\{calendar.YearNumber} - IBudgetSheet.xlsx";
 
@@ -52,7 +55,7 @@ namespace IBudget.Core.Services
             string[] weekLabels = calendar.Months.SelectMany(month => month.Weeks.Select(week => week.Label)).ToArray();
 
             var numOfTrackedTags = trackedTagsList.Count;
-            GenerateCharts(path, monthNames, weekLabels, numOfTrackedTags, trackedTagsList);
+            GenerateCharts(path, monthNames, weekLabels, numOfTrackedTags, trackedTagsList, financialGoals);
 
             // deleting the last sheet
             workbook = new XLWorkbook(path);
@@ -68,7 +71,7 @@ namespace IBudget.Core.Services
             return path;
         }
 
-        private void GenerateCharts(string path, string[] monthNames, string[] weekLabels, int numOfTrackedTags, List<Tag> trackedTagsList)
+        private void GenerateCharts(string path, string[] monthNames, string[] weekLabels, int numOfTrackedTags, List<Tag> trackedTagsList, List<FinancialGoal> financialGoals)
         {
             var totalOutgoingColumnNum = numOfTrackedTags + 7;
             var workBook = new Aspose.Cells.Workbook(path);
@@ -111,7 +114,10 @@ namespace IBudget.Core.Services
                 var startCellColumn = trackedTagsList.Count + 6;
                 var endCelColumn = startCellColumn + 2;
 
-                int chartIndex = workSheet!.Charts.Add(ChartType.Column, 8, startCellColumn, 20, endCelColumn); // 8: because we have a fixed number of cells from the top, *: determined by the number of tracked tags,
+                var startRow = (int) Math.Ceiling((decimal)trackedTagsList.Count/2)*2 + 2;
+                var endRow = startRow + 10;
+
+                int chartIndex = workSheet!.Charts.Add(ChartType.Column, startRow, startCellColumn, endRow, endCelColumn); // 8: because we have a fixed number of cells from the top, *: determined by the number of tracked tags,
                                                                                                                // 20: because we have a fixed height for the chart, *: determined by the number of tracked tags
 
                 var chart = workSheet.Charts[chartIndex];
@@ -129,8 +135,10 @@ namespace IBudget.Core.Services
                 chart.ValueAxis.MinorUnit = 100; // Set minor unit for Y-axis
                 chart.ValueAxis.MajorGridLines.IsVisible = true; // Show major gridlines
 
-                var totalOutgoingColumn = $"{IntToChar(totalOutgoingColumnNum)}7";
-                var totalIncomingColumn = $"{IntToChar(totalOutgoingColumnNum + 1)}7";
+                //var totalRows = (int)Math.Ceiling((decimal)trackedTagsList.Count / 2); // `total` as in the "Total Outgoing" and "Total Income" rows
+
+                var totalOutgoingColumn = $"{IntToChar(totalOutgoingColumnNum)}{startRow-1}";
+                var totalIncomingColumn = $"{IntToChar(totalOutgoingColumnNum + 1)}{startRow-1}";
 
                 chart.NSeries.Add(totalOutgoingColumn, true); // Replace with your actual cell range
                 chart.NSeries.Add(totalIncomingColumn, true); // Replace with your actual cell range
@@ -143,7 +151,7 @@ namespace IBudget.Core.Services
             workBook.Save(path);
         }
 
-        private void GenerateMonths(YearDTO calendar, XLWorkbook workbook, IXLWorksheet tableOfContentsWS, ref int nextFreeCell, List<Tag> trackedTagsList)
+        private void GenerateMonths(YearDTO calendar, XLWorkbook workbook, IXLWorksheet tableOfContentsWS, ref int nextFreeCell, List<Tag> trackedTagsList, List<FinancialGoal> financialGoals)
         {
             foreach (var month in calendar.Months)
             {
@@ -231,13 +239,13 @@ namespace IBudget.Core.Services
 
                 nextFreeCell++;
 
-                GenerateWeeks(month, workbook, tableOfContentsWS, ref nextFreeCell, trackedTagsList);
+                GenerateWeeks(month, workbook, tableOfContentsWS, ref nextFreeCell, trackedTagsList, financialGoals);
 
                 nextFreeCell++;
             }
         }
 
-        private void GenerateWeeks(MonthDTO month, XLWorkbook workbook, IXLWorksheet tableOfContentsWS, ref int nextFreeCell, List<Tag> trackedTagsList)
+        private void GenerateWeeks(MonthDTO month, XLWorkbook workbook, IXLWorksheet tableOfContentsWS, ref int nextFreeCell, List<Tag> trackedTagsList, List<FinancialGoal> financialGoals)
         {
             foreach (var week in month.Weeks)
             {
@@ -283,43 +291,43 @@ namespace IBudget.Core.Services
                         weekWorksheet.Cell(1, summaryColumn + 1)
                     ).Merge();
 
-                // tracked columns
-                // START REDO THIS WHOLE PLACE
-                var foodColumnNum = 0;
-                var alcoholColumnNum = 1;
-                var busColumnNum = 2;
-
-                if (true) // re do this later
+                // financial goals summary
+                var currentTitleRow = 2;
+                var offsetColumn = false;
+                foreach(var financialGoal in financialGoals)
                 {
-                    var columnLetter = IntToChar(foodColumnNum + 1);
-                    weekWorksheet.Cell(2, summaryColumn).Value = "Money spent on food";
-                    weekWorksheet.Cell(3, summaryColumn).FormulaA1 = $"_xlfn.SUM({columnLetter}:{columnLetter})";
+                    var titleRow = currentTitleRow;
+                    var valueRow = titleRow + 1;
+
+                    var tagColumn = trackedTagsList.FindIndex(tag => tag.Name.Equals(financialGoal.Name));
+                    var columnLetter = IntToChar(tagColumn + 1);
+                    weekWorksheet.Cell(titleRow, summaryColumn + (offsetColumn ? 1 : 0)).Value = $"Money spent on {financialGoal.Name}";
+                    weekWorksheet.Cell(valueRow, summaryColumn + (offsetColumn ? 1 : 0)).FormulaA1 = $"_xlfn.SUM({columnLetter}:{columnLetter})";
+                    if (offsetColumn)
+                    {
+                        currentTitleRow += 2;
+                        offsetColumn = false;
+                    }
+                    else
+                    {
+                        offsetColumn = true;
+                    }
                 }
 
+                var otherTitleRow = currentTitleRow;
+                var otherValueRow = otherTitleRow + 1;   
                 var otherColLetter = IntToChar(otherColumn);
-                weekWorksheet.Cell(2, summaryColumn + 1).Value = "Money spent on other";
-                weekWorksheet.Cell(3, summaryColumn + 1).FormulaA1 = $"_xlfn.SUM({otherColLetter}:{otherColLetter})";
+                weekWorksheet.Cell(otherTitleRow, summaryColumn + (offsetColumn ? 1 : 0)).Value = "Money spent on other";
+                weekWorksheet.Cell(otherValueRow, summaryColumn + (offsetColumn ? 1 : 0)).FormulaA1 = $"_xlfn.SUM({otherColLetter}:{otherColLetter})";
 
-                if (true) // re do this later
-                {
-                    var columnLetter = IntToChar(alcoholColumnNum + 1);
-                    weekWorksheet.Cell(4, summaryColumn).Value = "Money spent on alcohol";
-                    weekWorksheet.Cell(5, summaryColumn).FormulaA1 = $"_xlfn.SUM({columnLetter}:{columnLetter})";
-                }
-
-                if (true) // re do this later
-                {
-                    var columnLetter = IntToChar(busColumnNum + 1);
-                    weekWorksheet.Cell(4, summaryColumn + 1).Value = "Money spent on the bus";
-                    weekWorksheet.Cell(5, summaryColumn + 1).FormulaA1 = $"_xlfn.SUM({columnLetter}:{columnLetter})";
-                }
-
-                weekWorksheet.Cell(6, summaryColumn).Value = "Total Outgoing";
-                weekWorksheet.Cell(7, summaryColumn).FormulaA1 = $"_xlfn.SUM(A:{otherColLetter})";
+                var outgoingIncomingRow = otherTitleRow + 2;
+                var outgoingIncomingValueRow = outgoingIncomingRow + 1;
+                weekWorksheet.Cell(outgoingIncomingRow, summaryColumn).Value = "Total Outgoing";
+                weekWorksheet.Cell(outgoingIncomingValueRow, summaryColumn).FormulaA1 = $"_xlfn.SUM(A:{otherColLetter})";
 
                 var incomeColumnLetter = IntToChar(incomeColumn);
-                weekWorksheet.Cell(6, summaryColumn + 1).Value = "Total Income";
-                weekWorksheet.Cell(7, summaryColumn + 1).FormulaA1 = $"_xlfn.SUM({incomeColumnLetter}:{incomeColumnLetter})";
+                weekWorksheet.Cell(outgoingIncomingRow, summaryColumn + 1).Value = "Total Income";
+                weekWorksheet.Cell(outgoingIncomingValueRow, summaryColumn + 1).FormulaA1 = $"_xlfn.SUM({incomeColumnLetter}:{incomeColumnLetter})";
 
                 weekWorksheet.Column(summaryColumn).AdjustToContents();
                 weekWorksheet.Column(summaryColumn + 1).AdjustToContents();
@@ -336,17 +344,19 @@ namespace IBudget.Core.Services
             }
         }
 
-        private static void GenerateBudgetSheet(XLWorkbook workbook)
+        private static void GenerateBudgetSheet(XLWorkbook workbook, List<FinancialGoal> financialGoals)
         {
             var budgetSheet = workbook.Worksheets.Add("Monthly Budget");
             budgetSheet.Cell(1, 1).Value = "Name";
             budgetSheet.Cell(1, 1).Style.Font.Bold = true;
-            budgetSheet.Cell(2, 1).Value = "Food";
-            budgetSheet.Cell(3, 1).Value = "Alcohol";
-            budgetSheet.Cell(4, 1).Value = "Public transport";
-
             budgetSheet.Cell(1, 2).Value = "Amount";
             budgetSheet.Cell(1, 2).Style.Font.Bold = true;
+
+            for (int i = 0; i < financialGoals.Count; i++)
+            {
+                budgetSheet.Cell(i + 2, 1).Value = financialGoals[i].Name;
+                budgetSheet.Cell(i + 2, 2).Value = financialGoals[i].TargetAmount;
+            }
 
             var column2 = budgetSheet.Column(2);
             column2.Style.NumberFormat.Format = "$#,##0.00";

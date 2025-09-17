@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -71,8 +72,22 @@ namespace IBudget.GUI.ViewModels
                 var tags = await _tagService.GetAll();
                 foreach (var tag in tags)
                 {
-                    var tagTemplate = new AllTagsListItemTemplate(tag.Name, tag.IsTracked, _tagService);
-                    if (!Tags.Contains(tagTemplate)) Tags.Add(tagTemplate);
+                    var existing = Tags.FirstOrDefault(t => t.TagName == tag.Name);
+                    if (existing != null)
+                    {
+                        // Update properties if changed
+                        if (existing.IsTracked != tag.IsTracked)
+                        {
+                            existing.IsTracked = tag.IsTracked;
+                            existing.Label = tag.IsTracked
+                                ? "⭐ " + tag.Name
+                                : tag.Name;
+                        }
+                    }
+                    else
+                    {
+                        Tags.Add(new AllTagsListItemTemplate(tag.Name, tag.IsTracked, _tagService));
+                    }
                 }
             }
             catch (Exception ex)

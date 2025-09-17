@@ -81,10 +81,20 @@ namespace IBudget.GUI.ViewModels
                 return;
             }
 
-            var tagExists = await _tagService.GetTagByName(tagName);
-            if (tagExists is null)
+            var tag = await _tagService.GetTagByName(tagName);
+            if (tag is null)
             {
-                await _tagService.CreateTag(new Tag() { Name = tagName, IsTracked = false, CreatedAt = DateTime.Now });
+                await _tagService.CreateTag(new Tag() { Name = tagName, IsTracked = true, CreatedAt = DateTime.Now });
+            }
+            else if (!tag.IsTracked)
+            {
+                await _tagService.UpdateTag(new Tag()
+                {
+                    Id = tag.Id,
+                    Name = tag.Name,
+                    IsTracked = true,
+                    CreatedAt = tag.CreatedAt,
+                });
             }
 
             try

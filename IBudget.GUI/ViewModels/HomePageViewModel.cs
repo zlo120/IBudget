@@ -4,13 +4,15 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using IBudget.GUI.Services;
 using IBudget.Spreadsheet.Interfaces;
 
 namespace IBudget.GUI.ViewModels
 {
-    public partial class HomePageViewModel(ISpreadSheetGeneratorService spreadSheetGenerator) : ViewModelBase
+    public partial class HomePageViewModel(ISpreadSheetGeneratorService spreadSheetGenerator, IMessageService messageService) : ViewModelBase
     {
         private readonly ISpreadSheetGeneratorService _spreadSheetGenerator = spreadSheetGenerator;
+        private readonly IMessageService _messageService = messageService;
         [RelayCommand]
         private async Task GenerateExcel()
         {
@@ -39,11 +41,11 @@ namespace IBudget.GUI.ViewModels
                 {
                     Message = $"Spreadsheet generated at {path}, but could not open it automatically.\n{ex.Message}";
                 }
-
             }
             catch (Exception ex)
             {
-                Message = $"There was an issue generating your spreadsheet.\n{ex.StackTrace}";
+                Message = "An error occurred while generating your spreadsheet.";
+                await _messageService.ShowErrorAsync($"There was an issue generating your spreadsheet.\n{ex.StackTrace}");
             }
         }
 
