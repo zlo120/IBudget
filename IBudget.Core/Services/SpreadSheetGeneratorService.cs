@@ -117,8 +117,7 @@ namespace IBudget.Core.Services
                 var startRow = (int) Math.Ceiling((decimal)trackedTagsList.Count/2)*2 + 2;
                 var endRow = startRow + 10;
 
-                int chartIndex = workSheet!.Charts.Add(ChartType.Column, startRow, startCellColumn, endRow, endCelColumn); // 8: because we have a fixed number of cells from the top, *: determined by the number of tracked tags,
-                                                                                                               // 20: because we have a fixed height for the chart, *: determined by the number of tracked tags
+                int chartIndex = workSheet!.Charts.Add(ChartType.Column, startRow, startCellColumn, endRow, endCelColumn);
 
                 var chart = workSheet.Charts[chartIndex];
 
@@ -134,8 +133,6 @@ namespace IBudget.Core.Services
                 chart.ValueAxis.MajorUnit = 1000; // Set major unit for Y-axis
                 chart.ValueAxis.MinorUnit = 100; // Set minor unit for Y-axis
                 chart.ValueAxis.MajorGridLines.IsVisible = true; // Show major gridlines
-
-                //var totalRows = (int)Math.Ceiling((decimal)trackedTagsList.Count / 2); // `total` as in the "Total Outgoing" and "Total Income" rows
 
                 var totalOutgoingColumn = $"{IntToChar(totalOutgoingColumnNum)}{startRow-1}";
                 var totalIncomingColumn = $"{IntToChar(totalOutgoingColumnNum + 1)}{startRow-1}";

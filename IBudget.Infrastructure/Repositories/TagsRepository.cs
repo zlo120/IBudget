@@ -29,9 +29,11 @@ namespace IBudget.Infrastructure.Repositories
         public async Task<List<Tag>> FindTagsByDescription(string description)
         {
             var tags = new List<Tag>();
-            var tagNames = (await _expenseRuleTagsRepository.GetExpenseRuleTagByRule(description)).Tags;
-            if (tagNames.Count > 0)
+            var expenseRuleTags = await _expenseRuleTagsRepository.GetExpenseRuleTagByRule(description);
+            List<string> tagNames = [];
+            if (expenseRuleTags is not null && expenseRuleTags.Tags.Count > 0)
             {
+                tagNames = [.. expenseRuleTags.Tags.Distinct()];
                 foreach (var tagName in tagNames)
                 {
                     var tag = await GetTagByName(tagName);

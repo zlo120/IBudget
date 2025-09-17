@@ -7,7 +7,7 @@ namespace IBudget.Core.RepositoryInterfaces
     public interface IExpenseRuleTagsRepository
     {
         Task<ExpenseRuleTag> CreateExpenseRuleTag(ExpenseRuleTag expenseRuleTag);
-        Task<ExpenseRuleTag> GetExpenseRuleTagByRule(string rule);
+        Task<ExpenseRuleTag?> GetExpenseRuleTagByRule(string rule);
         Task<ExpenseRuleTag> GetExpenseRuleTagById(ObjectId id);
         Task<PaginatedResponse<ExpenseRuleTag>> GetExpenseRuleTagByPage(int pageNumber);
         Task<ExpenseRuleTag> UpdateExpenseRuleTag(ExpenseRuleTag expenseRuleTag);

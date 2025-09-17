@@ -58,7 +58,7 @@ namespace IBudget.Core.Services
 
                 // populate the expenses that fall into the "other" category
                 var otherExpenses = new Queue<FinancialRecord>(remainingExpenses
-                                                            .Where(expense => expense.Tags!.Count == 0 || expense.Tags.Any(tag => !tag.IsTracked))
+                                                            .Where(expense => expense.Tags!.Count == 0 || expense.Tags.All(tag => !tag.IsTracked))
                                                             .ToList());
                 PopulateColumn(otherExpenses, ref worksheet, otherColumnIndex, true);
 
