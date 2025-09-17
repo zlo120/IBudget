@@ -10,26 +10,26 @@ namespace IBudget.Core.Services
     {
         private readonly ISummaryService _summaryService;
         private readonly ITagService _tagService;
-        private readonly int _otherColumn;
-        private readonly int _incomeColumn;
-        private readonly string[] _trackedTags;
 
         public SpreadSheetPopulatorService(ISummaryService summaryService, ITagService tagService)
         {
             _summaryService = summaryService;
             _tagService = tagService;
-            _trackedTags = tagService.GetAll().Result
-                    .Where(tag => tag.IsTracked)
-                    .Select(tag => tag.Name)
-                    .OrderBy(s => s)
-                    .ToArray();
-
-            _otherColumn = _trackedTags.Length + 1; // 1 is a magic number as the "other" column is the next cell after all the tracked tags
-            _incomeColumn = _otherColumn + 3; // 3 is a magic number derived from the code in generator.cs where we see
-                                              // that the income column is 3 cells away from the "other" column
         }
+        private async Task<List<Tag>> GetAllTrackedTags()
+        {
+            return [.. (await _tagService.GetAll())
+                .Where(tag => tag.IsTracked)
+                .OrderBy(s => s.Name)
+                .ToList()];
+        }
+
         public async Task<XLWorkbook> PopulateSpreadsheet(XLWorkbook workbook)
         {
+            var trackedTagsList = await GetAllTrackedTags();
+            var otherColumnIndex = trackedTagsList.Count + 1;
+            var incomeColumnIndex = otherColumnIndex + 3;
+
             for (int worksheetNum = 1; worksheetNum <= workbook.Worksheets.Count; worksheetNum++)
             {
                 var worksheet = workbook.Worksheet(worksheetNum);
@@ -54,31 +54,31 @@ namespace IBudget.Core.Services
 
                 // populate the income
                 var incomeQueue = new Queue<Income>(week.Income);
-                PopulateColumn(new Queue<FinancialRecord>(incomeQueue.ToList()), ref worksheet, _incomeColumn);
+                PopulateColumn(new Queue<FinancialRecord>(incomeQueue.ToList()), ref worksheet, incomeColumnIndex, true);
 
                 // populate the expenses that fall into the "other" category
                 var otherExpenses = new Queue<FinancialRecord>(remainingExpenses
                                                             .Where(expense => expense.Tags!.Count == 0 || expense.Tags.Any(tag => !tag.IsTracked))
                                                             .ToList());
-                PopulateColumn(otherExpenses, ref worksheet, _otherColumn);
+                PopulateColumn(otherExpenses, ref worksheet, otherColumnIndex, true);
 
                 // populate the expenses that fall into the tracked tags
-                for (var columnCounter = 1; columnCounter <= _trackedTags.Length; columnCounter++)
+                for (var columnCounter = 1; columnCounter <= trackedTagsList.Count; columnCounter++)
                 {
                     // using all the data that exists in the db for this week and for this category
                     //   populate this column
                     var remainingExpenseInColumn = new Queue<FinancialRecord>(
                         remainingExpenses
                             .Where(e => e.Tags!
-                            .Any(t => t.Name.ToLower().Contains(_trackedTags[columnCounter - 1].ToLower())))
+                            .Any(t => t.Name.ToLower().Contains(trackedTagsList[columnCounter - 1].Name.ToLower())))
                             .ToList()
                     );
 
                     PopulateColumn(remainingExpenseInColumn, ref worksheet, columnCounter);
 
-                    for (int i = 1; i <= _trackedTags.Length; i++)
+                    for (int i = 1; i <= trackedTagsList.Count; i++)
                     {
-                        if (_trackedTags[i - 1].Length > 10)
+                        if (trackedTagsList[i - 1].Name.Length > 10)
                         {
                             worksheet.Column(i).AdjustToContents();
                         }
@@ -86,7 +86,7 @@ namespace IBudget.Core.Services
                         column.Style.NumberFormat.Format = "$#,##0.00";
                     }
 
-                    var incomeColumn = _trackedTags.Length + 4;
+                    var incomeColumn = trackedTagsList.Count + 4;
                     worksheet.Column(incomeColumn).AdjustToContents();
                     worksheet.Column(incomeColumn + 1).AdjustToContents();
                 }
@@ -95,7 +95,7 @@ namespace IBudget.Core.Services
             return workbook;
         }
 
-        private void PopulateColumn(Queue<FinancialRecord> remainingDataRecords, ref IXLWorksheet worksheet, int columnNum)
+        private void PopulateColumn(Queue<FinancialRecord> remainingDataRecords, ref IXLWorksheet worksheet, int columnNum, bool writeDescription = false)
         {
             var rowCounter = 3;
             while (remainingDataRecords.Any())
@@ -111,8 +111,7 @@ namespace IBudget.Core.Services
                 cell.Value = Math.Abs((decimal)record?.Amount!);
                 worksheet.Column(columnNum).Style.NumberFormat.Format = "$#,##0.00";
 
-                // write the description
-                if (_otherColumn == columnNum || _incomeColumn == columnNum)
+                if (writeDescription)
                 {
                     var descriptionColumn = columnNum + 1;
                     var descriptionCell = worksheet.Cell(rowCounter, descriptionColumn);

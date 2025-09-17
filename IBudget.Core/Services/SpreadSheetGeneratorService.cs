@@ -12,20 +12,23 @@ namespace IBudget.Core.Services
     {
         private readonly IPopulator _populator;
         private readonly ITagService _tagService;
-        private readonly List<string> _trackedTags;
 
         public SpreadSheetGeneratorService(IPopulator populator, ITagService tagService)
         {
             _populator = populator;
             _tagService = tagService;
-            _trackedTags = tagService.GetAll().Result
-                .Where(tag => tag.IsTracked)
-                .Select(tag => tag.Name)
-                .OrderBy(s => s)
-                .ToList();
         }
-        public async void GenerateSpreadsheet()
+
+        private async Task<List<Tag>> GetAllTrackedTags()
         {
+            return [.. (await _tagService.GetAll())
+                .Where(tag => tag.IsTracked)
+                .OrderBy(s => s.Name)
+                .ToList()];
+        }
+        public async Task<string> GenerateSpreadsheet()
+        {
+            var trackedTagsList = await GetAllTrackedTags();
             var calendar = Calendar.InitiateCalendar();
             var workbook = new XLWorkbook();
 
@@ -38,7 +41,7 @@ namespace IBudget.Core.Services
 
             int nextFreeCell = 2;
 
-            GenerateMonths(calendar, workbook, tableOfContentsWS, ref nextFreeCell);
+            GenerateMonths(calendar, workbook, tableOfContentsWS, ref nextFreeCell, trackedTagsList);
 
             string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + $"\\{calendar.YearNumber} - IBudgetSheet.xlsx";
 
@@ -48,8 +51,8 @@ namespace IBudget.Core.Services
             string[] monthNames = calendar.Months.Select(month => month.MonthName).ToArray();
             string[] weekLabels = calendar.Months.SelectMany(month => month.Weeks.Select(week => week.Label)).ToArray();
 
-            var numOfTrackedTags = _trackedTags.Count;
-            GenerateCharts(path, monthNames, weekLabels, numOfTrackedTags);
+            var numOfTrackedTags = trackedTagsList.Count;
+            GenerateCharts(path, monthNames, weekLabels, numOfTrackedTags, trackedTagsList);
 
             // deleting the last sheet
             workbook = new XLWorkbook(path);
@@ -62,13 +65,10 @@ namespace IBudget.Core.Services
 
             workbook.Save();
 
-            Console.WriteLine($"Your excel spreadsheet is ready to open at \"{path}\"");
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();
-            return;
+            return path;
         }
 
-        private void GenerateCharts(string path, string[] monthNames, string[] weekLabels, int numOfTrackedTags)
+        private void GenerateCharts(string path, string[] monthNames, string[] weekLabels, int numOfTrackedTags, List<Tag> trackedTagsList)
         {
             var totalOutgoingColumnNum = numOfTrackedTags + 7;
             var workBook = new Aspose.Cells.Workbook(path);
@@ -78,7 +78,7 @@ namespace IBudget.Core.Services
             foreach (var month in monthNames)
             {
                 var workSheet = workBook.Worksheets.Where(s => s.Name == month).FirstOrDefault();
-                int chartIndex = workSheet.Charts.Add(ChartType.Column, 3, 3, 20, 12);
+                int chartIndex = workSheet!.Charts.Add(ChartType.Column, 3, 3, 20, 12);
 
                 var chart = workSheet.Charts[chartIndex];
 
@@ -87,9 +87,9 @@ namespace IBudget.Core.Services
 
                 chart.Legend.Position = LegendPositionType.Bottom;
 
-                chart.Title.TextFont.Size = 14;
+                chart.Title.Font.Size = 14;
                 chart.CategoryAxis.Title.Text = "";
-                chart.ValueAxis.Title.TextFont.IsItalic = true;
+                chart.ValueAxis.Title.Font.IsItalic = true;
 
                 chart.ValueAxis.MajorUnit = 1000; // Set major unit for Y-axis
                 chart.ValueAxis.MinorUnit = 100; // Set minor unit for Y-axis
@@ -101,17 +101,18 @@ namespace IBudget.Core.Services
 
                 chart.NSeries[0].Name = "Total outgoing"; // Replace with your actual series name
                 chart.NSeries[1].Name = "Total income"; // Replace with your actual series name
+                chart.NSeries.CategoryData = ""; // Removes the default '1' label
             }
 
             foreach (var week in weekLabels)
             {
                 var workSheet = workBook.Worksheets.Where(s => s.Name == week).FirstOrDefault();
 
-                var startCellColumn = _trackedTags.Count + 6;
+                var startCellColumn = trackedTagsList.Count + 6;
                 var endCelColumn = startCellColumn + 2;
 
-                int chartIndex = workSheet.Charts.Add(ChartType.Column, 8, startCellColumn, 20, endCelColumn); // 8: because we have a fixed number of cells from the top, *: determined by the number of tracked tags,
-                                                                                        // 20: because we have a fixed height for the chart, *: determined by the number of tracked tags
+                int chartIndex = workSheet!.Charts.Add(ChartType.Column, 8, startCellColumn, 20, endCelColumn); // 8: because we have a fixed number of cells from the top, *: determined by the number of tracked tags,
+                                                                                                               // 20: because we have a fixed height for the chart, *: determined by the number of tracked tags
 
                 var chart = workSheet.Charts[chartIndex];
 
@@ -120,9 +121,9 @@ namespace IBudget.Core.Services
 
                 chart.Legend.Position = LegendPositionType.Bottom;
 
-                chart.Title.TextFont.Size = 14;
+                chart.Title.Font.Size = 14;
                 chart.CategoryAxis.Title.Text = "";
-                chart.ValueAxis.Title.TextFont.IsItalic = true;
+                chart.ValueAxis.Title.Font.IsItalic = true;
 
                 chart.ValueAxis.MajorUnit = 1000; // Set major unit for Y-axis
                 chart.ValueAxis.MinorUnit = 100; // Set minor unit for Y-axis
@@ -136,12 +137,13 @@ namespace IBudget.Core.Services
 
                 chart.NSeries[0].Name = "Total outgoing"; // Replace with your actual series name
                 chart.NSeries[1].Name = "Total income"; // Replace with your actual series name
+                chart.NSeries.CategoryData = ""; // Removes the default '1' label
             }
 
             workBook.Save(path);
         }
-    
-        private void GenerateMonths(YearDTO calendar, XLWorkbook workbook, IXLWorksheet tableOfContentsWS, ref int nextFreeCell)
+
+        private void GenerateMonths(YearDTO calendar, XLWorkbook workbook, IXLWorksheet tableOfContentsWS, ref int nextFreeCell, List<Tag> trackedTagsList)
         {
             foreach (var month in calendar.Months)
             {
@@ -229,13 +231,13 @@ namespace IBudget.Core.Services
 
                 nextFreeCell++;
 
-                GenerateWeeks(month, workbook, tableOfContentsWS, ref nextFreeCell);
+                GenerateWeeks(month, workbook, tableOfContentsWS, ref nextFreeCell, trackedTagsList);
 
                 nextFreeCell++;
             }
         }
 
-        private void GenerateWeeks(MonthDTO month, XLWorkbook workbook, IXLWorksheet tableOfContentsWS, ref int nextFreeCell)
+        private void GenerateWeeks(MonthDTO month, XLWorkbook workbook, IXLWorksheet tableOfContentsWS, ref int nextFreeCell, List<Tag> trackedTagsList)
         {
             foreach (var week in month.Weeks)
             {
@@ -256,12 +258,12 @@ namespace IBudget.Core.Services
                 weekWorksheet.Cell(1, 6).Value = "Go back to Table of Contents";
                 weekWorksheet.Cell(1, 6).SetHyperlink(new XLHyperlink($"'Table of Contents'!A1"));
 
-                for (int columnCounter = 1; columnCounter <= _trackedTags.Count; columnCounter++)
+                for (int columnCounter = 1; columnCounter <= trackedTagsList.Count; columnCounter++)
                 {
-                    weekWorksheet.Cell(2, columnCounter).Value = _trackedTags[columnCounter - 1];
+                    weekWorksheet.Cell(2, columnCounter).Value = trackedTagsList[columnCounter - 1].Name;
                 }
 
-                var otherColumn = _trackedTags.Count + 1;
+                var otherColumn = trackedTagsList.Count + 1;
                 weekWorksheet.Cell(2, otherColumn).Value = "Other";
                 weekWorksheet.Cell(2, otherColumn + 1).Value = "Description of other";
                 weekWorksheet.Column(otherColumn + 1).Width = 3 * weekWorksheet.Column(6).Width;
@@ -282,29 +284,30 @@ namespace IBudget.Core.Services
                     ).Merge();
 
                 // tracked columns
-                var foodColumnNum = _trackedTags.IndexOf("food") + 1;
-                var alcoholColumnNum = _trackedTags.IndexOf("alcohol") + 1;
-                var busColumnNum = _trackedTags.IndexOf("bus") + 1;
+                // START REDO THIS WHOLE PLACE
+                var foodColumnNum = 0;
+                var alcoholColumnNum = 1;
+                var busColumnNum = 2;
 
-                if (foodColumnNum != -1)
+                if (true) // re do this later
                 {
                     var columnLetter = IntToChar(foodColumnNum + 1);
                     weekWorksheet.Cell(2, summaryColumn).Value = "Money spent on food";
                     weekWorksheet.Cell(3, summaryColumn).FormulaA1 = $"_xlfn.SUM({columnLetter}:{columnLetter})";
                 }
 
-                var otherColLetter = IntToChar(otherColumn + 1);
+                var otherColLetter = IntToChar(otherColumn);
                 weekWorksheet.Cell(2, summaryColumn + 1).Value = "Money spent on other";
                 weekWorksheet.Cell(3, summaryColumn + 1).FormulaA1 = $"_xlfn.SUM({otherColLetter}:{otherColLetter})";
 
-                if (alcoholColumnNum != -1)
+                if (true) // re do this later
                 {
                     var columnLetter = IntToChar(alcoholColumnNum + 1);
                     weekWorksheet.Cell(4, summaryColumn).Value = "Money spent on alcohol";
                     weekWorksheet.Cell(5, summaryColumn).FormulaA1 = $"_xlfn.SUM({columnLetter}:{columnLetter})";
                 }
 
-                if (busColumnNum != -1)
+                if (true) // re do this later
                 {
                     var columnLetter = IntToChar(busColumnNum + 1);
                     weekWorksheet.Cell(4, summaryColumn + 1).Value = "Money spent on the bus";
@@ -314,7 +317,7 @@ namespace IBudget.Core.Services
                 weekWorksheet.Cell(6, summaryColumn).Value = "Total Outgoing";
                 weekWorksheet.Cell(7, summaryColumn).FormulaA1 = $"_xlfn.SUM(A:{otherColLetter})";
 
-                var incomeColumnLetter = IntToChar(incomeColumn + 1);
+                var incomeColumnLetter = IntToChar(incomeColumn);
                 weekWorksheet.Cell(6, summaryColumn + 1).Value = "Total Income";
                 weekWorksheet.Cell(7, summaryColumn + 1).FormulaA1 = $"_xlfn.SUM({incomeColumnLetter}:{incomeColumnLetter})";
 
@@ -342,15 +345,15 @@ namespace IBudget.Core.Services
             budgetSheet.Cell(3, 1).Value = "Alcohol";
             budgetSheet.Cell(4, 1).Value = "Public transport";
 
-            budgetSheet.Cell(1,2).Value = "Amount";
-            budgetSheet.Cell(1,2).Style.Font.Bold = true;
+            budgetSheet.Cell(1, 2).Value = "Amount";
+            budgetSheet.Cell(1, 2).Style.Font.Bold = true;
 
             var column2 = budgetSheet.Column(2);
             column2.Style.NumberFormat.Format = "$#,##0.00";
 
-            budgetSheet.Cell(1,4).Value = "Total Monthly Expense Budget";
-            budgetSheet.Cell(1,4).Style.Font.Bold = true;
-            budgetSheet.Cell(2,4).FormulaA1 = "_xlfn.SUM(B:B)";
+            budgetSheet.Cell(1, 4).Value = "Total Monthly Expense Budget";
+            budgetSheet.Cell(1, 4).Style.Font.Bold = true;
+            budgetSheet.Cell(2, 4).FormulaA1 = "_xlfn.SUM(B:B)";
 
             var column4 = budgetSheet.Column(4);
             column4.Style.NumberFormat.Format = "$#,##0.00";
@@ -370,5 +373,5 @@ namespace IBudget.Core.Services
                 throw new ArgumentOutOfRangeException(nameof(n), "Value must be between 1 and 26.");
             }
         }
-    }    
+    }
 }

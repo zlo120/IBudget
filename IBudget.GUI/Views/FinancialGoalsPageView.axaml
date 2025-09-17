@@ -1,0 +1,106 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="IBudget.GUI.Views.FinancialGoalsPageView"
+			 xmlns:vm="using:IBudget.GUI.ViewModels"
+			 x:DataType="vm:FinancialGoalsPageViewModel"
+			 x:CompileBindings="True">
+
+	<Grid ColumnDefinitions="*, *">
+		<!--List side-->
+		<Grid Grid.Column="0"
+			  RowDefinitions="Auto, *">
+			<TextBlock Grid.Row="0"
+					   HorizontalAlignment="Center"
+					   Margin="0 0 0 0"
+					   FontSize="20">
+				Financial Goals per Month
+			</TextBlock>
+
+			<TextBlock Margin="0 20 0 0"
+                       IsVisible="{Binding IsLoading}"
+                       Grid.Row="1"
+                       HorizontalAlignment="Center">
+				Loading financial goals...
+			</TextBlock>
+
+			<Grid Grid.Row="1"
+                  IsVisible="{Binding !IsLoading}">
+				<ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch"
+                              Margin="0,0,0,20">
+					<DataGrid Margin="20 20 20 0"
+                              ItemsSource="{Binding FinancialGoals}"
+                              GridLinesVisibility="All"
+                              BorderThickness="1"
+                              BorderBrush="Gray"
+                              VerticalAlignment="Stretch"
+                              IsReadOnly="True">
+						<DataGrid.Columns>
+							<DataGridTextColumn Header="Goal Name" Width="2*"
+                                                Binding="{Binding Key}" />
+							<DataGridTextColumn Header="Maximum Expense Amount" Width="2*"
+                                                Binding="{Binding Value}" />
+						</DataGrid.Columns>
+					</DataGrid>
+				</ScrollViewer>
+			</Grid>
+		</Grid>
+
+		 <!--Create side--> 
+		<Grid ColumnDefinitions="Auto, *"
+			  Grid.Column="1">
+
+			 <!--Create Financial Goal from Tag--> 
+			<StackPanel Margin="0 10 20 0"
+						Grid.Column="1">
+				<TextBlock>Create Tag</TextBlock>
+				<AutoCompleteBox Margin="0 5 0 0"
+						 ItemsSource="{Binding Tags}"
+						 Watermark="Enter goal name"
+						 Text="{Binding GoalName}"/>
+				<TextBox Margin="0 5 0 0"
+						 Text="{Binding Amount}"
+						 Watermark="Enter amount (e.g., 100.05)"
+						 TextInput="OnAmountTextInput"
+						 KeyDown="OnAmountKeyDown" />
+				<Grid ColumnDefinitions="*, Auto"
+					  Margin="0 5 0 0">
+					<TextBlock Text="{Binding Message}"
+							   TextAlignment="Start"/>
+					<Button Grid.Column="1"
+							IsDefault="True"
+							Command="{Binding CreateGoalCommand}">Create</Button>
+				</Grid>
+				
+				<!-- Information Area -->
+				<Border Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+						BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+						BorderThickness="1"
+						CornerRadius="4"
+						Padding="10"
+						Margin="0 15 0 0">
+					<Grid ColumnDefinitions="Auto, *">
+						<Border Padding="5"
+							CornerRadius="50">
+							<PathIcon Data="{StaticResource QuestionRegular}" VerticalAlignment="Top"/>
+						</Border>
+						<StackPanel Grid.Column="1">
+							<TextBlock FontWeight="SemiBold"
+									   Margin="0 0 0 5"
+									   Text="Creating a financial goal" />
+							<TextBlock TextWrapping="Wrap"
+									   FontSize="12"
+									   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}">
+								A financial goal is directly linked to tagging. If the financial goal you create has a corresponding tag these two will be linked. If no tag exists with the same name as your goal, a new tag will be created with your goal name.
+							</TextBlock>
+						</StackPanel>
+					</Grid>
+				</Border>
+			</StackPanel>
+		</Grid>
+	</Grid>
+</UserControl>

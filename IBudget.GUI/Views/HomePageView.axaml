@@ -9,10 +9,16 @@
 			 x:CompileBindings="True">
 
     <Grid>
-        <Button Content="Generate Excel"
+		<StackPanel VerticalAlignment="Center">
+			<Button Content="Generate Excel"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Command="{Binding GenerateExcelCommand}" />
+			<TextBlock Text="{Binding Message}"
+						FontSize="16"
+						HorizontalAlignment="Center"
+						VerticalAlignment="Center"/>
+		</StackPanel>
     </Grid>
 
 </UserControl>

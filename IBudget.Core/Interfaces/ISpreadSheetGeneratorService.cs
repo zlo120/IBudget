@@ -2,6 +2,6 @@
 {
     public interface ISpreadSheetGeneratorService
     {
-        void GenerateSpreadsheet();
+        Task<string> GenerateSpreadsheet();
     }
 }

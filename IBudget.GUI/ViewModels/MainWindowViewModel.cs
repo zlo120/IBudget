@@ -16,13 +16,16 @@ namespace IBudget.GUI.ViewModels
         private readonly DataPageViewModel _dataPageViewModel;
         private readonly DictionariesPageViewModel _dictionariesPageViewModel;
         private readonly TagsPageViewModel _tagsPageViewModel;
+        private readonly FinancialGoalsPageViewModel _financialGoalsPageViewModel;
 
         public MainWindowViewModel(
             HomePageViewModel homePageViewModel,
             UploadCsvPageViewModel uploadCsvPageViewModel,
             DataPageViewModel dataPageViewModel,
             DictionariesPageViewModel dictionariesPageViewModel,
-            TagsPageViewModel tagsPageViewModel
+            TagsPageViewModel tagsPageViewModel,
+            FinancialGoalsPageViewModel financialGoalsPageViewModel
+
         )
         {
             _homePageViewModel = homePageViewModel;
@@ -30,6 +33,7 @@ namespace IBudget.GUI.ViewModels
             _dataPageViewModel = dataPageViewModel;
             _dictionariesPageViewModel = dictionariesPageViewModel;
             _tagsPageViewModel = tagsPageViewModel;
+            _financialGoalsPageViewModel = financialGoalsPageViewModel;
 
             CurrentPage = _homePageViewModel;
         }
@@ -57,6 +61,8 @@ namespace IBudget.GUI.ViewModels
                 instance = _dictionariesPageViewModel;
             if (value.ModelType == typeof(TagsPageViewModel))
                 instance = _tagsPageViewModel;
+            if (value.ModelType == typeof(FinancialGoalsPageViewModel))
+                instance = _financialGoalsPageViewModel;
 
             if (instance is null) return;
             CurrentPage = instance;
@@ -69,6 +75,7 @@ namespace IBudget.GUI.ViewModels
             new ListItemTemplate(typeof(DataPageViewModel), "DataRegular"),
             new ListItemTemplate(typeof(DictionariesPageViewModel), "BookDbRegular"),
             new ListItemTemplate(typeof(TagsPageViewModel), "TagRegular"),
+            new ListItemTemplate(typeof(FinancialGoalsPageViewModel), "MoneyRegular"),
         };
 
         [RelayCommand]

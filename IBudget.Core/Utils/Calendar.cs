@@ -22,9 +22,8 @@ namespace IBudget.Core.Utils
     {
         public static YearDTO InitiateCalendar()
         {
-            int yearNum;
-            Console.Write("Please enter the year: ");
-            int.TryParse(Console.ReadLine(), out yearNum);
+            int yearNum = DateTime.Now.Year;
+            // get current year number
 
             var months = new List<MonthDTO>();
             var year = new YearDTO(yearNum);
@@ -40,54 +39,52 @@ namespace IBudget.Core.Utils
         }
         public static DateTime[] GetAllWeeks(int year, int month)
         {
-            DateTime[] weeks = new DateTime[5];
-
             DateTime currentDate = new DateTime(year, month, 1);
 
-            string[] acceptableDays = ["Monday", "Tuesday", "Wednesday"];
+            string[] acceptableDays = ["Tuesday", "Wednesday", "Thursday"];
 
-            var firstWeek = true;
-
-            if (currentDate.DayOfWeek != DayOfWeek.Sunday
+            if (currentDate.DayOfWeek != DayOfWeek.Monday
                 && acceptableDays.Contains(currentDate.DayOfWeek.ToString()))
             {
-                // count back until the nearest Sunday
-                while (currentDate.DayOfWeek != DayOfWeek.Sunday)
+                // count back until the nearest Monday
+                while (currentDate.DayOfWeek != DayOfWeek.Monday)
                 {
                     currentDate = currentDate.AddDays(-1);
                 }
             }
-            else if (currentDate.DayOfWeek != DayOfWeek.Sunday)
+            else if (currentDate.DayOfWeek != DayOfWeek.Monday) // count forward to the nearest Monday
             {
-                while (currentDate.DayOfWeek != DayOfWeek.Sunday)
+                while (currentDate.DayOfWeek != DayOfWeek.Monday)
                 {
                     currentDate = currentDate.AddDays(1);
                 }
             }
 
-            int counter = 0;
-            while (counter == 0 || currentDate.Month == currentDate.AddDays(3).Month)
+            var weekStartDates = new List<DateTime>();
+            bool isFirstWeek = true;
+
+            while (isFirstWeek || currentDate.Month == currentDate.AddDays(3).Month)
             {
-                if (counter != 0 && currentDate.Month != month)
+                if (!isFirstWeek && currentDate.Month != month)
                 {
                     break;
                 }
 
-                weeks[counter] = currentDate;
+                weekStartDates.Add(currentDate);
 
-                counter++;
+                isFirstWeek = false;
                 currentDate = currentDate.AddDays(7);
             }
 
-            return weeks;
+            return [.. weekStartDates];
         }
         public static DateTime[] GetWeekRange(DateTime date)
         {
             DateTime[] range = new DateTime[2];
 
-            if (date.DayOfWeek != DayOfWeek.Sunday)
+            if (date.DayOfWeek != DayOfWeek.Monday)
             {
-                while (date.DayOfWeek != DayOfWeek.Sunday)
+                while (date.DayOfWeek != DayOfWeek.Monday)
                 {
                     date = date.AddDays(-1);
                 }
@@ -100,9 +97,9 @@ namespace IBudget.Core.Utils
         }
         public static string GetWeekLabel(DateTime date)
         {
-            if (date.DayOfWeek != DayOfWeek.Sunday)
+            if (date.DayOfWeek != DayOfWeek.Monday)
             {
-                while (date.DayOfWeek != DayOfWeek.Sunday)
+                while (date.DayOfWeek != DayOfWeek.Monday)
                 {
                     date = date.AddDays(-1);
                 }
@@ -119,44 +116,6 @@ namespace IBudget.Core.Utils
             var d1 = date1.Date.AddDays(-1 * (int)cal.GetDayOfWeek(date1));
             var d2 = date2.Date.AddDays(-1 * (int)cal.GetDayOfWeek(date2));
             return d1 == d2;
-        }
-        public static void DisplayWeek(WeekDTO week)
-        {
-            var border = new String('=', week.Label.Length);
-            Console.WriteLine(border);
-            Console.WriteLine(week.Label);
-            Console.WriteLine(border);
-
-            if (week.Expenses.Count == 0)
-            {
-                Console.WriteLine("No expenses for this week.");
-            }
-            else
-            {
-                Console.WriteLine("Expenses:");
-                foreach (var expense in week.Expenses)
-                {
-                    Console.WriteLine(expense);
-                }
-                Console.WriteLine();
-            }
-
-
-            if (week.Income.Count == 0)
-            {
-                Console.WriteLine("No income for this week.");
-            }
-            else
-            {
-                Console.WriteLine("Income:");
-                foreach (var income in week.Income)
-                {
-                    Console.WriteLine(income);
-                }
-                Console.WriteLine();
-            }
-
-            Console.WriteLine();
         }
         public static DateTime ParseWeekStartFromWeekRange(string weekRange)
         {

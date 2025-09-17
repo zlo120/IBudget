@@ -55,6 +55,7 @@
 						Grid.Column="1">
 				<TextBlock>Create Tag</TextBlock>
 				<TextBox Margin="0 5 0 0"
+						 Watermark="Enter tag name"
 						 Text="{Binding TagName}"/>
 				<StackPanel Orientation="Horizontal">
 					<CheckBox IsChecked="{Binding IsTracked}" />

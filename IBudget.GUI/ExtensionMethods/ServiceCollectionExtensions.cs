@@ -2,6 +2,7 @@
 using IBudget.Core.Interfaces;
 using IBudget.Core.RepositoryInterfaces;
 using IBudget.Core.Services;
+using IBudget.GUI.Services;
 using IBudget.GUI.Services.Impl;
 using IBudget.GUI.ViewModels;
 using IBudget.GUI.ViewModels.DataView;
@@ -34,6 +35,7 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddTransient<DictionariesPageViewModel>();
             collection.AddTransient<MonthlyViewModel>();
             collection.AddTransient<WeeklyViewModel>();
+            collection.AddTransient<FinancialGoalsPageViewModel>();
 
             collection.AddTransient<ICSVParserService, CSVParserService>();
             collection.AddScoped<IIncomeService, IncomeService>();
@@ -52,6 +54,9 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddScoped<IExpenseTagsRepository, ExpenseTagsRepository>();
             collection.AddScoped<IExpenseRuleTagService, ExpenseRuleTagService>();
             collection.AddScoped<IExpenseRuleTagsRepository, ExpenseRuleTagsRepository>();
+            collection.AddScoped<IFinancialGoalService, FinancialGoalService>();
+            collection.AddScoped<IFinancialGoalRepository, FinancialGoalRepository>();
+            collection.AddSingleton<IMessageService, MessageService>();
 
             collection.AddScoped<MongoDbContext>();
 

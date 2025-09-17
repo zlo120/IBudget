@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml.Office2010.Excel;
-using IBudget.Core.Model;
-using IBudget.Core.RepositoryInterfaces;
+﻿using IBudget.Core.RepositoryInterfaces;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Tag = IBudget.Core.Model.Tag;
@@ -41,16 +39,16 @@ namespace IBudget.Infrastructure.Repositories
                 }
                 return tags;
             }
-            
+
             tagNames = [.. (await _expenseTagsRepository.GetAllExpenseTags()).Where(e => e.Title.Contains(description, StringComparison.InvariantCultureIgnoreCase))
                 .SelectMany(e => e.Tags)
                 .Distinct()];
             if (tagNames.Count == 0) return [];
-            foreach(var tagName in tagNames)
+            foreach (var tagName in tagNames)
             {
                 var tag = await GetTagByName(tagName);
                 if (tag != null) tags.Add(tag);
-            }   
+            }
             return tags;
         }
 

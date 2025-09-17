@@ -1,7 +1,7 @@
 ﻿using IBudget.GUI.ViewModels;
 using System;
 
-namespace IBudget.GUI.Services.Impl
+namespace IBudget.GUI.Services
 {
     public interface IViewModelService
     {

@@ -41,5 +41,10 @@ namespace IBudget.Infrastructure
         {
             return _database.GetCollection<Tag>("tags");
         }
+
+        public IMongoCollection<FinancialGoal> GetFinancialGoalsCollection()
+        {
+            return _database.GetCollection<FinancialGoal>("financialGoals");
+        }
     }
 }

@@ -1,6 +1,6 @@
-﻿using IBudget.Core.Interfaces;
+﻿using System.Globalization;
+using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
-using System.Globalization;
 
 namespace IBudget.Core.DTO
 {
@@ -10,8 +10,8 @@ namespace IBudget.Core.DTO
 
         public string MonthName { get; }
         public int MonthNum { get; set; }
-        public List<Income> AllIncome { get; set; } = new List<Income>();   
-        public List<Expense> AllExpenses { get; set; } = new List<Expense>();   
+        public List<Income> AllIncome { get; set; } = new List<Income>();
+        public List<Expense> AllExpenses { get; set; } = new List<Expense>();
         public List<DateTime[]> WeekRanges { get; private set; } = new List<DateTime[]>();
         public List<WeekDTO> Weeks { get; set; } = new List<WeekDTO>();
         public MonthDTO(int month)
@@ -37,36 +37,35 @@ namespace IBudget.Core.DTO
 
             string[] acceptableDays = ["Monday", "Tuesday", "Wednesday"];
 
-            var firstWeek = true;
-
-            if (currentDate.DayOfWeek != DayOfWeek.Sunday
+            if (currentDate.DayOfWeek != DayOfWeek.Monday
                 && acceptableDays.Contains(currentDate.DayOfWeek.ToString()))
             {
                 // count back until the nearest Sunday
-                while (currentDate.DayOfWeek != DayOfWeek.Sunday)
+                while (currentDate.DayOfWeek != DayOfWeek.Monday)
                 {
                     currentDate = currentDate.AddDays(-1);
                 }
             }
-            else if (currentDate.DayOfWeek != DayOfWeek.Sunday)
+            else if (currentDate.DayOfWeek != DayOfWeek.Monday)
             {
-                while (currentDate.DayOfWeek != DayOfWeek.Sunday)
+                while (currentDate.DayOfWeek != DayOfWeek.Monday)
                 {
                     currentDate = currentDate.AddDays(1);
                 }
             }
 
-            int counter = 0;
-            while (counter == 0 || currentDate.Month == currentDate.AddDays(3).Month)
+            bool isFirstWeek = true;
+
+            while (isFirstWeek || currentDate.Month == currentDate.AddDays(3).Month)
             {
-                if (counter != 0 && currentDate.Month != MonthNum)
+                if (!isFirstWeek && currentDate.Month != MonthNum)
                 {
                     break;
                 }
 
                 WeekRanges.Add([currentDate, currentDate.AddDays(6)]);
 
-                counter++;
+                isFirstWeek = false;
                 currentDate = currentDate.AddDays(7);
             }
 
@@ -76,10 +75,10 @@ namespace IBudget.Core.DTO
                 Weeks.Add(week);
             }
         }
-    
+
         public void PopulateAllWeeks(ICalendarService calendarService)
         {
-            for(int i = 0; i < Weeks.Count; i++)
+            for (int i = 0; i < Weeks.Count; i++)
             {
                 Weeks[i] = calendarService.RetrieveWeekData(Weeks[i]).Result;
             }
