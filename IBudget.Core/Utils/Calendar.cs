@@ -105,9 +105,8 @@ namespace IBudget.Core.Utils
                 }
             }
             // start variable date.ToShortDateString() but replace '/' with '-'
-            var start = date.ToShortDateString().Replace("/", "-");
-            var end = date.AddDays(6).ToShortDateString().Replace("/", "-");
-
+            var start = date.ToString("dd-MM-yyyy");
+            var end = date.AddDays(6).ToString("dd-MM-yyyy");
             return $"{start} to {end}";
         }
         public static bool DatesAreInTheSameWeek(DateTime date1, DateTime date2)
@@ -134,7 +133,7 @@ namespace IBudget.Core.Utils
             else
             {
                 // throw string parsing exception
-                throw new Exception("An error occurred when parse a d-MM-yyyy date string or dd-MM-yyyy date string.");
+                throw new Exception($"An error occurred when parse a d-MM-yyyy date string or dd-MM-yyyy date string, attempted to parse: {dateString}. Stacktrace: {Environment.StackTrace}");
             }
         }
     }

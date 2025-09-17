@@ -46,7 +46,11 @@ namespace IBudget.Core.Services
 
             GenerateMonths(calendar, workbook, tableOfContentsWS, ref nextFreeCell, trackedTagsList, financialGoals);
 
-            string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + $"\\Stacks\\{calendar.YearNumber} Budget.xlsx";
+            string path = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                "Stacks",
+                $"{calendar.YearNumber}-Budget.xlsx"
+            );
 
             workbook.SaveAs(path);
 
