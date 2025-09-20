@@ -4,120 +4,329 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="IBudget.GUI.Views.UploadCsv.TagDataStepPageView"
-			 xmlns:vm="using:IBudget.GUI.ViewModels.UploadCsv"
-			 x:DataType="vm:TagDataStepPageViewModel"
-			 x:CompileBindings="True">
+             xmlns:vm="using:IBudget.GUI.ViewModels.UploadCsv"
+             x:DataType="vm:TagDataStepPageViewModel"
+             x:CompileBindings="True">
 
-	<Grid ColumnDefinitions="*, *"
-		  Margin="35 15 35 15">
-		<Grid RowDefinitions="Auto, *"
-			  Grid.Column="0"
-			  Margin="5 0">
-			<StackPanel>
-				<TextBlock FontSize="26"
-					   Grid.Row="0">
-					Untagged
-				</TextBlock>
-				<TextBlock IsVisible="{Binding IsLoading}"
-						   Grid.Row="0">
-					Loading...
-				</TextBlock>
-			</StackPanel>
-			<ScrollViewer VerticalScrollBarVisibility="Auto"
-						  Grid.Row="1"
-						  IsVisible="{Binding !IsLoading}">
-				<StackPanel Orientation="Vertical"
-						Grid.Row="0">
-					<ListBox ItemsSource="{Binding UntaggedItems}"
-							 SelectedItem="{Binding SelectedUntaggedItem}"
-							 Margin="0 0 -100 0"
-							 Padding="0">
-						<ListBox.Styles>
-							<Style Selector="ListBoxItem">
-								<Setter Property="Padding" Value="12 8"></Setter>
-							</Style>
-						</ListBox.Styles>
-						<ListBox.ItemTemplate>
-							<DataTemplate DataType="{x:Type vm:TagListItemTemplate}">
-								<TextBlock Text="{Binding Label}"/>
-							</DataTemplate>
-						</ListBox.ItemTemplate>
-					</ListBox>
-				</StackPanel>
-			</ScrollViewer>
-			</Grid>
-		<Grid RowDefinitions="Auto, Auto, Auto, *, Auto"
-			  VerticalAlignment="Stretch"
-			  Grid.Column="1"
-			  Margin="5 0">
-			<StackPanel Orientation="Horizontal"
-						Grid.Row="0">
-				<CheckBox IsChecked="{Binding IsCreatingRule}" />
-				<TextBlock Margin="0 0 5 0"
-						   VerticalAlignment="Center"
-						   FontSize="16">
-					Create Rule
-				</TextBlock>
-				<Border Padding="5"
-						CornerRadius="50"
-						ToolTip.Tip="You can create a rule to capture more than one expense/income entry. Note: this is feature does not support regular expressions yet.">
-					<PathIcon Data="{StaticResource QuestionRegular}" VerticalAlignment="Top"/>
-				</Border>
-			</StackPanel>
-			<!--Start Tagging entries-->
-			<StackPanel Grid.Row="1"
-						IsVisible="{Binding !IsCreatingRule}">
-				<StackPanel Margin="0 5 0 0"
-							Grid.Row="2">
-					<TextBlock Margin="0 5 0 0"
-							   FontSize="16"
-							   Text="{Binding SelectedUntaggedItemName}"/>
-					<AutoCompleteBox Margin="0 5 0 0"
-									 ItemsSource="{Binding ExistingTags}"
-									 FilterMode="Contains"
-									 Watermark="Enter tag name"
-									 Text="{Binding Tag}"/>
-					
-				</StackPanel>
-			</StackPanel>
-			<!--End Tagging entries-->
-			<!--Start Creating rules-->
-			<StackPanel Grid.Row="1"
-						IsVisible="{Binding IsCreatingRule}">
-				<StackPanel Margin="0 5 0 0"
-							Grid.Row="2">
-					<TextBox Margin="0 5 0 0"
-							 Watermark="Enter rule name"
-							 Text="{Binding Rule}"/>
-					<AutoCompleteBox Margin="0 5 0 0"
-									 ItemsSource="{Binding ExistingTags}"
-									 FilterMode="Contains"
-									 Watermark="Enter tag name"
-									 Text="{Binding Tag}"/>
-				</StackPanel>
-			</StackPanel>
-			<!--End Creating rules-->
-			
-			<!--Submitting-->
-			<StackPanel Grid.Row="3"
-						Orientation="Horizontal"
-						HorizontalAlignment="Right"
-						VerticalAlignment="Top">
-				<TextBlock Text="{Binding RemainingUntaggedRecords}"
-						   Margin="5 0 5 0"/>
-				
-				<Button IsDefault="True" 
-						Command="{Binding SubmitTaggingCommand}">
-					Submit
-				</Button>
-			</StackPanel>
+	<UserControl.Styles>
+		<!-- Card Style -->
+		<Style Selector="Border.card">
+			<Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}"/>
+			<Setter Property="CornerRadius" Value="12"/>
+			<Setter Property="Padding" Value="24"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="BoxShadow" Value="0 2 8 0 #1A000000"/>
+		</Style>
 
-			<!--Resetting-->
-			<StackPanel Grid.Row="4"
-						Margin="0 0 0 10">
-				<Button HorizontalAlignment="Right"
-						Command="{Binding ResetCommand}">Reset</Button>
-			</StackPanel>
+		<!-- Header Style -->
+		<Style Selector="TextBlock.header">
+			<Setter Property="FontSize" Value="24"/>
+			<Setter Property="FontWeight" Value="SemiBold"/>
+			<Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+			<Setter Property="Margin" Value="0,0,0,16"/>
+		</Style>
+
+		<!-- Section Header Style -->
+		<Style Selector="TextBlock.section-header">
+			<Setter Property="FontSize" Value="18"/>
+			<Setter Property="FontWeight" Value="Medium"/>
+			<Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+			<Setter Property="Margin" Value="0,0,0,12"/>
+		</Style>
+
+		<!-- Primary Button Style -->
+		<Style Selector="Button.primary">
+			<Setter Property="Background" Value="#2196F3"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="CornerRadius" Value="8"/>
+			<Setter Property="Padding" Value="16,10"/>
+			<Setter Property="FontWeight" Value="SemiBold"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="MinWidth" Value="100"/>
+			<Setter Property="Transitions">
+				<Transitions>
+					<BrushTransition Property="Background" Duration="0:0:0.2"/>
+				</Transitions>
+			</Setter>
+		</Style>
+
+		<Style Selector="Button.primary:pointerover">
+			<Setter Property="Background" Value="#1976D2"/>
+		</Style>
+
+		<!-- Secondary Button Style -->
+		<Style Selector="Button.secondary">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="Foreground" Value="#2196F3"/>
+			<Setter Property="CornerRadius" Value="8"/>
+			<Setter Property="Padding" Value="16,10"/>
+			<Setter Property="FontWeight" Value="Medium"/>
+			<Setter Property="BorderBrush" Value="#2196F3"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="MinWidth" Value="100"/>
+			<Setter Property="Transitions">
+				<Transitions>
+					<BrushTransition Property="Background" Duration="0:0:0.2"/>
+				</Transitions>
+			</Setter>
+		</Style>
+
+		<Style Selector="Button.secondary:pointerover">
+			<Setter Property="Background" Value="#F3F9FF"/>
+		</Style>
+
+		<!-- Info Panel Style -->
+		<Style Selector="Border.info-panel">
+			<Setter Property="Background" Value="{DynamicResource LayerFillColorDefaultBrush}"/>
+			<Setter Property="CornerRadius" Value="8"/>
+			<Setter Property="Padding" Value="16"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}"/>
+			<Setter Property="BorderThickness" Value="1"/>
+		</Style>
+
+		<!-- List Item Style -->
+		<Style Selector="ListBoxItem.tag-item">
+			<Setter Property="CornerRadius" Value="6"/>
+			<Setter Property="Margin" Value="0,2"/>
+			<Setter Property="Padding" Value="12,8"/>
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="Transitions">
+				<Transitions>
+					<BrushTransition Property="Background" Duration="0:0:0.2"/>
+				</Transitions>
+			</Setter>
+		</Style>
+
+		<Style Selector="ListBoxItem.tag-item:selected">
+			<Setter Property="Background" Value="#E3F2FD"/>
+			<Setter Property="BorderBrush" Value="#2196F3"/>
+			<Setter Property="BorderThickness" Value="1"/>
+		</Style>
+
+		<Style Selector="ListBoxItem.tag-item:pointerover">
+			<Setter Property="Background" Value="#F5F5F5"/>
+		</Style>
+
+		<!-- Progress Style -->
+		<Style Selector="Border.progress-indicator">
+			<Setter Property="Background" Value="#FFF3E0"/>
+			<Setter Property="CornerRadius" Value="20"/>
+			<Setter Property="Padding" Value="12,6"/>
+			<Setter Property="BorderBrush" Value="#FFB74D"/>
+			<Setter Property="BorderThickness" Value="1"/>
+		</Style>
+
+		<!-- Entry Display Style -->
+		<Style Selector="Border.entry-display">
+			<Setter Property="Background" Value="#F8F9FA"/>
+			<Setter Property="CornerRadius" Value="8"/>
+			<Setter Property="Padding" Value="12"/>
+		</Style>
+	</UserControl.Styles>
+
+	<ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto">
+		<Grid ColumnDefinitions="1.2*,*"
+              Margin="32"
+              MaxWidth="1200">
+
+			<!-- Left Panel - Untagged Items -->
+			<Border Classes="card"
+                    Grid.Column="0"
+                    Grid.Row="0"
+                    Margin="0,0,16,0">
+				<Grid RowDefinitions="Auto,Auto,*">
+
+					<!-- Untagged Items Header -->
+					<StackPanel Grid.Row="0" Spacing="12">
+						<StackPanel Orientation="Horizontal" Spacing="12">
+							<Border Background="#FF9800"
+                                   CornerRadius="16"
+                                   Width="32"
+                                   Height="32">
+								<PathIcon Data="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,6A1,1 0 0,1 13,7A1,1 0 0,1 12,8A1,1 0 0,1 11,7A1,1 0 0,1 12,6M12,10A1,1 0 0,1 13,11V17A1,1 0 0,1 12,18A1,1 0 0,1 11,17V11A1,1 0 0,1 12,10Z"
+                                         Width="16"
+                                         Height="16"
+                                         Foreground="White"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"/>
+							</Border>
+							<TextBlock Classes="section-header"
+                                      Text="Untagged Items"
+                                      VerticalAlignment="Center"/>
+						</StackPanel>
+
+						<!-- Progress Indicator -->
+						<Border Classes="progress-indicator"
+                               HorizontalAlignment="Left">
+							<TextBlock Text="{Binding RemainingUntaggedRecords}"
+                                      FontSize="14"
+                                      FontWeight="Medium"
+                                      Foreground="#F57C00"/>
+						</Border>
+					</StackPanel>
+
+					<!-- Loading State -->
+					<StackPanel Grid.Row="1"
+                               IsVisible="{Binding IsLoading}"
+                               Spacing="16"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Margin="0,40">
+						<Border Background="#F5F5F5"
+                               CornerRadius="50"
+                               Width="60"
+                               Height="60">
+							<PathIcon Data="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"
+                                     Width="24"
+                                     Height="24"
+                                     Foreground="#666666"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"/>
+						</Border>
+						<TextBlock Text="Loading untagged items..."
+                                  FontSize="16"
+                                  Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                  HorizontalAlignment="Center"/>
+					</StackPanel>
+
+					<!-- Items List -->
+					<ScrollViewer Grid.Row="2"
+                                 VerticalScrollBarVisibility="Auto"
+                                 IsVisible="{Binding !IsLoading}"
+                                 Margin="0,16,0,0">
+						<ListBox ItemsSource="{Binding UntaggedItems}"
+                                SelectedItem="{Binding SelectedUntaggedItem}"
+                                Background="Transparent"
+                                BorderThickness="0">
+							<ListBox.ItemTemplate>
+								<DataTemplate DataType="{x:Type vm:TagListItemTemplate}">
+									<Border Classes="tag-item"
+                                           Background="Transparent">
+										<TextBlock Text="{Binding Label}"
+                                                  FontSize="14"
+                                                  TextWrapping="Wrap"/>
+									</Border>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+					</ScrollViewer>
+				</Grid>
+			</Border>
+
+			<!-- Right Panel - Tagging Controls -->
+			<Border Classes="card"
+                    Grid.Column="1"
+                    Grid.Row="1">
+				<Grid RowDefinitions="Auto,Auto,Auto,*">
+
+					<!-- Rule Creation Toggle -->
+					<Border Classes="info-panel"
+                           Grid.Row="0"
+                           Margin="0,0,0,24">
+						<StackPanel Spacing="12">
+							<StackPanel Orientation="Horizontal" Spacing="6">
+								<CheckBox IsChecked="{Binding IsCreatingRule}"
+                                         VerticalAlignment="Center"/>
+								<TextBlock Text="Create Rule"
+                                          FontSize="16"
+                                          FontWeight="Medium"
+                                          VerticalAlignment="Center"
+                                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+							</StackPanel>
+							<TextBlock Text="You can create a rule to capture more than one expense/income entry. If an expense has a title that contains this rule, then the tag associated with this rule will be applied to the expense. This does not support regular expressions yet."
+                                      FontSize="12"
+                                      Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                      TextWrapping="Wrap"/>
+						</StackPanel>
+					</Border>
+
+					<!-- Tagging Controls -->
+					<StackPanel Grid.Row="1" Spacing="16">
+
+						<!-- Single Entry Tagging -->
+						<StackPanel IsVisible="{Binding !IsCreatingRule}" Spacing="12">
+							<TextBlock Text="Selected Entry:"
+                                      FontSize="14"
+                                      FontWeight="Medium"
+                                      Foreground="{DynamicResource TextControlForeground}"/>
+							<Border>
+								<TextBlock Text="{Binding SelectedUntaggedItemName}"
+                                          FontSize="16"
+                                          FontWeight="Medium"
+										  Foreground="{DynamicResource Tex}"
+                                          TextWrapping="Wrap"/>
+							</Border>
+							<TextBlock Text="Tag:"
+                                      FontSize="14"
+                                      FontWeight="Medium"
+                                      Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+							<AutoCompleteBox ItemsSource="{Binding ExistingTags}"
+                                           FilterMode="Contains"
+                                           Watermark="Enter or select a tag"
+                                           Text="{Binding Tag}"
+                                           CornerRadius="8"
+                                           Padding="12"/>
+						</StackPanel>
+
+						<!-- Rule Creation -->
+						<StackPanel IsVisible="{Binding IsCreatingRule}" Spacing="12">
+							<TextBlock Text="Rule Name:"
+                                      FontSize="14"
+                                      FontWeight="Medium"
+                                      Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+							<TextBox Watermark="Enter a descriptive rule name"
+                                    Text="{Binding Rule}"
+                                    CornerRadius="8"
+                                    Padding="12"/>
+							<TextBlock Text="Tag:"
+                                      FontSize="14"
+                                      FontWeight="Medium"
+                                      Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+							<AutoCompleteBox ItemsSource="{Binding ExistingTags}"
+                                           FilterMode="Contains"
+                                           Watermark="Enter or select a tag"
+                                           Text="{Binding Tag}"
+                                           CornerRadius="8"
+                                           Padding="12"/>
+						</StackPanel>
+					</StackPanel>
+
+					<!-- Action Buttons -->
+					<StackPanel Grid.Row="2"
+                               Spacing="12"
+                               Margin="0,24,0,0">
+						<!-- Primary Button - changes text based on mode -->
+						<Button Classes="primary"
+                               IsDefault="True"
+                               Command="{Binding SubmitTaggingCommand}"
+                               HorizontalAlignment="Stretch">
+							<StackPanel Orientation="Horizontal" Spacing="8">
+								<PathIcon Data="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"
+                                         Width="16"
+                                         Height="16"/>
+								<TextBlock Text="Submit Tag" IsVisible="{Binding !IsCreatingRule}"/>
+								<TextBlock Text="Create Rule" IsVisible="{Binding IsCreatingRule}"/>
+							</StackPanel>
+						</Button>
+
+						<Button Classes="secondary"
+                               Command="{Binding ResetCommand}"
+                               HorizontalAlignment="Stretch">
+							<StackPanel Orientation="Horizontal" Spacing="8">
+								<PathIcon Data="M12,2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20V18A6,6 0 0,0 18,12A6,6 0 0,0 12,6A6,6 0 0,0 6,12H8L4,16L0,12H2A10,10 0 0,1 12,2Z"
+                                         Width="16"
+                                         Height="16"/>
+								<TextBlock Text="Reset"/>
+							</StackPanel>
+						</Button>
+					</StackPanel>
+
+					<!-- Empty space filler -->
+					<Border Grid.Row="3"/>
+				</Grid>
+			</Border>
 		</Grid>
-	</Grid>
+	</ScrollViewer>
 </UserControl>
