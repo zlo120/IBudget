@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using IBudget.GUI.ViewModels;
 
@@ -17,6 +18,14 @@ public partial class TagsPageView : UserControl
         if (DataContext is TagsPageViewModel viewModel)
         {
             viewModel.RefreshView();
+        }
+    }
+
+    private async void OnIconButtonClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.DataContext is AllTagsListItemTemplate item)
+        {
+            await item.DeleteClickCommand.ExecuteAsync(null);
         }
     }
 }
