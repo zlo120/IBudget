@@ -4,70 +4,236 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="IBudget.GUI.Views.DataView.MonthlyView"
-			 xmlns:vm="using:IBudget.GUI.ViewModels.DataView"
-			 x:DataType="vm:MonthlyViewModel"
-			 x:CompileBindings="True">
-	<Grid RowDefinitions="Auto, *">
-		<ComboBox SelectedIndex="{Binding SelectedIndex}"
-				  FontSize="20"
-				  Margin="5 10 0 5"
-				  Grid.Row="0"
-				  HorizontalAlignment="Left">
-			<ComboBoxItem Content="January" FontSize="16"/> 
-			<ComboBoxItem Content="February"  FontSize="16"/> 
-			<ComboBoxItem Content="March"  FontSize="16"/>
-			<ComboBoxItem Content="April" FontSize="16" /> 
-			<ComboBoxItem Content="May" FontSize="16" /> 
-			<ComboBoxItem Content="June" FontSize="16" />
-			<ComboBoxItem Content="July" FontSize="16" /> 
-			<ComboBoxItem Content="August" FontSize="16" /> 
-			<ComboBoxItem Content="September" FontSize="16" />
-			<ComboBoxItem Content="October" FontSize="16"/>
-			<ComboBoxItem Content="November"  FontSize="16"/> 
-			<ComboBoxItem Content="December" FontSize="16" />
-		</ComboBox>
+             xmlns:vm="using:IBudget.GUI.ViewModels.DataView"
+             x:DataType="vm:MonthlyViewModel"
+             x:CompileBindings="True">
 
-		<Grid Grid.Row="1"
-			  ColumnDefinitions="*, *">
-			<!-- Data summary -->
-			<ScrollViewer VerticalScrollBarVisibility="Auto"
-					  Grid.Column="0">
-				<ItemsControl ItemsSource="{Binding SummaryItems}">
-					<ItemsControl.ItemsPanel>
-						<ItemsPanelTemplate>
-							<WrapPanel/>
-						</ItemsPanelTemplate>
-					</ItemsControl.ItemsPanel>
-					<ItemsControl.ItemTemplate>
-						<DataTemplate>
-							<Border Background="Gray"
-									Width="180"
-									Height="180"
-									Margin="5"
-									CornerRadius="5"
-									Padding="5 10 5 5">
-								<StackPanel HorizontalAlignment="Center">
-									<TextBlock Text="{Binding SummaryTitle}"
-											   Foreground="White"
-											   HorizontalAlignment="Center"
-											   FontSize="20"/>
-									<TextBlock Text="{Binding SummaryValue}"
-											   Foreground="White"
-											   HorizontalAlignment="Center"
-											   FontSize="15"/>
-								</StackPanel>
-							</Border>
+	<UserControl.Styles>
+		<!-- Header Card Style -->
+		<Style Selector="Border.header-card">
+			<Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}"/>
+			<Setter Property="CornerRadius" Value="12"/>
+			<Setter Property="Padding" Value="24,16"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="BoxShadow" Value="0 2 8 0 #0D000000"/>
+			<Setter Property="Margin" Value="0,0,0,16"/>
+		</Style>
 
-						</DataTemplate>
-					</ItemsControl.ItemTemplate>
-				</ItemsControl>
-			</ScrollViewer>
-			
-			<!-- Data charts -->
-			<Grid Grid.Column="1"
-				  RowDefinitions="Auto, *">
-				<TextBlock Grid.Row="0">Summary Spending</TextBlock>
+		<!-- Summary Card Style -->
+		<Style Selector="Border.summary-card">
+			<Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}"/>
+			<Setter Property="CornerRadius" Value="12"/>
+			<Setter Property="Padding" Value="20"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="BoxShadow" Value="0 2 8 0 #0D000000"/>
+			<Setter Property="Margin" Value="8"/>
+			<Setter Property="MinWidth" Value="200"/>
+			<Setter Property="MinHeight" Value="140"/>
+			<Setter Property="Transitions">
+				<Transitions>
+					<BrushTransition Property="Background" Duration="0:0:0.2"/>
+				</Transitions>
+			</Setter>
+		</Style>
+
+		<Style Selector="Border.summary-card:pointerover">
+			<Setter Property="Background" Value="{DynamicResource LayerFillColorDefaultBrush}"/>
+		</Style>
+
+		<!-- Total Spending Card Style -->
+		<Style Selector="Border.total-card">
+			<Setter Property="Background" Value="#2196F3"/>
+			<Setter Property="CornerRadius" Value="12"/>
+			<Setter Property="Padding" Value="24"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="BoxShadow" Value="0 4 12 0 #1A000000"/>
+			<Setter Property="Margin" Value="16,0,0,0"/>
+			<Setter Property="MinWidth" Value="300"/>
+			<Setter Property="MinHeight" Value="200"/>
+		</Style>
+
+		<!-- Summary Section Card -->
+		<Style Selector="Border.summary-section">
+			<Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}"/>
+			<Setter Property="CornerRadius" Value="12"/>
+			<Setter Property="Padding" Value="24"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="BoxShadow" Value="0 2 8 0 #0D000000"/>
+		</Style>
+
+		<!-- Title Style -->
+		<Style Selector="TextBlock.title">
+			<Setter Property="FontSize" Value="16"/>
+			<Setter Property="FontWeight" Value="SemiBold"/>
+			<Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+			<Setter Property="Margin" Value="0,0,0,8"/>
+			<Setter Property="TextWrapping" Value="Wrap"/>
+		</Style>
+
+		<!-- Value Style -->
+		<Style Selector="TextBlock.value">
+			<Setter Property="FontSize" Value="22"/>
+			<Setter Property="FontWeight" Value="Bold"/>
+			<Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
+		</Style>
+
+		<!-- Total Value Style -->
+		<Style Selector="TextBlock.total-value">
+			<Setter Property="FontSize" Value="36"/>
+			<Setter Property="FontWeight" Value="Bold"/>
+			<Setter Property="Foreground" Value="White"/>
+		</Style>
+
+		<!-- Total Title Style -->
+		<Style Selector="TextBlock.total-title">
+			<Setter Property="FontSize" Value="18"/>
+			<Setter Property="FontWeight" Value="Medium"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="Opacity" Value="0.9"/>
+			<Setter Property="Margin" Value="0,0,0,8"/>
+		</Style>
+
+		<!-- Section Header Style -->
+		<Style Selector="TextBlock.section-header">
+			<Setter Property="FontSize" Value="20"/>
+			<Setter Property="FontWeight" Value="SemiBold"/>
+			<Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+			<Setter Property="Margin" Value="0,0,0,16"/>
+		</Style>
+
+		<!-- Month Selector Style -->
+		<Style Selector="ComboBox.month-selector">
+			<Setter Property="FontSize" Value="18"/>
+			<Setter Property="FontWeight" Value="Medium"/>
+			<Setter Property="Padding" Value="16,8"/>
+			<Setter Property="CornerRadius" Value="8"/>
+			<Setter Property="MinWidth" Value="150"/>
+		</Style>
+	</UserControl.Styles>
+
+	<Grid RowDefinitions="Auto,*" Margin="24">
+
+		<!-- Header Section -->
+		<Border Classes="header-card" Grid.Row="0">
+			<Grid ColumnDefinitions="Auto,*,Auto">
+				<StackPanel Grid.Column="0" Spacing="4">
+					<TextBlock Text="Monthly Overview"
+                              Classes="section-header"/>
+					<TextBlock Text="Track your spending and financial goals"
+                              FontSize="14"
+                              Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+				</StackPanel>
+
+				<ComboBox Grid.Column="2"
+                         Classes="month-selector"
+                         SelectedIndex="{Binding SelectedIndex}"
+                         HorizontalAlignment="Right">
+					<ComboBoxItem Content="January"/>
+					<ComboBoxItem Content="February"/>
+					<ComboBoxItem Content="March"/>
+					<ComboBoxItem Content="April"/>
+					<ComboBoxItem Content="May"/>
+					<ComboBoxItem Content="June"/>
+					<ComboBoxItem Content="July"/>
+					<ComboBoxItem Content="August"/>
+					<ComboBoxItem Content="September"/>
+					<ComboBoxItem Content="October"/>
+					<ComboBoxItem Content="November"/>
+					<ComboBoxItem Content="December"/>
+				</ComboBox>
 			</Grid>
+		</Border>
+
+		<!-- Main Content - Horizontal Layout -->
+		<Grid Grid.Row="1" ColumnDefinitions="2*,1*" Margin="0,16,0,0">
+
+			<!-- Left Side: Goal-based Spending Cards -->
+			<Border Classes="summary-section" Grid.Column="0">
+				<Grid RowDefinitions="Auto,*">
+					<TextBlock Grid.Row="0"
+                              Text="Spending by Financial Goals"
+                              Classes="section-header"/>
+
+					<ScrollViewer Grid.Row="1"
+                                 HorizontalScrollBarVisibility="Disabled"
+                                 VerticalScrollBarVisibility="Auto"
+                                 Padding="0,0,8,0">
+						<ItemsControl ItemsSource="{Binding SummaryItems}">
+							<ItemsControl.ItemsPanel>
+								<ItemsPanelTemplate>
+									<UniformGrid Columns="2" HorizontalAlignment="Stretch"/>
+								</ItemsPanelTemplate>
+							</ItemsControl.ItemsPanel>
+							<ItemsControl.ItemTemplate>
+								<DataTemplate>
+									<Border Classes="summary-card">
+										<StackPanel Spacing="12">
+											<!-- Card Header with Icon -->
+											<Grid ColumnDefinitions="Auto,*">
+												<Border Grid.Column="0"
+                                                       Background="#FF9800"
+                                                       CornerRadius="8"
+                                                       Width="40"
+                                                       Height="40"
+                                                       Margin="0,0,12,0">
+													<PathIcon Data="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z"
+                                                             Width="20"
+                                                             Height="20"
+                                                             Foreground="White"
+                                                             HorizontalAlignment="Center"
+                                                             VerticalAlignment="Center"/>
+												</Border>
+												<StackPanel Grid.Column="1" VerticalAlignment="Center">
+													<TextBlock Text="{Binding SummaryTitle}"
+                                                              Classes="title"/>
+												</StackPanel>
+											</Grid>
+
+											<!-- Value Display -->
+											<TextBlock Text="{Binding SummaryValue}"
+                                                      Classes="value"
+                                                      HorizontalAlignment="Left"/>
+										</StackPanel>
+									</Border>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</ScrollViewer>
+				</Grid>
+			</Border>
+
+			<!-- Right Side: Total Spending Card -->
+			<Border Classes="total-card" Grid.Column="1">
+				<StackPanel VerticalAlignment="Center" Spacing="16">
+					<!-- Total Icon -->
+					<Border Background="White"
+                           CornerRadius="16"
+                           Width="80"
+                           Height="80"
+                           HorizontalAlignment="Center">
+						<PathIcon Data="M12,1L21,5V11C21,16.55 17.16,21.74 12,23C6.84,21.74 3,16.55 3,11V5L12,1M12,7C10.34,7 9,8.34 9,10C9,11.66 10.34,13 12,13C13.66,13 15,11.66 15,10C15,8.34 13.66,7 12,7M6,17.25C6,15.18 8.41,13.53 12,13.53C15.59,13.53 18,15.18 18,17.25"
+                                 Width="36"
+                                 Height="36"
+                                 Foreground="#2196F3"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"/>
+					</Border>
+
+					<!-- Total Content -->
+					<StackPanel HorizontalAlignment="Center" Spacing="8">
+						<TextBlock Text="Total Monthly Spending"
+                                  Classes="total-title"
+                                  HorizontalAlignment="Center"/>
+						<TextBlock Text="{Binding TotalSpending, StringFormat='${0:F2}'}"
+                                  Classes="total-value"
+                                  HorizontalAlignment="Center"/>
+					</StackPanel>
+				</StackPanel>
+			</Border>
+
 		</Grid>
 
 	</Grid>

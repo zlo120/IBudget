@@ -1,22 +1,26 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using IBudget.Core.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Diagnostics;
+using Amazon.Runtime.Internal.Transform;
+using CommunityToolkit.Mvvm.ComponentModel;
+using IBudget.Core.Interfaces;
+using IBudget.GUI.Services;
 
 namespace IBudget.GUI.ViewModels.DataView
 {
     public partial class MonthlyViewModel : ViewModelBase
     {
-        private readonly ITagService _tagService;
         private readonly ISummaryService _summaryService;
-
+        private readonly IMessageService _messageService;
+        private readonly IFinancialGoalService _financialGoalService;
+        
         [ObservableProperty]
         private string _thisMonth = string.Empty;
+        
         [ObservableProperty]
         private int _selectedIndex = 0;
 
@@ -24,26 +28,47 @@ namespace IBudget.GUI.ViewModels.DataView
         private ObservableCollection<SummaryItem> _summaryItems = new();
 
         [ObservableProperty]
-        private ObservableCollection<string> _trackedTags = new();
+        private ObservableCollection<string> _financialGoals = new();
 
         [ObservableProperty]
-        private Dictionary<string, double> _summaryChartData = new();
+        private Dictionary<string, double> _summarySpending = new();
 
-        public MonthlyViewModel(ITagService tagService, ISummaryService summaryService)
+        [ObservableProperty]
+        private double _totalSpending = 0.0;
+
+        public MonthlyViewModel(ITagService tagService, ISummaryService summaryService, IMessageService messageService, IFinancialGoalService financialGoalService)
         {
             ThisMonth = DateTime.Now.ToString("MMMM");
             var thisMonthInt = DateTime.ParseExact(ThisMonth, "MMMM", CultureInfo.InvariantCulture, DateTimeStyles.None).Month;
             SelectedIndex = thisMonthInt - 1;
-            
-            for (int i = 0; i < 50; i++)
-            {
-                SummaryItems.Add(new SummaryItem($"Summary value {i + 1}", 22.22));
-            }
 
-            _tagService = tagService;
             _summaryService = summaryService;
-            
+            _messageService = messageService;
+            _financialGoalService = financialGoalService;
+
             _ = InitializeDataAsync();
+        }
+
+        partial void OnSelectedIndexChanged(int value)
+        {
+            // Update the month when selection changes and reload data
+            var monthNames = new[]
+            {
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            };
+
+            try
+            {
+                if (value >= 0 && value < monthNames.Length)
+                {
+                    ThisMonth = monthNames[value];
+                    _ = LoadMonthDataAsync(value + 1);
+                }
+            }
+            catch (Exception)
+            {                
+            }
         }
 
         private async Task InitializeDataAsync()
@@ -51,29 +76,58 @@ namespace IBudget.GUI.ViewModels.DataView
             try
             {
                 var thisMonthInt = DateTime.ParseExact(ThisMonth, "MMMM", CultureInfo.InvariantCulture, DateTimeStyles.None).Month;
-                
-                var trackedTags = (await _tagService.GetAll())
-                    .Where(tag => tag.IsTracked)
-                    .Select(tag => tag.Name)
-                    .OrderBy(s => s)
-                    .ToList();
-
-                var monthsData = await _summaryService.ReadMonth(thisMonthInt);
-                
-                foreach (var tag in trackedTags)
-                {
-                    TrackedTags.Add(tag);
-                    double totalMoneySpent = monthsData.AllExpenses
-                        .Where(e => e.Tags!.Select(t => t.Name).Contains(tag))
-                        .Select(e => e.Amount)
-                        .Sum();
-                    SummaryChartData.Add(tag, totalMoneySpent);
-                }
+                await LoadMonthDataAsync(thisMonthInt);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error initializing monthly data: {ex.Message}");
+                await _messageService.ShowErrorAsync($"Error initializing monthly data: {ex.Message}");
             }
+        }
+
+        private async Task LoadMonthDataAsync(int monthNumber)
+        {
+            try
+            {
+                // Clear existing data
+                SummaryItems.Clear();
+                FinancialGoals.Clear();
+                SummarySpending.Clear();
+                TotalSpending = 0.0;
+
+                var financialGoalsResult = await _financialGoalService.GetAll();
+                var financialGoals = financialGoalsResult?.Select(goal => goal.Name) ?? Enumerable.Empty<string>();
+                var monthsData = await _summaryService.ReadMonth(monthNumber);
+                
+                if (monthsData?.AllExpenses == null)
+                {
+                    // No data available for this month
+                    return;
+                }
+
+                foreach (var goal in financialGoals)
+                {
+                    if (string.IsNullOrEmpty(goal)) continue;
+                    
+                    FinancialGoals.Add(goal);
+                    double totalMoneySpent = monthsData.AllExpenses
+                        .Where(e => e.Tags?.Select(t => t.Name).Contains(goal) == true)
+                        .Select(e => e.Amount)
+                        .Sum();
+                    SummarySpending.Add(goal, totalMoneySpent);
+                    SummaryItems.Add(new SummaryItem($"Total spending on {goal}", totalMoneySpent));
+                }
+
+                TotalSpending = monthsData.AllExpenses.Select(expense => expense.Amount).Sum();
+            }
+            catch (Exception ex)
+            {
+                await _messageService.ShowErrorAsync($"Error loading data for month {monthNumber}: {ex.Message}");
+            }
+        }
+
+        public void RefreshView()
+        {
+            _ = InitializeDataAsync();
         }
     }
 
@@ -82,7 +136,7 @@ namespace IBudget.GUI.ViewModels.DataView
         public SummaryItem(string title, double value)
         {
             SummaryTitle = title;
-            SummaryValue = $"${value}";
+            SummaryValue = $"${value:F2}";
         }
         public string SummaryTitle { get; set; }
         public string SummaryValue { get; set; }

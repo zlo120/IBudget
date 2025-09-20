@@ -28,7 +28,6 @@ namespace IBudget.GUI.ViewModels
         {
             _tagService = tagService;
             _messageService = messageService;
-            // Remove blocking call from constructor
             _ = InitializeTagsAsync();
         }
 

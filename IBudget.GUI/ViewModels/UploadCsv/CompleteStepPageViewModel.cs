@@ -131,7 +131,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
                 {
                     var expense = new Expense()
                     {
-                        Amount = formattedFinancialCSV.Amount,
+                        Amount = Math.Abs(formattedFinancialCSV.Amount),
                         Notes = formattedDescription,
                         Date = formattedFinancialCSV.Date.ToDateTime(new TimeOnly(0, 0)),
                         Tags = tags,

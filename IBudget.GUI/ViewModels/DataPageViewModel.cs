@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using IBudget.Core.Interfaces;
 using IBudget.GUI.ViewModels.DataView;
 
 namespace IBudget.GUI.ViewModels
