@@ -7,84 +7,287 @@
              xmlns:vm="using:IBudget.GUI.ViewModels"
              x:DataType="vm:DictionariesPageViewModel"
              x:CompileBindings="True">
-	<Grid ColumnDefinitions="*, *"
-          Margin="10">
-		<!-- Expense Dictionary column -->
-		<Grid RowDefinitions="Auto, *"
-              Grid.Column="0">
-			<TextBlock Grid.Row="0"
-                       HorizontalAlignment="Center"
-                       FontSize="20">
-				Expense Dictionaries
-			</TextBlock>
 
-			<TextBlock Margin="0 20 0 0"
-                       IsVisible="{Binding IsLoadingRD}"
-                       Grid.Row="1"
-                       HorizontalAlignment="Center">
-				Loading rule dictionaries...
-			</TextBlock>
-			<Grid Grid.Row="1"
-                  IsVisible="{Binding !IsLoadingED}">
-				<ScrollViewer VerticalScrollBarVisibility="Auto"
-                              HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch"
-                              Margin="0,0,0,20">
-					<DataGrid Margin="20 40 20 0"
-                              ItemsSource="{Binding ExpenseTagsInfo}"
-                              GridLinesVisibility="All"
-                              BorderThickness="1"
-                              BorderBrush="Gray"
-                              VerticalAlignment="Stretch"
-                              IsReadOnly="True">
-						<DataGrid.Columns>
-							<DataGridTextColumn Header="Expense" Width="2*"
-                                                Binding="{Binding Key}" />
-							<DataGridTextColumn Header="Tag" Width="2*"
-                                                Binding="{Binding Value}" />
-						</DataGrid.Columns>
-					</DataGrid>
-				</ScrollViewer>
+	<ScrollViewer VerticalScrollBarVisibility="Auto">
+		<StackPanel Margin="30">
+			<!-- Header Section -->
+			<StackPanel Spacing="10" Margin="0,0,0,30">
+				<TextBlock Text="Tag Dictionary Management"
+                          FontSize="24"
+                          FontWeight="Bold"
+                          HorizontalAlignment="Center"
+                          Foreground="{DynamicResource TextControlForeground}" />
+				<TextBlock Text="View and manage expense categorization rules and mappings"
+                          FontSize="14"
+                          HorizontalAlignment="Center"
+                          Opacity="0.7"
+                          Foreground="{DynamicResource TextControlForeground}" />
+			</StackPanel>
+
+			<!-- Content Grid -->
+			<Grid ColumnDefinitions="1*, 1*">
+
+				<!-- Expense Dictionaries Section -->
+				<StackPanel Grid.Column="0" Margin="0,0,15,0">
+					<!-- Section Header -->
+					<Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8,8,0,0"
+                            Padding="20,15">
+						<StackPanel Spacing="5">
+							<TextBlock Text="📝 Expense Dictionaries"
+                                      FontSize="18"
+                                      FontWeight="SemiBold"
+                                      HorizontalAlignment="Center" />
+							<TextBlock Text="Expense descriptions mapped to specific tags"
+                                      FontSize="12"
+                                      HorizontalAlignment="Center"
+                                      Opacity="0.7" />
+						</StackPanel>
+					</Border>
+
+					<!-- Content Area -->
+					<Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1,0,1,1"
+                            CornerRadius="0,0,8,8"
+                            MinHeight="400"
+                            MaxHeight="600">
+
+						<!-- FIXED: Wrapped multiple children in a Grid -->
+						<Grid>
+							<!-- Loading State -->
+							<StackPanel IsVisible="{Binding IsLoadingED}"
+		                               Spacing="15"
+		                               VerticalAlignment="Center"
+		                               HorizontalAlignment="Center">
+								<TextBlock Text="🔄 Loading expense dictionaries..."
+		                                  FontSize="14"
+		                                  HorizontalAlignment="Center"
+		                                  Opacity="0.7" />
+							</StackPanel>
+
+							<!-- Content -->
+							<ScrollViewer IsVisible="{Binding !IsLoadingED}"
+		                                 VerticalScrollBarVisibility="Auto"
+		                                 Padding="15">
+								<ItemsControl ItemsSource="{Binding ExpenseTagsInfo}">
+									<ItemsControl.ItemTemplate>
+										<DataTemplate DataType="{x:Type vm:InfoContainer}">
+											<Border Background="{DynamicResource ControlFillColorDefaultBrush}"
+		                                           BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+		                                           BorderThickness="1"
+		                                           CornerRadius="6"
+		                                           Padding="15"
+		                                           Margin="0,0,0,8">
+												<Grid RowDefinitions="Auto, Auto, Auto">
+													<StackPanel Grid.Row="0" Spacing="5">
+														<TextBlock Text="Expense Description"
+		                                                          FontSize="11"
+		                                                          FontWeight="Medium"
+		                                                          Opacity="0.7"
+		                                                          Foreground="{DynamicResource TextControlForeground}" />
+														<TextBlock Text="{Binding Key}"
+		                                                          FontSize="13"
+		                                                          TextWrapping="Wrap"
+		                                                          FontWeight="Medium"
+		                                                          Foreground="{DynamicResource TextControlForeground}" />
+													</StackPanel>
+
+													<StackPanel Grid.Row="1" Spacing="5" Margin="0,10,0,0">
+														<TextBlock Text="Assigned Tag"
+		                                                          FontSize="11"
+		                                                          FontWeight="Medium"
+		                                                          Opacity="0.7"
+		                                                          Foreground="{DynamicResource TextControlForeground}" />
+														<Border Background="{DynamicResource AccentTextFillColorPrimaryBrush}"
+		                                                       CornerRadius="12"
+		                                                       Padding="8,4"
+		                                                       HorizontalAlignment="Left">
+															<TextBlock Text="{Binding Value}"
+		                                                              FontSize="11"
+		                                                              FontWeight="SemiBold"
+		                                                              Foreground="White" />
+														</Border>
+													</StackPanel>
+
+													<!-- Delete Button -->
+													<StackPanel Grid.Row="2" Margin="0,10,0,0">
+														<Button Content="🗑️ Delete"
+																HorizontalAlignment="Right"
+																Padding="8,4"
+																FontSize="11"
+																Background="{DynamicResource SystemControlErrorTextForegroundBrush}"
+																Foreground="White"
+																CornerRadius="4"
+																Command="{Binding DeleteExpenseTagCommand}"
+																ToolTip.Tip="Delete this expense dictionary entry" />
+													</StackPanel>
+												</Grid>
+											</Border>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+							</ScrollViewer>
+						</Grid>
+					</Border>
+				</StackPanel>
+
+				<!-- Rule Dictionaries Section -->
+				<StackPanel Grid.Column="1" Margin="15,0,0,0">
+					<!-- Section Header -->
+					<Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8,8,0,0"
+                            Padding="20,15">
+						<StackPanel Spacing="5">
+							<TextBlock Text="⚙️ Rule Dictionaries"
+                                      FontSize="18"
+                                      FontWeight="SemiBold"
+                                      HorizontalAlignment="Center" />
+							<TextBlock Text="Pattern matching rules for automatic tagging"
+                                      FontSize="12"
+                                      HorizontalAlignment="Center"
+                                      Opacity="0.7" />
+						</StackPanel>
+					</Border>
+
+					<!-- Content Area -->
+					<Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1,0,1,1"
+                            CornerRadius="0,0,8,8"
+                            MinHeight="400"
+                            MaxHeight="600">
+
+						<!-- FIXED: Wrapped multiple children in a Grid -->
+						<Grid>
+							<!-- Loading State -->
+							<StackPanel IsVisible="{Binding IsLoadingRD}"
+		                               Spacing="15"
+		                               VerticalAlignment="Center"
+		                               HorizontalAlignment="Center">
+								<TextBlock Text="🔄 Loading rule dictionaries..."
+		                                  FontSize="14"
+		                                  HorizontalAlignment="Center"
+		                                  Opacity="0.7" />
+							</StackPanel>
+
+							<!-- Content -->
+							<ScrollViewer IsVisible="{Binding !IsLoadingRD}"
+		                                 VerticalScrollBarVisibility="Auto"
+		                                 Padding="15">
+								<ItemsControl ItemsSource="{Binding ExpenseRuleTagsInfo}">
+									<ItemsControl.ItemTemplate>
+										<DataTemplate DataType="{x:Type vm:InfoContainer}">
+											<Border Background="{DynamicResource ControlFillColorDefaultBrush}"
+		                                           BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+		                                           BorderThickness="1"
+		                                           CornerRadius="6"
+		                                           Padding="15"
+		                                           Margin="0,0,0,8">
+												<Grid RowDefinitions="Auto, Auto, Auto">
+													<StackPanel Grid.Row="0" Spacing="5">
+														<TextBlock Text="Matching Rule"
+		                                                          FontSize="11"
+		                                                          FontWeight="Medium"
+		                                                          Opacity="0.7"
+		                                                          Foreground="{DynamicResource TextControlForeground}" />
+														<Border Background="{DynamicResource ControlFillColorInputActiveBrush}"
+		                                                       BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+		                                                       BorderThickness="1"
+		                                                       CornerRadius="4"
+		                                                       Padding="8,6">
+															<TextBlock Text="{Binding Key}"
+		                                                              FontSize="12"
+		                                                              FontFamily="Consolas, 'Courier New', monospace"
+		                                                              TextWrapping="Wrap"
+		                                                              Foreground="{DynamicResource TextControlForeground}" />
+														</Border>
+													</StackPanel>
+
+													<StackPanel Grid.Row="1" Spacing="5" Margin="0,10,0,0">
+														<TextBlock Text="Applied Tag"
+		                                                          FontSize="11"
+		                                                          FontWeight="Medium"
+		                                                          Opacity="0.7"
+		                                                          Foreground="{DynamicResource TextControlForeground}" />
+														<Border Background="{DynamicResource AccentTextFillColorSecondaryBrush}"
+		                                                       CornerRadius="12"
+		                                                       Padding="8,4"
+		                                                       HorizontalAlignment="Left">
+															<TextBlock Text="{Binding Value}"
+		                                                              FontSize="11"
+		                                                              FontWeight="SemiBold"
+		                                                              Foreground="White" />
+														</Border>
+													</StackPanel>
+
+													<!-- Delete Button -->
+													<StackPanel Grid.Row="2" Margin="0,10,0,0">
+														<Button Content="🗑️ Delete"
+																HorizontalAlignment="Right"
+																Padding="8,4"
+																FontSize="11"
+																Background="{DynamicResource SystemControlErrorTextForegroundBrush}"
+																Foreground="White"
+																CornerRadius="4"
+																Command="{Binding DeleteExpenseRuleTagCommand}"
+																ToolTip.Tip="Delete this rule dictionary entry" />
+													</StackPanel>
+												</Grid>
+											</Border>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+							</ScrollViewer>
+						</Grid>
+					</Border>
+				</StackPanel>
 			</Grid>
-		</Grid>
 
-		<!-- Rule Dictionary column -->
-		<Grid RowDefinitions="Auto, *"
-              Grid.Column="1">
-			<TextBlock Grid.Row="0"
-                       HorizontalAlignment="Center"
-                       FontSize="20">
-				Rule Dictionaries
-			</TextBlock>
+			<!-- Summary Section -->
+			<Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="0,30,0,0">
+				<StackPanel Spacing="10">
+					<TextBlock Text="📊 Dictionary Summary"
+                              FontSize="16"
+                              FontWeight="SemiBold"
+                              HorizontalAlignment="Center" />
 
-			<TextBlock Margin="0 20 0 0"
-                       IsVisible="{Binding IsLoadingRD}"
-                       Grid.Row="1"
-                       HorizontalAlignment="Center">
-				Loading rule dictionaries...
-			</TextBlock>
-			<Grid Grid.Row="1"
-                  IsVisible="{Binding !IsLoadingRD}">
-				<ScrollViewer VerticalScrollBarVisibility="Auto"
-                              HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch"
-                              Margin="0,0,0,20">
-					<DataGrid Margin="20 40 20 0"
-                              ItemsSource="{Binding ExpenseRuleTagsInfo}"
-                              GridLinesVisibility="All"
-                              BorderThickness="1"
-                              BorderBrush="Gray"
-                              VerticalAlignment="Stretch"
-                              IsReadOnly="True">
-						<DataGrid.Columns>
-							<DataGridTextColumn Header="Expense" Width="2*"
-                                                Binding="{Binding Key}" />
-							<DataGridTextColumn Header="Tag" Width="2*"
-                                                Binding="{Binding Value}" />
-						</DataGrid.Columns>
-					</DataGrid>
-				</ScrollViewer>
-			</Grid>
-		</Grid>
-	</Grid>
+					<Grid ColumnDefinitions="1*, 1*">
+						<StackPanel Grid.Column="0" Spacing="5" HorizontalAlignment="Center">
+							<TextBlock Text="{Binding ExpenseTagsInfo.Count, StringFormat='{}{0} items'}"
+                                      FontSize="20"
+                                      FontWeight="Bold"
+                                      HorizontalAlignment="Center"
+                                      Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+							<TextBlock Text="Expense Mappings"
+                                      FontSize="12"
+                                      HorizontalAlignment="Center"
+                                      Opacity="0.7" />
+						</StackPanel>
+
+						<StackPanel Grid.Column="1" Spacing="5" HorizontalAlignment="Center">
+							<TextBlock Text="{Binding ExpenseRuleTagsInfo.Count, StringFormat='{}{0} rules'}"
+                                      FontSize="20"
+                                      FontWeight="Bold"
+                                      HorizontalAlignment="Center"
+                                      Foreground="{DynamicResource AccentTextFillColorSecondaryBrush}" />
+							<TextBlock Text="Automation Rules"
+                                      FontSize="12"
+                                      HorizontalAlignment="Center"
+                                      Opacity="0.7" />
+						</StackPanel>
+					</Grid>
+				</StackPanel>
+			</Border>
+		</StackPanel>
+	</ScrollViewer>
 </UserControl>

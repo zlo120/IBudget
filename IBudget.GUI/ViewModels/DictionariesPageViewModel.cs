@@ -5,8 +5,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
+using IBudget.GUI.Services;
+using MongoDB.Bson;
 
 namespace IBudget.GUI.ViewModels
 {
@@ -25,11 +28,13 @@ namespace IBudget.GUI.ViewModels
         private bool _isLoadingRD = true;
         private readonly IExpenseTagService _expenseTagService;
         private readonly IExpenseRuleTagService _expenseRuleTagService;
+        private readonly IMessageService _messageService;
 
-        public DictionariesPageViewModel(IExpenseTagService expenseTagService, IExpenseRuleTagService expenseRuleTagService)
+        public DictionariesPageViewModel(IExpenseTagService expenseTagService, IExpenseRuleTagService expenseRuleTagService, IMessageService messageService)
         {
             _expenseTagService = expenseTagService;
             _expenseRuleTagService = expenseRuleTagService;
+            _messageService = messageService;
             _ = InitializeDbSearchAsync(); // Change to async Task
         }
 
@@ -82,7 +87,9 @@ namespace IBudget.GUI.ViewModels
             {
                 foreach (var eD in ExpenseTags)
                 {
-                    ExpenseTagsInfo.Add(new InfoContainer() { Key = eD.Title, Value = eD.Tags.First() });
+                    var container = new InfoContainer() { Key = eD.Title, Value = eD.Tags.First() };
+                    container.SetExpenseTagData(eD, _expenseTagService, _messageService, RemoveExpenseTagFromCollection);
+                    ExpenseTagsInfo.Add(container);
                 }
             }
         }
@@ -93,15 +100,101 @@ namespace IBudget.GUI.ViewModels
             {
                 foreach (var rD in ExpenseRuleTags)
                 {
-                    ExpenseRuleTagsInfo.Add(new InfoContainer() { Key = rD.Rule, Value = rD.Tags.First() });
+                    var container = new InfoContainer() { Key = rD.Rule, Value = rD.Tags.First() };
+                    container.SetExpenseRuleTagData(rD, _expenseRuleTagService, _messageService, RemoveExpenseRuleTagFromCollection);
+                    ExpenseRuleTagsInfo.Add(container);
                 }
             }
         }
+
+        private void RemoveExpenseTagFromCollection(InfoContainer item)
+        {
+            ExpenseTagsInfo.Remove(item);
+        }
+
+        private void RemoveExpenseRuleTagFromCollection(InfoContainer item)
+        {
+            ExpenseRuleTagsInfo.Remove(item);
+        }
     }
 
-    public class InfoContainer
+    public partial class InfoContainer : ObservableObject
     {
-        public string Key { get; set; }
-        public string Value { get; set; }
+        public required string Key { get; set; }
+        public required string Value { get; set; }
+
+        // Store references for deletion
+        private ExpenseTag? _expenseTag;
+        private ObjectId _expenseTagId;
+        private ExpenseRuleTag? _expenseRuleTag;
+        private ObjectId _expenseRuleTagId;
+        private IExpenseTagService? _expenseTagService;
+        private IExpenseRuleTagService? _expenseRuleTagService;
+        private IMessageService? _messageService;
+        private Action<InfoContainer>? _removeFromCollection;
+
+        public void SetExpenseTagData(ExpenseTag expenseTag, IExpenseTagService expenseTagService, IMessageService messageService, Action<InfoContainer> removeFromCollection)
+        {
+            _expenseTag = expenseTag;
+            _expenseTagService = expenseTagService;
+            _messageService = messageService;
+            _removeFromCollection = removeFromCollection;
+            _expenseTagId = (ObjectId)expenseTag.Id!;
+        }
+
+        public void SetExpenseRuleTagData(ExpenseRuleTag expenseRuleTag, IExpenseRuleTagService expenseRuleTagService, IMessageService messageService, Action<InfoContainer> removeFromCollection)
+        {
+            _expenseRuleTag = expenseRuleTag;
+            _expenseRuleTagService = expenseRuleTagService;
+            _messageService = messageService;
+            _removeFromCollection = removeFromCollection;
+            _expenseRuleTagId = (ObjectId)expenseRuleTag.Id!;
+        }
+
+        [RelayCommand]
+        private async Task DeleteExpenseTag()
+        {
+            if (_expenseTagService == null || _messageService == null) return;
+
+            var confirmation = await _messageService.ShowConfirmationAsync(
+                "Delete Expense Dictionary", 
+                $"Are you sure you want to delete the expense mapping for '{Key}'? This action cannot be undone.");
+
+            if (confirmation)
+            {
+                try
+                {
+                    await _expenseTagService.DeleteExpenseTagById(_expenseTagId);
+                    _removeFromCollection?.Invoke(this);
+                }
+                catch (Exception ex)
+                {
+                    await _messageService.ShowErrorAsync($"Error deleting expense dictionary: {ex.Message}");
+                }
+            }
+        }
+
+        [RelayCommand]
+        private async Task DeleteExpenseRuleTag()
+        {
+            if (_expenseRuleTagService == null || _messageService == null) return;
+
+            var confirmation = await _messageService.ShowConfirmationAsync(
+                "Delete Rule Dictionary", 
+                $"Are you sure you want to delete the rule '{Key}'? This action cannot be undone.");
+
+            if (confirmation)
+            {
+                try
+                {
+                    await _expenseRuleTagService.DeleteExpenseRuleTagById(_expenseRuleTagId);
+                    _removeFromCollection?.Invoke(this);
+                }
+                catch (Exception ex)
+                {
+                    await _messageService.ShowErrorAsync($"Error deleting rule dictionary: {ex.Message}");
+                }
+            }
+        }
     }
 }
