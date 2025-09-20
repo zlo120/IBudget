@@ -4,28 +4,129 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="IBudget.GUI.Views.UploadCsv.CompleteStepPageView"
-			 xmlns:vm="using:IBudget.GUI.ViewModels.UploadCsv"
-			 x:DataType="vm:CompleteStepPageViewModel"
-			 x:CompileBindings="True">
+             xmlns:vm="using:IBudget.GUI.ViewModels.UploadCsv"
+             x:DataType="vm:CompleteStepPageViewModel"
+             x:CompileBindings="True">
 
-	<Grid RowDefinitions="Auto, *"
-		  Margin="15 25 15 5">
-		
-		<TextBlock Text="{Binding HeaderMessage}"
-				   HorizontalAlignment="Center"
-				   FontSize="26"
-				   Grid.Row="0" />
-		
-		<StackPanel Grid.Row="1"
-					Margin="0 20 0 0"
-					HorizontalAlignment="Center">
-			<TextBlock Text="{Binding BodyMessage}"/>
-			<Button HorizontalAlignment="Center"
-					IsEnabled="{Binding IsEnabled}"
-					Command="{Binding StartAgainCommand}">
-				Start new upload
-			</Button>
-		</StackPanel>
-		
-	</Grid>
+	<UserControl.Styles>
+		<!-- Success Card Style -->
+		<Style Selector="Border.success-card">
+			<Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}"/>
+			<Setter Property="CornerRadius" Value="16"/>
+			<Setter Property="Padding" Value="40"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="BoxShadow" Value="0 4 12 0 #1A000000"/>
+		</Style>
+
+		<!-- Header Style -->
+		<Style Selector="TextBlock.header">
+			<Setter Property="FontSize" Value="32"/>
+			<Setter Property="FontWeight" Value="Bold"/>
+			<Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+			<Setter Property="TextAlignment" Value="Center"/>
+		</Style>
+
+		<!-- Body Text Style -->
+		<Style Selector="TextBlock.body">
+			<Setter Property="FontSize" Value="16"/>
+			<Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}"/>
+			<Setter Property="TextAlignment" Value="Center"/>
+			<Setter Property="TextWrapping" Value="Wrap"/>
+			<Setter Property="LineHeight" Value="24"/>
+		</Style>
+
+		<!-- Primary Button Style -->
+		<Style Selector="Button.primary">
+			<Setter Property="Background" Value="#4CAF50"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="CornerRadius" Value="12"/>
+			<Setter Property="Padding" Value="24,14"/>
+			<Setter Property="FontWeight" Value="SemiBold"/>
+			<Setter Property="FontSize" Value="16"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="MinWidth" Value="160"/>
+			<Setter Property="Transitions">
+				<Transitions>
+					<BrushTransition Property="Background" Duration="0:0:0.2"/>
+				</Transitions>
+			</Setter>
+		</Style>
+
+		<Style Selector="Button.primary:pointerover">
+			<Setter Property="Background" Value="#45A049"/>
+		</Style>
+
+		<Style Selector="Button.primary:pressed">
+			<Setter Property="Background" Value="#3D8B40"/>
+		</Style>
+
+		<!-- Success Icon Style -->
+		<Style Selector="Border.success-icon">
+			<Setter Property="Background" Value="#4CAF50"/>
+			<Setter Property="CornerRadius" Value="50"/>
+			<Setter Property="Width" Value="100"/>
+			<Setter Property="Height" Value="100"/>
+		</Style>
+	</UserControl.Styles>
+
+	<ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto">
+		<Grid RowDefinitions="*,Auto,*"
+              Margin="32"
+              MaxWidth="600"
+              HorizontalAlignment="Center">
+
+			<!-- Top Spacer -->
+			<Border Grid.Row="0" MinHeight="50"/>
+
+			<!-- Success Card -->
+			<Border Classes="success-card"
+                    Grid.Row="1"
+                    HorizontalAlignment="Center">
+				<StackPanel Spacing="32" HorizontalAlignment="Center">
+
+					<!-- Success Icon -->
+					<Border Classes="success-icon"
+                           HorizontalAlignment="Center">
+						<PathIcon Data="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"
+                                 Width="48"
+                                 Height="48"
+                                 Foreground="White"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"/>
+					</Border>
+
+					<!-- Header Message -->
+					<TextBlock Classes="header"
+                              Text="{Binding HeaderMessage}"
+                              HorizontalAlignment="Center"/>
+
+					<!-- Body Message -->
+					<TextBlock Classes="body"
+                              Text="{Binding BodyMessage}"
+                              HorizontalAlignment="Center"
+                              MaxWidth="400"/>
+
+					<!-- Action Button -->
+					<Button Classes="primary"
+                           IsEnabled="{Binding IsEnabled}"
+                           Command="{Binding StartAgainCommand}"
+                           HorizontalAlignment="Center">
+						<StackPanel Orientation="Horizontal" Spacing="12">
+							<PathIcon Data="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7,13H10V16H14V13H17L12,8L7,13Z"
+                                     Width="20"
+                                     Height="20"/>
+							<TextBlock Text="Start New Upload"/>
+						</StackPanel>
+					</Button>
+
+				</StackPanel>
+			</Border>
+
+			<!-- Bottom Spacer -->
+			<Border Grid.Row="2" MinHeight="50"/>
+
+		</Grid>
+	</ScrollViewer>
 </UserControl>
