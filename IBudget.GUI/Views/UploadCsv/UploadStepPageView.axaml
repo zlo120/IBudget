@@ -4,92 +4,305 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="IBudget.GUI.Views.UploadCsv.UploadStepPageView"
-			 xmlns:vm="using:IBudget.GUI.ViewModels"
-			 x:DataType="vm:UploadCsv.UploadStepPageViewModel"
-			 x:CompileBindings="True">
-	
-	<Grid RowDefinitions="Auto, Auto, Auto, Auto"
-				HorizontalAlignment="Center"
-				VerticalAlignment="Center">
-		<StackPanel>
-			<Grid DragDrop.AllowDrop="True" 
-				  IsVisible="{Binding !CanProceed}">
-				<Border BorderBrush="Black"
-						Padding="10"
-						Background="DarkGray"
-						CornerRadius="7"
-						MinWidth="400"
-						MinHeight="250"
-						Margin="0 0 0 5">
-					<StackPanel Orientation="Horizontal"
-								VerticalAlignment="Center"
-								HorizontalAlignment="Center">
-						<PathIcon Data="{Binding FileIcon}" 
-								  Margin="0 0 5 0"/>
-						<TextBlock Text="Drag and drop a file here"
-							   HorizontalAlignment="Center"
-							   VerticalAlignment="Center"/>
+             xmlns:vm="using:IBudget.GUI.ViewModels"
+             x:DataType="vm:UploadCsv.UploadStepPageViewModel"
+             x:CompileBindings="True">
+
+	<UserControl.Styles>
+		<Style Selector="Border.upload-area">
+			<Setter Property="BorderBrush" Value="#E0E0E0"/>
+			<Setter Property="BorderThickness" Value="2"/>
+			<Setter Property="Background" Value="#FAFAFA"/>
+			<Setter Property="CornerRadius" Value="12"/>
+			<Setter Property="Transitions">
+				<Transitions>
+					<BrushTransition Property="BorderBrush" Duration="0:0:0.2"/>
+					<BrushTransition Property="Background" Duration="0:0:0.2"/>
+				</Transitions>
+			</Setter>
+		</Style>
+
+		<Style Selector="Border.upload-area:pointerover">
+			<Setter Property="BorderBrush" Value="#2196F3"/>
+			<Setter Property="Background" Value="#F3F9FF"/>
+		</Style>
+
+		<Style Selector="Border.upload-area.dragover">
+			<Setter Property="BorderBrush" Value="#4CAF50"/>
+			<Setter Property="Background" Value="#F1F8E9"/>
+			<Setter Property="BorderThickness" Value="3"/>
+		</Style>
+
+		<Style Selector="Button.primary">
+			<Setter Property="Background" Value="#2196F3"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="CornerRadius" Value="8"/>
+			<Setter Property="Padding" Value="24,12"/>
+			<Setter Property="FontWeight" Value="SemiBold"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="Transitions">
+				<Transitions>
+					<BrushTransition Property="Background" Duration="0:0:0.2"/>
+				</Transitions>
+			</Setter>
+		</Style>
+
+		<Style Selector="Button.primary:pointerover">
+			<Setter Property="Background" Value="#1976D2"/>
+		</Style>
+
+		<Style Selector="Button.secondary">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="Foreground" Value="#2196F3"/>
+			<Setter Property="CornerRadius" Value="8"/>
+			<Setter Property="Padding" Value="20,10"/>
+			<Setter Property="FontWeight" Value="Medium"/>
+			<Setter Property="BorderBrush" Value="#2196F3"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="Transitions">
+				<Transitions>
+					<BrushTransition Property="Background" Duration="0:0:0.2"/>
+				</Transitions>
+			</Setter>
+		</Style>
+
+		<Style Selector="Button.secondary:pointerover">
+			<Setter Property="Background" Value="#F3F9FF"/>
+		</Style>
+
+		<Style Selector="Button.secondary.no-hover:pointerover">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="BorderBrush" Value="#2196F3"/>
+		</Style>
+
+		<Style Selector="Button.icon-button">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="Width" Value="32"/>
+			<Setter Property="Height" Value="32"/>
+			<Setter Property="CornerRadius" Value="16"/>
+			<Setter Property="Padding" Value="0"/>
+			<Setter Property="Transitions">
+				<Transitions>
+					<BrushTransition Property="Background" Duration="0:0:0.2"/>
+				</Transitions>
+			</Setter>
+		</Style>
+
+		<Style Selector="Button.icon-button:pointerover">
+			<Setter Property="Background" Value="#F5F5F5"/>
+		</Style>
+
+		<Style Selector="TextBlock.success">
+			<Setter Property="Foreground" Value="#4CAF50"/>
+			<Setter Property="FontWeight" Value="Medium"/>
+		</Style>
+
+		<Style Selector="TextBlock.error">
+			<Setter Property="Foreground" Value="#F44336"/>
+			<Setter Property="FontWeight" Value="Medium"/>
+		</Style>
+
+		<Style Selector="Panel.notification">
+			<Setter Property="Background" Value="#E8F5E8"/>
+			<Setter Property="Margin" Value="0,16,0,0"/>
+		</Style>
+
+		<Style Selector="Panel.notification.error">
+			<Setter Property="Background" Value="#FFEBEE"/>
+		</Style>
+	</UserControl.Styles>
+
+	<ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto">
+		<StackPanel Spacing="24"
+                    Margin="32"
+                    MaxWidth="600"
+                    HorizontalAlignment="Center">
+
+			<!-- Header Section -->
+			<StackPanel Spacing="8" HorizontalAlignment="Center">
+				<TextBlock Text="Upload CSV File"
+                          FontSize="28"
+                          FontWeight="Bold"
+                          HorizontalAlignment="Center"
+                          Foreground="{DynamicResource TextControlForeground}"/>
+				<TextBlock Text="Select or drag and drop your CSV file to get started"
+                          FontSize="16"
+                          HorizontalAlignment="Center"
+                          Foreground="{DynamicResource TextControlForeground}"
+                          TextAlignment="Center"/>
+			</StackPanel>
+
+			<!-- Upload Area -->
+			<Border Classes="upload-area"
+                    MinHeight="280"
+                    DragDrop.AllowDrop="True"
+                    IsVisible="{Binding !CanProceed}">
+				<StackPanel Spacing="24"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Margin="40">
+
+					<!-- File Icon -->
+					<Border Background="#F0F0F0"
+                            CornerRadius="50"
+                            Width="100"
+                            Height="100"
+                            HorizontalAlignment="Center">
+						<PathIcon Data="{Binding FileIcon}"
+                                 Width="48"
+                                 Height="48"
+                                 Foreground="#666666"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"/>
+					</Border>
+
+					<!-- Instructions -->
+					<StackPanel Spacing="8" HorizontalAlignment="Center">
+						<TextBlock Text="Drag and drop your CSV file here"
+                                  FontSize="18"
+                                  FontWeight="Medium"
+                                  HorizontalAlignment="Center"
+                                  Foreground="#333333"/>
+						<TextBlock Text="or"
+                                  FontSize="14"
+                                  HorizontalAlignment="Center"
+                                  Foreground="#999999"/>
 					</StackPanel>
-				</Border>
-			</Grid>
-			<Button Grid.Row="0"
-					Click="OpenFileButton_Clicked"
-					IsVisible="{Binding !CanProceed}"
-					HorizontalAlignment="Center">
-				Or Click Here To Upload File
-			</Button>
-		</StackPanel>
 
-		<StackPanel Grid.Row="1"
-					Orientation="Horizontal"					
-					HorizontalAlignment="Center"
-					VerticalAlignment="Center">
-			<TextBlock Text="{Binding UploadMessage}"
-					   FontSize="16"
-					   HorizontalAlignment="Center"
-					   Margin="0 5 0 0"/>
-			
-			<Button IsVisible="{Binding CanProceed}"
-					Margin="5 0 5 0"
-					MaxWidth="25"
-					MaxHeight="25"
-					Background="Transparent"
-					VerticalAlignment="Center"
-					HorizontalAlignment="Center"
-					BorderBrush="Transparent"
-					Command="{Binding ClearCommand}">
-				<PathIcon Data="{Binding DismissIcon}"/> 
-			</Button>
-		</StackPanel>
+					<!-- Browse Button -->
+					<Button Background="Transparent"
+							Foreground="#2196F3"
+							CornerRadius="8"
+							Padding="20,10"
+							FontWeight="Medium"
+							BorderBrush="#2196F3"
+							BorderThickness="1"
+							Click="OpenFileButton_Clicked"
+							HorizontalAlignment="Center">
+						<StackPanel Orientation="Horizontal" Spacing="8">
+							<PathIcon Data="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"
+									 Width="16" Height="16"/>
+							<TextBlock Text="Browse Files"/>
+						</StackPanel>
+					</Button>
+				</StackPanel>
+			</Border>
 
-		<!--Error message-->
-		<StackPanel IsVisible="{Binding IsError}"
-					Orientation="Horizontal"
-					Grid.Row="2"
-					HorizontalAlignment="Center"
-					VerticalAlignment="Center">
-			<TextBlock Text="{Binding ErrorMessage}"
-					   FontSize="16"
-					   HorizontalAlignment="Center"
-					   VerticalAlignment="Center"
-					   Margin="0 5 0 0"/>
-			<Button Margin="5 0 5 0"
-					MaxWidth="25"
-					MaxHeight="25"
-					Background="Transparent"
-					VerticalAlignment="Center"
-					HorizontalAlignment="Center"
-					BorderBrush="Transparent"
-					Command="{Binding ToggleErrorCommand}">
-				<PathIcon Data="{Binding DismissIcon}"/>
+			<!-- Success State -->
+			<Border Classes="notification"
+                    IsVisible="{Binding CanProceed}"
+                    CornerRadius="12"
+                    Padding="20">
+				<Grid ColumnDefinitions="Auto,*,Auto">
+					<!-- Success Icon -->
+					<Border Grid.Column="0"
+                            Background="#4CAF50"
+                            CornerRadius="20"
+                            Width="40"
+                            Height="40"
+                            VerticalAlignment="Center">
+						<PathIcon Data="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"
+                                 Width="20"
+                                 Height="20"
+                                 Foreground="White"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"/>
+					</Border>
+
+					<!-- Message -->
+					<StackPanel Grid.Column="1"
+                               Margin="16,0,0,0"
+                               VerticalAlignment="Center">
+						<TextBlock Text="File uploaded successfully!"
+                                  FontSize="16"
+                                  FontWeight="SemiBold"
+                                  Classes="success"/>
+						<TextBlock Text="{Binding UploadMessage}"
+                                  FontSize="14"
+                                  Foreground="#666666"
+                                  Margin="0,4,0,0"/>
+					</StackPanel>
+
+					<!-- Clear Button -->
+					<Button Grid.Column="2"
+                            Classes="icon-button"
+                            Command="{Binding ClearCommand}"
+                            VerticalAlignment="Center"
+                            ToolTip.Tip="Remove file">
+						<PathIcon Data="{Binding DismissIcon}"
+                                 Width="16"
+                                 Height="16"
+                                 Foreground="#666666"/>
+					</Button>
+				</Grid>
+			</Border>
+
+			<!-- Error State -->
+			<Border Classes="notification error"
+                    IsVisible="{Binding IsError}"
+                    CornerRadius="12"
+                    Padding="20">
+				<Grid ColumnDefinitions="Auto,*,Auto">
+					<!-- Error Icon -->
+					<Border Grid.Column="0"
+                            Background="#F44336"
+                            CornerRadius="20"
+                            Width="40"
+                            Height="40"
+                            VerticalAlignment="Center">
+						<PathIcon Data="M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z"
+                                 Width="20"
+                                 Height="20"
+                                 Foreground="White"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"/>
+					</Border>
+
+					<!-- Error Message -->
+					<StackPanel Grid.Column="1"
+                               Margin="16,0,0,0"
+                               VerticalAlignment="Center">
+						<TextBlock Text="Upload Error"
+                                  FontSize="16"
+                                  FontWeight="SemiBold"
+                                  Classes="error"/>
+						<TextBlock Text="{Binding ErrorMessage}"
+                                  FontSize="14"
+                                  Foreground="#666666"
+                                  Margin="0,4,0,0"
+                                  TextWrapping="Wrap"/>
+					</StackPanel>
+
+					<!-- Dismiss Button -->
+					<Button Grid.Column="2"
+                            Classes="icon-button"
+                            Command="{Binding ToggleErrorCommand}"
+                            VerticalAlignment="Center"
+                            ToolTip.Tip="Dismiss error">
+						<PathIcon Data="{Binding DismissIcon}"
+                                 Width="16"
+                                 Height="16"
+                                 Foreground="#666666"/>
+					</Button>
+				</Grid>
+			</Border>
+
+			<!-- Confirm Button -->
+			<Button Classes="primary"
+                    IsVisible="{Binding CanProceed}"
+                    HorizontalAlignment="Center"
+                    Command="{Binding ConfirmFileCommand}"
+                    Margin="0,8,0,0">
+				<StackPanel Orientation="Horizontal" Spacing="8">
+					<PathIcon Data="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"
+                             Width="18"
+                             Height="18"/>
+					<TextBlock Text="Confirm and Continue"/>
+				</StackPanel>
 			</Button>
+
 		</StackPanel>
-		
-		<Button Grid.Row="3"
-				IsVisible="{Binding CanProceed}"
-				HorizontalAlignment="Center"
-				Command="{Binding ConfirmFileCommand}">
-			Confirm File
-		</Button>
-	</Grid>
+	</ScrollViewer>
 </UserControl>
