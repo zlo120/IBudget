@@ -23,32 +23,60 @@ namespace IBudget.GUI
             AvaloniaXamlLoader.Load(this);
         }
 
-        public override void OnFrameworkInitializationCompleted()
+        public override async void OnFrameworkInitializationCompleted()
         {
             // If you use CommunityToolkit, line below is needed to remove Avalonia data validation.
             // Without this line you will get duplicate validations from both Avalonia and CT
             BindingPlugins.DataValidators.RemoveAt(0);
 
-            BlobCache.ApplicationName = "Stacks";
-
             // Register all the services needed for the application to run
             var collection = new ServiceCollection();
             collection.AddCommonServices();
-            //collection.AddDbContext<Context>();
-            collection.AddEntityFrameworkDesignTimeServices();
+            
             var services = collection.BuildServiceProvider();
-
-            var mainViewModel = services.GetRequiredService<MainWindowViewModel>();
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 // Line below is needed to remove Avalonia data validation.
                 // Without this line you will get duplicate validations from both Avalonia and CT
                 BindingPlugins.DataValidators.RemoveAt(0);
-                desktop.MainWindow = new MainWindow
+
+                // Show database connection window first
+                var dbConnectionViewModel = services.GetRequiredService<InitialisationViewModel>();
+                var dbConnectionWindow = new InitialisationWindow
                 {
-                    DataContext = mainViewModel,
+                    DataContext = dbConnectionViewModel
                 };
+
+                // Set the parent window reference
+                dbConnectionViewModel.SetParentWindow(dbConnectionWindow);
+
+                // Handle connection completion
+                dbConnectionViewModel.ConnectionCompleted += (sender, isConnected) =>
+                {                    
+                    if (isConnected)
+                    {
+                        // Connection successful, show main window
+                        var mainViewModel = services.GetRequiredService<MainWindowViewModel>();
+                        desktop.MainWindow = new MainWindow
+                        {
+                            DataContext = mainViewModel,
+                        };
+                        desktop.MainWindow.Show();
+                    }
+                    else
+                    {
+                        // Connection failed, exit application
+                        desktop.Shutdown();
+                    }
+                    dbConnectionWindow.Close();
+                };
+
+                // Show the database connection window
+                dbConnectionWindow.Show();
+                
+                // Start the connection test
+                await dbConnectionViewModel.InitializeConnectionAsync();
             }
 
             base.OnFrameworkInitializationCompleted();

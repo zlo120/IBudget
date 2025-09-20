@@ -36,6 +36,7 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddTransient<MonthlyViewModel>();
             collection.AddTransient<WeeklyViewModel>();
             collection.AddTransient<FinancialGoalsPageViewModel>();
+            collection.AddTransient<InitialisationViewModel>();
 
             collection.AddTransient<ICSVParserService, CSVParserService>();
             collection.AddScoped<IIncomeService, IncomeService>();
@@ -57,15 +58,9 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddScoped<IFinancialGoalService, FinancialGoalService>();
             collection.AddScoped<IFinancialGoalRepository, FinancialGoalRepository>();
             collection.AddSingleton<IMessageService, MessageService>();
+            collection.AddScoped<ISettingsService, SettingsService>();
 
             collection.AddScoped<MongoDbContext>();
-
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true)
-                .Build();
-
-            collection.AddSingleton<IConfiguration>(configuration);
         }
     }
 }

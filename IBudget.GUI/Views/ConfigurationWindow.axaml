@@ -1,0 +1,56 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="IBudget.GUI.Views.ConfigurationWindow"
+        xmlns:vm="using:IBudget.GUI.ViewModels"
+        x:DataType="vm:ConfigurationViewModel"
+        x:CompileBindings="True"
+        Title="MongoDB Configuration"
+        Icon="/Assets/stacks-logo.ico"
+        Width="500" Height="300"
+        WindowStartupLocation="CenterScreen"
+        CanResize="False">
+	<StackPanel Margin="20" Spacing="20">
+		<TextBlock Text="MongoDB Connection Configuration"
+                   FontSize="20"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"/>
+
+		<StackPanel Spacing="10">
+			<TextBlock Text="Connection String:"
+                       FontWeight="SemiBold"/>
+			<TextBox Text="{Binding ConnectionString}"
+                     Watermark="mongodb://localhost:27017/mydatabase"
+                     Height="40"
+                     FontSize="12"/>
+			<TextBlock Text="Enter your MongoDB connection string. Example: mongodb://localhost:27017/mydatabase"
+                       FontSize="11"
+                       Foreground="Gray"
+                       TextWrapping="Wrap"/>
+		</StackPanel>
+
+		<TextBlock Text="{Binding StatusMessage}"
+                   TextWrapping="Wrap"
+                   HorizontalAlignment="Center"
+                   FontWeight="SemiBold"
+                   IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+
+		<ProgressBar IsIndeterminate="{Binding IsSaving}"
+                     Height="6"
+                     IsVisible="{Binding IsSaving}"/>
+
+		<StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Spacing="15">
+			<Button Content="Cancel"
+                    Command="{Binding CancelCommand}"
+                    IsEnabled="{Binding !IsSaving}"
+                    Width="100"
+                    Height="35"/>
+			<Button Content="Save Configuration"
+                    Command="{Binding SaveConfigurationCommand}"
+                    IsEnabled="{Binding !IsSaving}"
+                    Width="150"
+                    Height="35"/>
+		</StackPanel>
+	</StackPanel>
+</Window>

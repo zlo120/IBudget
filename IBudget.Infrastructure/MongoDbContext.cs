@@ -1,6 +1,6 @@
-﻿using IBudget.Core.Model;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using IBudget.Core.Interfaces;
+using IBudget.Core.Model;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Tag = IBudget.Core.Model.Tag;
 
@@ -9,9 +9,9 @@ namespace IBudget.Infrastructure
     public class MongoDbContext
     {
         private readonly IMongoDatabase _database;
-        public MongoDbContext(IConfiguration config)
+        public MongoDbContext(ISettingsService settingsService)
         {
-            var connectionString = config.GetConnectionString("MongoDB");
+            var connectionString = settingsService.GetDbConnectionString();
             var client = new MongoClient(connectionString);
             _database = client.GetDatabase("Stacks");
         }
@@ -45,6 +45,12 @@ namespace IBudget.Infrastructure
         public IMongoCollection<FinancialGoal> GetFinancialGoalsCollection()
         {
             return _database.GetCollection<FinancialGoal>("financialGoals");
+        }
+
+        public static async Task TestConnection(string connectionString)
+        {
+            var client = new MongoClient(connectionString);
+            await client.GetDatabase("admin").RunCommandAsync((Command<BsonDocument>)"{ping:1}");
         }
     }
 }
