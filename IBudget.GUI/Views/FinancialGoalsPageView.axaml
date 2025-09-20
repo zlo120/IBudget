@@ -38,12 +38,31 @@
                               BorderThickness="1"
                               BorderBrush="Gray"
                               VerticalAlignment="Stretch"
-                              IsReadOnly="True">
+                              IsReadOnly="False">
 						<DataGrid.Columns>
 							<DataGridTextColumn Header="Goal Name" Width="2*"
-                                                Binding="{Binding Key}" />
+                                                Binding="{Binding Key}" 
+                                                IsReadOnly="True" />
 							<DataGridTextColumn Header="Maximum Expense Amount" Width="2*"
-                                                Binding="{Binding Value}" />
+                                                Binding="{Binding Value}" 
+                                                IsReadOnly="True" />
+							<DataGridTemplateColumn Header="Actions" Width="Auto">
+								<DataGridTemplateColumn.CellTemplate>
+									<DataTemplate>
+										<Button Padding="8"
+												Background="Transparent"
+												BorderThickness="0"
+												HorizontalAlignment="Center"
+												VerticalAlignment="Center"
+												CommandParameter="{Binding Key}"
+												Command="{Binding DeleteGoalCommand}"
+												ToolTip.Tip="Delete Goal">
+											<PathIcon Data="{StaticResource DeleteForever}" 
+													  Foreground="{DynamicResource TextControlForeground}" />
+										</Button>
+									</DataTemplate>
+								</DataGridTemplateColumn.CellTemplate>
+							</DataGridTemplateColumn>
 						</DataGrid.Columns>
 					</DataGrid>
 				</ScrollViewer>
@@ -94,7 +113,7 @@
 									   Text="Creating a financial goal" />
 							<TextBlock TextWrapping="Wrap"
 									   FontSize="12"
-									   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}">
+									   Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}">
 								A financial goal is directly linked to tagging. If the financial goal you create has a corresponding tag these two will be linked. If no tag exists with the same name as your goal, a new tag will be created with your goal name.
 							</TextBlock>
 						</StackPanel>

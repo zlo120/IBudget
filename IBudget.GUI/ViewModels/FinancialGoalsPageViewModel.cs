@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
+using IBudget.Core.Services;
 using IBudget.GUI.Services;
+using IBudget.GUI.Services.Impl;
 
 namespace IBudget.GUI.ViewModels
 {
@@ -17,7 +17,7 @@ namespace IBudget.GUI.ViewModels
         private readonly ITagService _tagService;
         private readonly IMessageService _messageService;
         public required ObservableCollection<string> Tags { get; set; }
-        public ObservableCollection<InfoContainer> FinancialGoals { get; } = [];
+        public ObservableCollection<FinancialGoalListItem> FinancialGoals { get; } = [];
         [ObservableProperty]
         private string _goalName = string.Empty;
         [ObservableProperty]
@@ -34,6 +34,10 @@ namespace IBudget.GUI.ViewModels
             _ = InitializeFinancialGoalsAsync();
         }
 
+        private void RemoveGoalFromCollection()
+        {
+            InitializeFinancialGoalsAsync();
+        }
         private async Task InitializeFinancialGoalsAsync()
         {
             try
@@ -42,7 +46,7 @@ namespace IBudget.GUI.ViewModels
                 var financialGoals = await _financialGoalService.GetAll();
                 foreach (var financialGoal in financialGoals)
                 {
-                    FinancialGoals.Add(new InfoContainer()
+                    FinancialGoals.Add(new FinancialGoalListItem(RemoveGoalFromCollection, _financialGoalService, _messageService)
                     {
                         Key = financialGoal.Name,
                         Value = financialGoal.TargetAmount.ToString("C"),
@@ -113,6 +117,35 @@ namespace IBudget.GUI.ViewModels
             }
 
             await InitializeFinancialGoalsAsync();
+        }
+
+    }
+
+    public partial class FinancialGoalListItem(Action removeFromCollection, IFinancialGoalService financialGoalService, IMessageService messageService)
+    {
+        private readonly Action _removeFromCollection = removeFromCollection;
+        private readonly IFinancialGoalService _financialGoalService = financialGoalService;
+        private readonly IMessageService _messageService = messageService;
+        public string Key { get; set; }
+        public string Value { get; set; }
+        [RelayCommand]
+        public async Task DeleteGoal(string goalName)
+        {
+            var confirmation = await _messageService.ShowConfirmationAsync("Delete Financial Goal", $"Are you sure you want to delete the financial goal '{goalName}'? This action cannot be undone.");
+            if (confirmation)
+            {
+                try
+                    {
+                
+                    await _financialGoalService.DeleteFinancialGoalByName(goalName);
+                    _removeFromCollection();
+                
+                }
+                catch (Exception ex)
+                {
+                    await _messageService.ShowErrorAsync($"Error deleting financial goal: {ex.Message}");
+                }
+            }
         }
     }
 }
