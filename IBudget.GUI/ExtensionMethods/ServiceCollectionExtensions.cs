@@ -60,7 +60,7 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddSingleton<IMessageService, MessageService>();
             collection.AddScoped<ISettingsService, SettingsService>();
 
-            collection.AddScoped<MongoDbContext>();
+            collection.AddSingleton<MongoDbContext>();
         }
     }
 }
