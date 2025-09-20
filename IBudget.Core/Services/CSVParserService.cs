@@ -118,7 +118,7 @@ namespace IBudget.Core.Services
                         )
                     .FirstOrDefault();
 
-                if (expenseRuleTagsMatch is null && expenseRuleTagsMatch is null)
+                if (expenseTagsMatch is null && expenseRuleTagsMatch is null)
                     untaggedRecords.Add(record);
             }
 
