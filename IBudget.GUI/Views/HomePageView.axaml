@@ -217,7 +217,7 @@
                           FontSize="12"
                           HorizontalAlignment="Center"
                           Opacity="0.6" />
-				<TextBlock Text="Version 0.1.0"
+				<TextBlock Text="{Binding Version}"
                           FontSize="11"
                           HorizontalAlignment="Center"
                           Opacity="0.5"

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -9,10 +10,24 @@ using IBudget.Spreadsheet.Interfaces;
 
 namespace IBudget.GUI.ViewModels
 {
-    public partial class HomePageViewModel(ISpreadSheetGeneratorService spreadSheetGenerator, IMessageService messageService) : ViewModelBase
+    public partial class HomePageViewModel : ViewModelBase
     {
-        private readonly ISpreadSheetGeneratorService _spreadSheetGenerator = spreadSheetGenerator;
-        private readonly IMessageService _messageService = messageService;
+        private readonly ISpreadSheetGeneratorService _spreadSheetGenerator;
+        private readonly IMessageService _messageService;
+
+        [ObservableProperty]
+        private string? _version;
+
+        [ObservableProperty]
+        private string? _message;
+
+        public HomePageViewModel(ISpreadSheetGeneratorService spreadSheetGenerator, IMessageService messageService)
+        {
+            _spreadSheetGenerator = spreadSheetGenerator;
+            _messageService = messageService;
+            Version = $"Version {Assembly.GetExecutingAssembly().GetName().Version}";
+        }
+
         [RelayCommand]
         private async Task GenerateExcel()
         {
@@ -48,8 +63,5 @@ namespace IBudget.GUI.ViewModels
                 await _messageService.ShowErrorAsync($"There was an issue generating your spreadsheet.\n{ex.StackTrace}");
             }
         }
-
-        [ObservableProperty]
-        private string _message = string.Empty;
     }
 }
