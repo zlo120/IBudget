@@ -212,11 +212,17 @@
 			</Grid>
 
 			<!-- Footer -->
-			<TextBlock Text="Navigate using the menu on the left to manage your data and settings."
-                      FontSize="12"
-                      HorizontalAlignment="Center"
-                      Opacity="0.6"
-                      Margin="0,30,0,0" />
+			<StackPanel Spacing="8" Margin="0,30,0,0">
+				<TextBlock Text="Navigate using the menu on the left to manage your data and settings."
+                          FontSize="12"
+                          HorizontalAlignment="Center"
+                          Opacity="0.6" />
+				<TextBlock Text="Version 0.1.0"
+                          FontSize="11"
+                          HorizontalAlignment="Center"
+                          Opacity="0.5"
+                          FontStyle="Italic" />
+			</StackPanel>
 		</StackPanel>
 	</ScrollViewer>
 

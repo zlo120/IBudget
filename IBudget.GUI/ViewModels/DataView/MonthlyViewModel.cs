@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Amazon.Runtime.Internal.Transform;
 using CommunityToolkit.Mvvm.ComponentModel;
 using IBudget.Core.Interfaces;
+using IBudget.Core.Services;
 using IBudget.GUI.Services;
 
 namespace IBudget.GUI.ViewModels.DataView
@@ -17,10 +16,10 @@ namespace IBudget.GUI.ViewModels.DataView
         private readonly ISummaryService _summaryService;
         private readonly IMessageService _messageService;
         private readonly IFinancialGoalService _financialGoalService;
-        
+
         [ObservableProperty]
         private string _thisMonth = string.Empty;
-        
+
         [ObservableProperty]
         private int _selectedIndex = 0;
 
@@ -31,7 +30,7 @@ namespace IBudget.GUI.ViewModels.DataView
         private ObservableCollection<string> _financialGoals = new();
 
         [ObservableProperty]
-        private Dictionary<string, double> _summarySpending = new();
+        private Dictionary<string, double> _summarySpending = new(); // not used in UI currently
 
         [ObservableProperty]
         private double _totalSpending = 0.0;
@@ -51,6 +50,7 @@ namespace IBudget.GUI.ViewModels.DataView
 
         partial void OnSelectedIndexChanged(int value)
         {
+            if (_financialGoalService is null || _messageService is null) return;
             // Update the month when selection changes and reload data
             var monthNames = new[]
             {
@@ -67,7 +67,7 @@ namespace IBudget.GUI.ViewModels.DataView
                 }
             }
             catch (Exception)
-            {                
+            {
             }
         }
 
@@ -97,7 +97,7 @@ namespace IBudget.GUI.ViewModels.DataView
                 var financialGoalsResult = await _financialGoalService.GetAll();
                 var financialGoals = financialGoalsResult?.Select(goal => goal.Name) ?? Enumerable.Empty<string>();
                 var monthsData = await _summaryService.ReadMonth(monthNumber);
-                
+
                 if (monthsData?.AllExpenses == null)
                 {
                     // No data available for this month
@@ -107,7 +107,7 @@ namespace IBudget.GUI.ViewModels.DataView
                 foreach (var goal in financialGoals)
                 {
                     if (string.IsNullOrEmpty(goal)) continue;
-                    
+
                     FinancialGoals.Add(goal);
                     double totalMoneySpent = monthsData.AllExpenses
                         .Where(e => e.Tags?.Select(t => t.Name).Contains(goal) == true)
