@@ -29,7 +29,7 @@ namespace IBudget.Infrastructure.Repositories
         public async Task<List<Tag>> FindTagsByDescription(string description)
         {
             var tags = new List<Tag>();
-            var expenseRuleTags = await _expenseRuleTagsRepository.GetExpenseRuleTagByRule(description);
+            var expenseRuleTags = await _expenseRuleTagsRepository.GetExpenseRuleTagByDescription(description);
             List<string> tagNames = [];
             if (expenseRuleTags is not null && expenseRuleTags.Tags.Count > 0)
             {

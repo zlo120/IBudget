@@ -39,9 +39,9 @@ namespace IBudget.Core.Services
             return await _expenseRuleTagRepository.GetExpenseRuleTagByPage(pageNumber);
         }
 
-        public async Task<ExpenseRuleTag?> GetExpenseRuleTagByRule(string rule)
+        public async Task<ExpenseRuleTag?> GetExpenseRuleTagByDescription(string description)
         {
-            return await _expenseRuleTagRepository.GetExpenseRuleTagByRule(rule);
+            return await _expenseRuleTagRepository.GetExpenseRuleTagByDescription(description);
         }
 
         public async Task<ExpenseRuleTag> UpdateExpenseRuleTag(ExpenseRuleTag expenseRuleTag)

@@ -61,9 +61,9 @@ namespace IBudget.Infrastructure.Repositories
             };
         }
 
-        public async Task<ExpenseRuleTag?> GetExpenseRuleTagByRule(string rule)
+        public async Task<ExpenseRuleTag?> GetExpenseRuleTagByDescription(string description)
         {
-            return await _expenseRuleTagsCollection.Find(e => e.Rule.Equals(rule, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefaultAsync();
+            return await _expenseRuleTagsCollection.Find(e => description.ToLower().Contains(e.Rule.ToLower())).FirstOrDefaultAsync();
         }
 
         public async Task<ExpenseRuleTag> UpdateExpenseRuleTag(ExpenseRuleTag expenseRuleTag)
