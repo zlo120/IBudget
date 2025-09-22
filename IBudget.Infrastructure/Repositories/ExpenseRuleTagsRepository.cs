@@ -63,7 +63,7 @@ namespace IBudget.Infrastructure.Repositories
 
         public async Task<ExpenseRuleTag?> GetExpenseRuleTagByRule(string rule)
         {
-            return await _expenseRuleTagsCollection.Find(e => e.Rule == rule).FirstOrDefaultAsync();
+            return await _expenseRuleTagsCollection.Find(e => e.Rule.Equals(rule, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefaultAsync();
         }
 
         public async Task<ExpenseRuleTag> UpdateExpenseRuleTag(ExpenseRuleTag expenseRuleTag)

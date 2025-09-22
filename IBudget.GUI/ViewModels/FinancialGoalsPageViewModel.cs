@@ -115,7 +115,8 @@ namespace IBudget.GUI.ViewModels
                 await _messageService.ShowErrorAsync($"Error creating financial goal: {ex.Message}");
                 return;
             }
-
+            GoalName = string.Empty;
+            Amount = string.Empty;
             await InitializeFinancialGoalsAsync();
         }
 
