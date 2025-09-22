@@ -4,6 +4,7 @@ using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using IBudget.GUI.Utils;
+using IBudget.GUI.ViewModels.DataView;
 using System;
 using System.Collections.ObjectModel;
 
@@ -17,6 +18,7 @@ namespace IBudget.GUI.ViewModels
         private readonly DictionariesPageViewModel _dictionariesPageViewModel;
         private readonly TagsPageViewModel _tagsPageViewModel;
         private readonly FinancialGoalsPageViewModel _financialGoalsPageViewModel;
+        private readonly DataTableViewModel _dataTableViewModel;
 
         public MainWindowViewModel(
             HomePageViewModel homePageViewModel,
@@ -24,8 +26,8 @@ namespace IBudget.GUI.ViewModels
             DataPageViewModel dataPageViewModel,
             DictionariesPageViewModel dictionariesPageViewModel,
             TagsPageViewModel tagsPageViewModel,
-            FinancialGoalsPageViewModel financialGoalsPageViewModel
-
+            FinancialGoalsPageViewModel financialGoalsPageViewModel,
+            DataTableViewModel dataTableViewModel
         )
         {
             _homePageViewModel = homePageViewModel;
@@ -34,6 +36,7 @@ namespace IBudget.GUI.ViewModels
             _dictionariesPageViewModel = dictionariesPageViewModel;
             _tagsPageViewModel = tagsPageViewModel;
             _financialGoalsPageViewModel = financialGoalsPageViewModel;
+            _dataTableViewModel = dataTableViewModel;
 
             CurrentPage = _homePageViewModel;
         }
@@ -63,6 +66,8 @@ namespace IBudget.GUI.ViewModels
                 instance = _tagsPageViewModel;
             if (value.ModelType == typeof(FinancialGoalsPageViewModel))
                 instance = _financialGoalsPageViewModel;
+            if (value.ModelType == typeof(DataTableViewModel))
+                instance = _dataTableViewModel;
 
             if (instance is null) return;
             CurrentPage = instance;
@@ -73,6 +78,7 @@ namespace IBudget.GUI.ViewModels
             new ListItemTemplate(typeof(HomePageViewModel), "HomeRegular"),
             new ListItemTemplate(typeof(UploadCsvPageViewModel), "DocumentRegular"),
             new ListItemTemplate(typeof(DataPageViewModel), "DataRegular"),
+            new ListItemTemplate(typeof(DataTableViewModel), "FolderRegular"),
             new ListItemTemplate(typeof(DictionariesPageViewModel), "BookDbRegular"),
             new ListItemTemplate(typeof(TagsPageViewModel), "TagRegular"),
             new ListItemTemplate(typeof(FinancialGoalsPageViewModel), "MoneyRegular"),
@@ -97,6 +103,10 @@ namespace IBudget.GUI.ViewModels
             else if (type == typeof(DictionariesPageViewModel))
             {
                 Label = "Tag Dictionary";
+            }
+            else if (type == typeof(DataTableViewModel))
+            {
+                Label = "Financial Records";
             }
             else
             {

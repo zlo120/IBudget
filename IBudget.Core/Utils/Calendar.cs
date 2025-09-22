@@ -136,5 +136,14 @@ namespace IBudget.Core.Utils
                 throw new Exception($"An error occurred when parse a d-MM-yyyy date string or dd-MM-yyyy date string, attempted to parse: {dateString}. Stacktrace: {Environment.StackTrace}");
             }
         }
+    
+        public static DateTime GetBeginningOfWeek(DateTime date)
+        {
+            while (date.DayOfWeek != DayOfWeek.Monday)
+            {
+                date = date.AddDays(-1);
+            }
+            return date;
+        }
     }
 }

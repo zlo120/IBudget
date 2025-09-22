@@ -49,7 +49,17 @@
 			<Setter Property="Padding" Value="24"/>
 			<Setter Property="BorderThickness" Value="0"/>
 			<Setter Property="BoxShadow" Value="0 4 12 0 #1A000000"/>
-			<Setter Property="Margin" Value="16,0,0,0"/>
+			<Setter Property="MinWidth" Value="300"/>
+			<Setter Property="MinHeight" Value="200"/>
+		</Style>
+
+		<!-- Total Income Card Style -->
+		<Style Selector="Border.total-income-card">
+			<Setter Property="Background" Value="#4CAF50"/>
+			<Setter Property="CornerRadius" Value="12"/>
+			<Setter Property="Padding" Value="24"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="BoxShadow" Value="0 4 12 0 #1A000000"/>
 			<Setter Property="MinWidth" Value="300"/>
 			<Setter Property="MinHeight" Value="200"/>
 		</Style>
@@ -205,34 +215,68 @@
 				</Grid>
 			</Border>
 
-			<!-- Right Side: Total Spending Card -->
-			<Border Classes="total-card" Grid.Column="1">
-				<StackPanel VerticalAlignment="Center" Spacing="16">
-					<!-- Total Icon -->
-					<Border Background="White"
-                           CornerRadius="16"
-                           Width="80"
-                           Height="80"
-                           HorizontalAlignment="Center">
-						<PathIcon Data="M12,1L21,5V11C21,16.55 17.16,21.74 12,23C6.84,21.74 3,16.55 3,11V5L12,1M12,7C10.34,7 9,8.34 9,10C9,11.66 10.34,13 12,13C13.66,13 15,11.66 15,10C15,8.34 13.66,7 12,7M6,17.25C6,15.18 8.41,13.53 12,13.53C15.59,13.53 18,15.18 18,17.25"
-                                 Width="36"
-                                 Height="36"
-                                 Foreground="#2196F3"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Center"/>
-					</Border>
+			<!-- Right Side: Total Spending and Income Cards -->
+			<StackPanel Grid.Column="1" Spacing="16" Margin="16,0,0,0">
+				
+				<!-- Total Spending Card -->
+				<Border Classes="total-card">
+					<StackPanel VerticalAlignment="Center" Spacing="16">
+						<!-- Total Icon -->
+						<Border Background="White"
+								CornerRadius="16"
+								Width="80"
+								Height="80"
+								HorizontalAlignment="Center">
+							<PathIcon Data="M12,1L21,5V11C21,16.55 17.16,21.74 12,23C6.84,21.74 3,16.55 3,11V5L12,1M12,7C10.34,7 9,8.34 9,10C9,11.66 10.34,13 12,13C13.66,13 15,11.66 15,10C15,8.34 13.66,7 12,7M6,17.25C6,15.18 8.41,13.53 12,13.53C15.59,13.53 18,15.18 18,17.25"
+									 Width="36"
+									 Height="36"
+									 Foreground="#2196F3"
+									 HorizontalAlignment="Center"
+									 VerticalAlignment="Center"/>
+						</Border>
 
-					<!-- Total Content -->
-					<StackPanel HorizontalAlignment="Center" Spacing="8">
-						<TextBlock Text="Total Monthly Spending"
-                                  Classes="total-title"
-                                  HorizontalAlignment="Center"/>
-						<TextBlock Text="{Binding TotalSpending, StringFormat='${0:F2}'}"
-                                  Classes="total-value"
-                                  HorizontalAlignment="Center"/>
+						<!-- Total Content -->
+						<StackPanel HorizontalAlignment="Center" Spacing="8">
+							<TextBlock Text="Total Monthly Spending"
+									  Classes="total-title"
+									  HorizontalAlignment="Center"/>
+							<TextBlock Text="{Binding TotalSpending, StringFormat='${0:F2}'}"
+									  Classes="total-value"
+									  HorizontalAlignment="Center"/>
+						</StackPanel>
 					</StackPanel>
-				</StackPanel>
-			</Border>
+				</Border>
+
+				<!-- Total Income Card -->
+				<Border Classes="total-income-card">
+					<StackPanel VerticalAlignment="Center" Spacing="16">
+						<!-- Income Icon -->
+						<Border Background="White"
+								CornerRadius="16"
+								Width="80"
+								Height="80"
+								HorizontalAlignment="Center">
+							<PathIcon Data="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z"
+									 Width="36"
+									 Height="36"
+									 Foreground="#4CAF50"
+									 HorizontalAlignment="Center"
+									 VerticalAlignment="Center"/>
+						</Border>
+
+						<!-- Income Content -->
+						<StackPanel HorizontalAlignment="Center" Spacing="8">
+							<TextBlock Text="Total Monthly Income"
+									  Classes="total-title"
+									  HorizontalAlignment="Center"/>
+							<TextBlock Text="{Binding TotalIncome, StringFormat='${0:F2}'}"
+									  Classes="total-value"
+									  HorizontalAlignment="Center"/>
+						</StackPanel>
+					</StackPanel>
+				</Border>
+
+			</StackPanel>
 
 		</Grid>
 
