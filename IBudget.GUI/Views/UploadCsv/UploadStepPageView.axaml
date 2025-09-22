@@ -9,6 +9,34 @@
              x:CompileBindings="True">
 
 	<UserControl.Styles>
+		<!-- Add this new specific style for the browse button -->
+		<Style Selector="Button.browse-button">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="Foreground" Value="#2196F3"/>
+			<Setter Property="CornerRadius" Value="8"/>
+			<Setter Property="Padding" Value="20,10"/>
+			<Setter Property="FontWeight" Value="Medium"/>
+			<Setter Property="BorderBrush" Value="#2196F3"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="Transitions">
+				<Transitions>
+					<BrushTransition Property="Background" Duration="0:0:0.2"/>
+				</Transitions>
+			</Setter>
+		</Style>
+
+		<!-- Override hover state with higher specificity -->
+		<Style Selector="Button.browse-button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="Foreground" Value="#2196F3"/>
+		</Style>
+		
+		<Style Selector="Button.browse-button:pointerover">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="Foreground" Value="#2196F3"/>
+			<Setter Property="BorderBrush" Value="#2196F3"/>
+		</Style>
+
 		<Style Selector="Border.upload-area">
 			<Setter Property="BorderBrush" Value="#E0E0E0"/>
 			<Setter Property="BorderThickness" Value="2"/>
@@ -172,13 +200,7 @@
 					</StackPanel>
 
 					<!-- Browse Button -->
-					<Button Background="Transparent"
-							Foreground="#2196F3"
-							CornerRadius="8"
-							Padding="20,10"
-							FontWeight="Medium"
-							BorderBrush="#2196F3"
-							BorderThickness="1"
+					<Button Classes="browse-button"
 							Click="OpenFileButton_Clicked"
 							HorizontalAlignment="Center">
 						<StackPanel Orientation="Horizontal" Spacing="8">

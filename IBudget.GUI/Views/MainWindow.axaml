@@ -17,26 +17,34 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-	<SplitView IsPaneOpen="{Binding IsPaneOpen}"
-				OpenPaneLength="300"
-				CompactPaneLength="46"
-				DisplayMode="CompactInline">
-
-		<SplitView.Pane>
-			<StackPanel Orientation="Vertical"
-						Spacing="5"
-						HorizontalAlignment="Stretch"
-						VerticalAlignment="Top">
-				<Button HorizontalAlignment="Left"
-						Width="32"
-						Height="32"
-						Margin="7 10"
-						Command="{Binding TogglePaneCommand}">
-					<PathIcon Data="{StaticResource LineHorizontal3Regular}" />
-				</Button>
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto" />
+			<ColumnDefinition Width="*" />
+		</Grid.ColumnDefinitions>
+		
+		<!-- Side Panel -->
+		<StackPanel Grid.Column="0" 
+					Orientation="Vertical"
+					Spacing="5"
+					HorizontalAlignment="Left"
+					VerticalAlignment="Top"
+					Margin="5">
+			
+			<!-- Hamburger button - always visible -->
+			<Button HorizontalAlignment="Left"
+					Width="32"
+					Height="32"
+					Margin="7 10"
+					Command="{Binding TogglePaneCommand}">
+				<PathIcon Data="{StaticResource LineHorizontal3Regular}" />
+			</Button>
+			
+			<!-- Panel content - only visible when pane is open -->
+			<Border Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+					IsVisible="{Binding IsPaneOpen}">
 				<ListBox ItemsSource="{Binding Items}"
 						 SelectedItem="{Binding SelectedListItem}"
-						 Margin="0 0 -100 0"
 						 Padding="0">
 					<ListBox.Styles>
 						<Style Selector="ListBoxItem">
@@ -52,15 +60,13 @@
 						</DataTemplate>
 					</ListBox.ItemTemplate>
 				</ListBox>
-			</StackPanel>
-		</SplitView.Pane>
-
-		<SplitView.Content>
-			<Border CornerRadius="15 0 0 0">
-				<TransitioningContentControl Content="{Binding CurrentPage}"/>
 			</Border>
-		</SplitView.Content>
-
-	</SplitView>
+		</StackPanel>
+		
+		<!-- Main Content -->
+		<Border Grid.Column="1" CornerRadius="15 0 0 0">
+			<TransitioningContentControl Content="{Binding CurrentPage}"/>
+		</Border>
+	</Grid>
 
 </Window>
