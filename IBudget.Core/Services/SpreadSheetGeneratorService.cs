@@ -120,7 +120,7 @@ namespace IBudget.Core.Services
                 var startCellColumn = trackedTagsList.Count + 6;
                 var endCelColumn = startCellColumn + 2;
 
-                var startRow = (int) Math.Ceiling((decimal)trackedTagsList.Count/2)*2 + 2;
+                var startRow = (int) Math.Ceiling((decimal)financialGoals.Count/2)*2 + 6;
                 var endRow = startRow + 10;
 
                 int chartIndex = workSheet!.Charts.Add(ChartType.Column, startRow, startCellColumn, endRow, endCelColumn);
@@ -167,7 +167,7 @@ namespace IBudget.Core.Services
 
                 var offsetColumn = false;
 
-                var totalRow = (int)Math.Ceiling((decimal)trackedTagsList.Count / 2) * 2 + 1;
+                var totalRow = (int)Math.Ceiling((decimal)financialGoals.Count / 2) * 2 + 5;
                 var totalOutgoingColumn = trackedTagsList.Count + 7;
                 var totalIncomeColumn = totalOutgoingColumn + 1;
 
@@ -366,11 +366,11 @@ namespace IBudget.Core.Services
                     }
                 }
 
-                var otherTitleRow = currentTitleRow;
+                var otherTitleRow = financialGoals.Count == 0 ? currentTitleRow : currentTitleRow += 2;
                 var otherValueRow = otherTitleRow + 1;   
                 var otherColLetter = IntToChar(otherColumn);
-                weekWorksheet.Cell(otherTitleRow, summaryColumn + (offsetColumn ? 1 : 0)).Value = "Money spent on other";
-                weekWorksheet.Cell(otherValueRow, summaryColumn + (offsetColumn ? 1 : 0)).FormulaA1 = $"_xlfn.SUM({otherColLetter}:{otherColLetter})";
+                weekWorksheet.Cell(otherTitleRow, summaryColumn).Value = "Money spent on other";
+                weekWorksheet.Cell(otherValueRow, summaryColumn).FormulaA1 = $"_xlfn.SUM({otherColLetter}:{otherColLetter})";
 
                 var outgoingIncomingRow = otherTitleRow + 2;
                 var outgoingIncomingValueRow = outgoingIncomingRow + 1;
