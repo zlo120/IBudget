@@ -13,7 +13,7 @@ namespace IBudget.Infrastructure.Repositories
 
         public async Task ClearCollection()
         {
-            await _tagsCollection.DeleteManyAsync(_ => true);
+            await _tagsCollection.DeleteManyAsync(t => t.Name != "ignored");
         }
 
         public async Task CreateTag(Tag tag)

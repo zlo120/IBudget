@@ -5,6 +5,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="IBudget.GUI.Views.TagsPageView"
 			 xmlns:vm="using:IBudget.GUI.ViewModels"
+			 xmlns:converters="using:IBudget.GUI.Converters"
 			 x:DataType="vm:TagsPageViewModel"
 			 x:CompileBindings="True">
 
@@ -177,7 +178,8 @@
                                                        CornerRadius="16"
                                                        ToolTip.Tip="Delete this tag"
                                                        FontSize="12"
-                                                       Click="OnIconButtonClick" />
+                                                       Click="OnIconButtonClick"
+                                                       IsVisible="{Binding TagName, Converter={x:Static converters:StringNotEqualConverter.Instance}, ConverterParameter=ignored}" />
 											</StackPanel>
 										</Grid>
 									</Border>

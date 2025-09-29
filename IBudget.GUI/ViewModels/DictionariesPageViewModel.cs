@@ -243,6 +243,7 @@ namespace IBudget.GUI.ViewModels
                 Tags = [SelectedTag],
                 CreatedAt = DateTime.UtcNow
             }; 
+            await _expenseRuleTagService.UpdateExpenseRuleTag(newExpenseRuleTag);
         }   
 
         private void FinishEdDbSearch()

@@ -35,6 +35,7 @@ namespace IBudget.GUI.ViewModels
         {
             try
             {
+                Tags.Clear();
                 var tags = await _tagService.GetAll();
                 foreach (var tag in tags)
                 {
@@ -100,6 +101,7 @@ namespace IBudget.GUI.ViewModels
 
         public async Task RefreshViewAsync()
         {
+            Tags.Clear();
             try
             {
                 var tags = await _tagService.GetAll();
