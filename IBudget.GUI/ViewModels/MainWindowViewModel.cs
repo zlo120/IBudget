@@ -19,6 +19,7 @@ namespace IBudget.GUI.ViewModels
         private readonly TagsPageViewModel _tagsPageViewModel;
         private readonly FinancialGoalsPageViewModel _financialGoalsPageViewModel;
         private readonly DataTableViewModel _dataTableViewModel;
+        private readonly SettingsPageViewModel _settingsPageViewModel;
 
         public MainWindowViewModel(
             HomePageViewModel homePageViewModel,
@@ -27,7 +28,8 @@ namespace IBudget.GUI.ViewModels
             DictionariesPageViewModel dictionariesPageViewModel,
             TagsPageViewModel tagsPageViewModel,
             FinancialGoalsPageViewModel financialGoalsPageViewModel,
-            DataTableViewModel dataTableViewModel
+            DataTableViewModel dataTableViewModel,
+            SettingsPageViewModel settingsPageViewModel
         )
         {
             _homePageViewModel = homePageViewModel;
@@ -37,6 +39,7 @@ namespace IBudget.GUI.ViewModels
             _tagsPageViewModel = tagsPageViewModel;
             _financialGoalsPageViewModel = financialGoalsPageViewModel;
             _dataTableViewModel = dataTableViewModel;
+            _settingsPageViewModel = settingsPageViewModel;
 
             CurrentPage = _homePageViewModel;
         }
@@ -68,6 +71,8 @@ namespace IBudget.GUI.ViewModels
                 instance = _financialGoalsPageViewModel;
             if (value.ModelType == typeof(DataTableViewModel))
                 instance = _dataTableViewModel;
+            if (value.ModelType == typeof(SettingsPageViewModel))
+                instance = _settingsPageViewModel;
 
             if (instance is null) return;
             CurrentPage = instance;
@@ -82,6 +87,7 @@ namespace IBudget.GUI.ViewModels
             new ListItemTemplate(typeof(DictionariesPageViewModel), "BookDbRegular"),
             new ListItemTemplate(typeof(TagsPageViewModel), "TagRegular"),
             new ListItemTemplate(typeof(FinancialGoalsPageViewModel), "MoneyRegular"),
+            new ListItemTemplate(typeof(SettingsPageViewModel), "SettingsRegular"),
         };
 
         [RelayCommand]
@@ -107,6 +113,10 @@ namespace IBudget.GUI.ViewModels
             else if (type == typeof(DataTableViewModel))
             {
                 Label = "Financial Records";
+            }
+            else if (type == typeof(SettingsPageViewModel))
+            {
+                Label = "Settings";
             }
             else
             {

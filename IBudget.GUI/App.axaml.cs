@@ -1,17 +1,10 @@
-using System;
-using System.IO;
-using Akavache;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
-using IBudget.Core.RepositoryInterfaces;
 using IBudget.GUI.ExtensionMethods;
 using IBudget.GUI.ViewModels;
 using IBudget.GUI.Views;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace IBudget.GUI
@@ -32,7 +25,7 @@ namespace IBudget.GUI
             // Register all the services needed for the application to run
             var collection = new ServiceCollection();
             collection.AddCommonServices();
-            
+
             var services = collection.BuildServiceProvider();
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -53,7 +46,7 @@ namespace IBudget.GUI
 
                 // Handle connection completion
                 dbConnectionViewModel.ConnectionCompleted += (sender, isConnected) =>
-                {                    
+                {
                     if (isConnected)
                     {
                         // Connection successful, show main window
@@ -74,7 +67,7 @@ namespace IBudget.GUI
 
                 // Show the database connection window
                 dbConnectionWindow.Show();
-                
+
                 // Start the connection test
                 await dbConnectionViewModel.InitializeConnectionAsync();
             }

@@ -1,0 +1,186 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:converters="clr-namespace:IBudget.GUI.Converters"
+             xmlns:enums="using:IBudget.Core.Enums"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="IBudget.GUI.Views.SettingsPageView"
+			 xmlns:vm="using:IBudget.GUI.ViewModels"
+			 x:DataType="vm:SettingsPageViewModel"
+			 x:CompileBindings="True">
+  
+  <UserControl.Resources>
+    <converters:DatabaseTypeConverter x:Key="DatabaseTypeConverter"/>
+  </UserControl.Resources>
+  
+  <ScrollViewer>
+    <StackPanel Margin="20" Spacing="20">
+      
+      <!-- Page Title -->
+      <TextBlock Text="Settings" 
+                 FontSize="24" 
+                 FontWeight="Bold" 
+                 Margin="0,0,0,10"
+                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+      
+      <!-- Database Configuration Section -->
+      <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" 
+              Padding="15" 
+              CornerRadius="8"
+              BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+              BorderThickness="1">
+        <StackPanel Spacing="15">
+          <TextBlock Text="Database Configuration" 
+                     FontSize="18" 
+                     FontWeight="SemiBold"
+                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+          
+          <StackPanel Spacing="8">
+            <TextBlock Text="Database Type:" 
+                       FontWeight="Medium"
+                       Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+            <ComboBox ItemsSource="{Binding DatabaseTypes}"
+                      SelectedItem="{Binding SelectedDatabaseType}"
+                      Width="300"
+                      HorizontalAlignment="Left">
+              <ComboBox.ItemTemplate>
+                <DataTemplate x:DataType="enums:DatabaseType">
+                  <TextBlock Text="{Binding Converter={StaticResource DatabaseTypeConverter}}"/>
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+          </StackPanel>
+          
+          <!-- Edit Configuration Button -->
+          <Button Content="Edit Configuration"
+                  Command="{Binding EditConfigurationCommand}"
+                  IsVisible="{Binding IsEditConfigurationVisible}"
+                  HorizontalAlignment="Left"
+                  Padding="12,8"
+                  CornerRadius="4"
+                  Margin="0,10,0,0">
+            <Button.Content>
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="⚙️" FontSize="14"/>
+                <TextBlock Text="Edit Configuration"/>
+              </StackPanel>
+            </Button.Content>
+          </Button>
+        </StackPanel>
+      </Border>
+      
+      <!-- Reset Collections Section -->
+      <Border Background="{DynamicResource SystemFillColorCautionBackgroundBrush}" 
+              Padding="15" 
+              CornerRadius="8"
+              BorderBrush="{DynamicResource SystemFillColorCautionBrush}" 
+              BorderThickness="1"
+              IsVisible="{Binding IsResetCollectionsSectionVisible}">
+        <StackPanel Spacing="15">
+          <StackPanel Spacing="5">
+            <TextBlock Text="Reset Collections" 
+                       FontSize="18" 
+                       FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+            <TextBlock Text="⚠️ Warning: These actions will permanently delete all data from the selected collection." 
+                       FontStyle="Italic" 
+                       Foreground="{DynamicResource SystemFillColorCautionBrush}"/>
+          </StackPanel>
+          
+          <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,10,*">
+            
+            <Button Grid.Row="0" Grid.Column="0"
+                    Content="Reset ExpenseTag Collection"
+                    Command="{Binding ResetExpenseTagCollectionCommand}"
+                    IsEnabled="{Binding !IsResetInProgress}"
+                    Classes="accent"
+                    Padding="12,8"
+                    CornerRadius="4"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,0,0,10"/>
+            
+            <Button Grid.Row="0" Grid.Column="2"
+                    Content="Reset ExpenseRuleTag Collection"
+                    Command="{Binding ResetExpenseRuleTagCollectionCommand}"
+                    IsEnabled="{Binding !IsResetInProgress}"
+                    Classes="accent"
+                    Padding="12,8"
+                    CornerRadius="4"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,0,0,10"/>
+            
+            <Button Grid.Row="1" Grid.Column="0"
+                    Content="Reset Expense Collection"
+                    Command="{Binding ResetExpenseCollectionCommand}"
+                    IsEnabled="{Binding !IsResetInProgress}"
+                    Classes="accent"
+                    Padding="12,8"
+                    CornerRadius="4"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,0,0,10"/>
+            
+            <Button Grid.Row="1" Grid.Column="2"
+                    Content="Reset Income Collection"
+                    Command="{Binding ResetIncomeCollectionCommand}"
+                    IsEnabled="{Binding !IsResetInProgress}"
+                    Classes="accent"
+                    Padding="12,8"
+                    CornerRadius="4"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,0,0,10"/>
+            
+            <Button Grid.Row="2" Grid.Column="0"
+                    Content="Reset Tags Collection"
+                    Command="{Binding ResetTagsCollectionCommand}"
+                    IsEnabled="{Binding !IsResetInProgress}"
+                    Classes="accent"
+                    Padding="12,8"
+                    CornerRadius="4"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,0,0,10"/>
+            
+            <Button Grid.Row="2" Grid.Column="2"
+                    Content="Reset Financial Goals Collection"
+                    Command="{Binding ResetFinancialGoalsCollectionCommand}"
+                    IsEnabled="{Binding !IsResetInProgress}"
+                    Classes="accent"
+                    Padding="12,8"
+                    CornerRadius="4"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,0,0,10"/>
+            
+          </Grid>
+        </StackPanel>
+      </Border>
+      
+      <!-- Status Message -->
+      <Border Background="{DynamicResource SystemFillColorSuccessBackgroundBrush}" 
+              Padding="15" 
+              CornerRadius="8"
+              BorderBrush="{DynamicResource SystemFillColorSuccessBrush}"
+              BorderThickness="1"
+              IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+        <TextBlock Text="{Binding StatusMessage}" 
+                   FontWeight="Medium"
+                   TextWrapping="Wrap"
+                   Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+      </Border>
+      
+      <!-- Loading Indicator -->
+      <StackPanel Orientation="Horizontal" 
+                  Spacing="10"
+                  IsVisible="{Binding IsResetInProgress}">
+        <ProgressBar IsIndeterminate="True" 
+                     Width="200" 
+                     Height="6"/>
+        <TextBlock Text="Processing..." 
+                   VerticalAlignment="Center"
+                   FontStyle="Italic"
+                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+      </StackPanel>
+      
+    </StackPanel>
+  </ScrollViewer>
+  
+</UserControl>

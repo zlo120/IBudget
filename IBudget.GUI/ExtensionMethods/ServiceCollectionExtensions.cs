@@ -38,6 +38,7 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddTransient<FinancialGoalsPageViewModel>();
             collection.AddTransient<InitialisationViewModel>();
             collection.AddTransient<DataTableViewModel>();
+            collection.AddTransient<SettingsPageViewModel>();
 
             collection.AddTransient<ICSVParserService, CSVParserService>();
             collection.AddScoped<IIncomeService, IncomeService>();

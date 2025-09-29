@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using IBudget.Core.Enums;
 using IBudget.Core.Interfaces;
 using IBudget.GUI.Views;
-using Avalonia.Controls;
 using IBudget.Infrastructure;
 
 namespace IBudget.GUI.ViewModels
 {
-    public partial class InitialisationViewModel(IServiceProvider serviceProvider) : ViewModelBase
+    public partial class InitialisationViewModel : ViewModelBase
     {
-        private readonly IServiceProvider _serviceProvider = serviceProvider;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly ISettingsService _settingsService;
         private Window? _parentWindow;
 
         [ObservableProperty]
@@ -26,7 +28,25 @@ namespace IBudget.GUI.ViewModels
         [ObservableProperty]
         private bool _isConnected = false;
 
+        [ObservableProperty]
+        private DatabaseType _selectedDatabaseType = DatabaseType.CustomMongoDbInstance;
+
+        public ObservableCollection<DatabaseType> DatabaseTypes { get; }
+
         public event EventHandler<bool>? ConnectionCompleted;
+
+        public InitialisationViewModel(IServiceProvider serviceProvider, ISettingsService settingsService)
+        {
+            _serviceProvider = serviceProvider;
+            _settingsService = settingsService;
+            DatabaseTypes = new ObservableCollection<DatabaseType>
+            {
+                DatabaseType.CustomMongoDbInstance,
+                DatabaseType.Offline,
+                DatabaseType.StacksBackend
+            };
+            SelectedDatabaseType = _settingsService.GetDatabaseType();
+        }
 
         public void SetParentWindow(Window window)
         {
@@ -46,7 +66,7 @@ namespace IBudget.GUI.ViewModels
 
             try
             {
-                await AttemptDatabaseConnection(); 
+                await AttemptDatabaseConnection();
                 ConnectionCompleted?.Invoke(this, true);
             }
             catch (KeyNotFoundException)
@@ -64,15 +84,27 @@ namespace IBudget.GUI.ViewModels
             finally
             {
                 IsConnecting = false;
-            }            
+            }
         }
 
         private async Task AttemptDatabaseConnection()
         {
-            var settingsService = _serviceProvider.GetService(typeof(Core.Interfaces.ISettingsService)) as Core.Interfaces.ISettingsService
-                ?? throw new InvalidOperationException("Settings service not available.");
-            var connectionString = settingsService.GetDbConnectionString();
-            await MongoDbContext.TestConnection(connectionString);
+            var databaseType = _settingsService.GetDatabaseType();
+            switch(databaseType)
+            {
+                case DatabaseType.Offline:
+                    throw new NotImplementedException("Offline database mode is not implemented yet.");
+                case DatabaseType.StacksBackend:
+                    throw new NotImplementedException("StacksBackend database mode is not implemented yet.");
+                case DatabaseType.CustomMongoDbInstance:
+                    var settingsService = _serviceProvider.GetService(typeof(Core.Interfaces.ISettingsService)) as Core.Interfaces.ISettingsService
+                        ?? throw new InvalidOperationException("Settings service not available.");
+                    var connectionString = settingsService.GetDbConnectionString();
+                    await MongoDbContext.TestConnection(connectionString);
+                    break;
+                default:
+                    throw new InvalidOperationException("Unsupported database type.");
+            }            
         }
 
         [RelayCommand]
