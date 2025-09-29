@@ -1,4 +1,5 @@
-﻿using IBudget.Core.Enums;
+﻿using System.Threading.Tasks;
+using IBudget.Core.Enums;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
 using IBudget.Core.Services;
@@ -71,6 +72,37 @@ namespace IBudget.Infrastructure
         {
             var client = new MongoClient(connectionString);
             await client.GetDatabase("admin").RunCommandAsync((Command<BsonDocument>)"{ping:1}");
+        }
+
+        public async Task ResetExpenseRuleTagsCollection()
+        {
+            await _database.GetCollection<ExpenseRuleTag>("expenseRuleTags").DeleteManyAsync(new BsonDocument());
+        }
+
+        public async Task ResetExpenseTagsCollection()
+        {
+
+            await _database.GetCollection<ExpenseTag>("expenseTags").DeleteManyAsync(new BsonDocument());
+        }
+
+        public async Task ResetExpensesCollection()
+        {
+            await _database.GetCollection<Expense>("expenses").DeleteManyAsync(new BsonDocument());
+        }
+
+        public async Task ResetIncomeCollection()
+        {
+            await _database.GetCollection<Income>("income").DeleteManyAsync(new BsonDocument());
+        }
+
+        public async Task ResetTagsCollection()
+        {
+            await _database.GetCollection<Tag>("tags").DeleteManyAsync(new BsonDocument());
+        }
+
+        public async Task ResetFinancialGoalsCollection()
+        {
+            await _database.GetCollection<FinancialGoal>("financialGoals").DeleteManyAsync(new BsonDocument());
         }
     }
 }

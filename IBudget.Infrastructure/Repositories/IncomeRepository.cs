@@ -13,6 +13,11 @@ namespace IBudget.Infrastructure.Repositories
             await _incomeCollection.InsertOneAsync(income);
         }
 
+        public async Task ClearCollection()
+        {
+            await _incomeCollection.DeleteManyAsync(FilterDefinition<Income>.Empty);
+        }
+
         public async Task DeleteIncome(ObjectId id)
         {
             await _incomeCollection.DeleteOneAsync(e => e.Id == id);

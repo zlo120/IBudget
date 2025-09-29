@@ -17,5 +17,6 @@ namespace IBudget.Core.Interfaces
         /// <returns>Returns a List of tags from the expense name/rule match.</returns>
         Task<List<Tag>> FindTagsByDescription(string description);
         Task UpdateTag(Tag tag);
+        Task ClearCollection();
     }
 }

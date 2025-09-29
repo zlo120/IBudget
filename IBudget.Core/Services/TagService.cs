@@ -47,5 +47,10 @@ namespace IBudget.Core.Services
         {
             await _tagRepository.UpdateTag(tag);
         }
+
+        public async Task ClearCollection()
+        {
+            await _tagRepository.ClearCollection();
+        }
     }
 }

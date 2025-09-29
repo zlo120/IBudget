@@ -25,6 +25,11 @@ namespace IBudget.Core.Services
             await _expenseRepository.AddExpense(expense);
         }
 
+        public async Task ClearCollection()
+        {
+            await _expenseRepository.ClearCollection();
+        }
+
         public async Task DeleteExpense(ObjectId id)
         {
             await _expenseRepository.DeleteExpense(id);

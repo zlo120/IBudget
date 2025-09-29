@@ -12,5 +12,6 @@ namespace IBudget.Core.Interfaces
         Task<List<Expense>> GetExpensesByMonth(int month);
         Task<List<Expense>> GetExpenseByWeek(DateTime startDate);
         Task<bool> DoesBatchHashExist(string batchHash);
+        Task ClearCollection();
     }
 }

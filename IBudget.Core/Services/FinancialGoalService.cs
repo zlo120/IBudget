@@ -8,6 +8,12 @@ namespace IBudget.Core.Services
     public class FinancialGoalService(IFinancialGoalRepository financialGoalRepository) : IFinancialGoalService
     {
         private readonly IFinancialGoalRepository _financialGoalRepository = financialGoalRepository;
+
+        public async Task ClearCollection()
+        {
+            await _financialGoalRepository.ClearCollection();
+        }
+
         public async Task CreateFinancialGoal(FinancialGoal financialGoal)
         {
             await _financialGoalRepository.CreateFinancialGoal(financialGoal);

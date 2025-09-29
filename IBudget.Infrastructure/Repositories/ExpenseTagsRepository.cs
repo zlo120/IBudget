@@ -10,6 +10,12 @@ namespace IBudget.Infrastructure.Repositories
     public class ExpenseTagsRepository(MongoDbContext context) : IExpenseTagsRepository
     {
         private readonly IMongoCollection<ExpenseTag> _expenseTagsCollection = context.GetExpenseTagsCollection();
+
+        public async Task ClearCollection()
+        {
+            await _expenseTagsCollection.DeleteManyAsync(FilterDefinition<ExpenseTag>.Empty);
+        }
+
         public async Task<ExpenseTag> CreateExpenseTag(ExpenseTag expenseTag)
         {
             await _expenseTagsCollection.InsertOneAsync(expenseTag);

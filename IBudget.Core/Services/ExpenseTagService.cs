@@ -9,6 +9,12 @@ namespace IBudget.Core.Services
     public class ExpenseTagService(IExpenseTagsRepository expenseTagsRepository) : IExpenseTagService
     {
         private readonly IExpenseTagsRepository _expenseTagsRepository = expenseTagsRepository;
+
+        public async Task ClearCollection()
+        {
+            await _expenseTagsRepository.ClearCollection();
+        }
+
         public async Task<ExpenseTag> CreateExpenseTag(ExpenseTag expenseTag)
         {
             return await _expenseTagsRepository.CreateExpenseTag(expenseTag);

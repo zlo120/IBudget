@@ -14,5 +14,6 @@ namespace IBudget.Core.RepositoryInterfaces
         Task DeleteExpenseTagByTitle(string title);
         Task DeleteExpenseTagById(ObjectId id);
         Task<List<ExpenseTag>> GetAllExpenseTags();
+        Task ClearCollection();
     }
 }

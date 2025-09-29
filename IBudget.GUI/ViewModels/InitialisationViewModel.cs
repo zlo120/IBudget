@@ -45,7 +45,14 @@ namespace IBudget.GUI.ViewModels
                 DatabaseType.Offline,
                 DatabaseType.StacksBackend
             };
-            SelectedDatabaseType = _settingsService.GetDatabaseType();
+            try
+            {
+                SelectedDatabaseType = _settingsService.GetDatabaseType();
+            }
+            catch
+            {
+                SelectedDatabaseType = DatabaseType.CustomMongoDbInstance;
+            }
         }
 
         public void SetParentWindow(Window window)

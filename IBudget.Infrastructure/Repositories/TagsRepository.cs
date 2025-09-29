@@ -11,6 +11,11 @@ namespace IBudget.Infrastructure.Repositories
         private readonly IExpenseTagsRepository _expenseTagsRepository = expenseTagsRepository;
         private readonly IExpenseRuleTagsRepository _expenseRuleTagsRepository = expenseRuleTagsRepository;
 
+        public async Task ClearCollection()
+        {
+            await _tagsCollection.DeleteManyAsync(_ => true);
+        }
+
         public async Task CreateTag(Tag tag)
         {
             await _tagsCollection.InsertOneAsync(tag);

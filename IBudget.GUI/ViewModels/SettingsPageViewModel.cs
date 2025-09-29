@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using IBudget.Core.Enums;
 using IBudget.Core.Interfaces;
+using IBudget.Core.Services;
 using IBudget.GUI.Services;
 
 namespace IBudget.GUI.ViewModels
@@ -16,7 +17,12 @@ namespace IBudget.GUI.ViewModels
     {
         private readonly ISettingsService _settingsService;
         private readonly IMessageService _messageService;
-
+        private readonly IExpenseRuleTagService _expenseRuleTagService;
+        private readonly IExpenseService _expenseService;
+        private readonly IExpenseTagService _expenseTagService;
+        private readonly IFinancialGoalService _financialGoalService;
+        private readonly IIncomeService _incomeService;
+        private readonly ITagService _tagService;
         [ObservableProperty]
         private DatabaseType _selectedDatabaseType;
 
@@ -34,10 +40,22 @@ namespace IBudget.GUI.ViewModels
 
         public SettingsPageViewModel(
             ISettingsService settingsService,
-            IMessageService messageService)
+            IMessageService messageService,
+            IExpenseRuleTagService expenseRuleTagService,
+            IExpenseService expenseService,
+            IExpenseTagService expenseTagService,
+            IFinancialGoalService financialGoalService,
+            IIncomeService incomeService,
+            ITagService tagService)
         {
             _settingsService = settingsService;
             _messageService = messageService;
+            _expenseRuleTagService = expenseRuleTagService;
+            _expenseService = expenseService;
+            _expenseTagService = expenseTagService;
+            _financialGoalService = financialGoalService;
+            _incomeService = incomeService;
+            _tagService = tagService;
 
             DatabaseTypes = new ObservableCollection<DatabaseType>
             {
@@ -91,37 +109,61 @@ namespace IBudget.GUI.ViewModels
         [RelayCommand]
         private async Task ResetExpenseTagCollection()
         {
-            throw new NotImplementedException();
+            var confirmation = await _messageService.ShowConfirmationAsync("Reset collection", "This will delete all expense tags. Are you sure you want to continue?");
+            if (confirmation)
+            {
+                await _expenseTagService.ClearCollection();
+            }
         }
 
         [RelayCommand]
         private async Task ResetExpenseRuleTagCollection()
         {
-            throw new NotImplementedException();
+            var confirmation = await _messageService.ShowConfirmationAsync("Reset collection", "This will delete all expense rule tags. Are you sure you want to continue?");
+            if (confirmation)
+            {
+                await _expenseRuleTagService.ClearCollection();
+            }
         }
 
         [RelayCommand]
         private async Task ResetExpenseCollection()
         {
-            throw new NotImplementedException();
+            var confirmation = await _messageService.ShowConfirmationAsync("Reset collection", "This will delete all expense records. Are you sure you want to continue?");
+            if (confirmation)
+            {
+                await _expenseService.ClearCollection();
+            }
         }
 
         [RelayCommand]
         private async Task ResetIncomeCollection()
         {
-            throw new NotImplementedException();
+            var confirmation = await _messageService.ShowConfirmationAsync("Reset collection", "This will delete all income records. Are you sure you want to continue?");
+            if (confirmation)
+            {
+                await _incomeService.ClearCollection();
+            }
         }
 
         [RelayCommand]
         private async Task ResetTagsCollection()
         {
-            throw new NotImplementedException();
+            var confirmation = await _messageService.ShowConfirmationAsync("Reset collection", "This will delete all the tags. Are you sure you want to continue?");
+            if (confirmation)
+            {
+                await _tagService.ClearCollection();
+            }
         }
 
         [RelayCommand]
         private async Task ResetFinancialGoalsCollection()
         {
-            throw new NotImplementedException();
+            var confirmation = await _messageService.ShowConfirmationAsync("Reset collection", "This will delete all your financial goals. Are you sure you want to continue?");
+            if (confirmation)
+            {
+                await _financialGoalService.ClearCollection();
+            }
         }
     }
 }

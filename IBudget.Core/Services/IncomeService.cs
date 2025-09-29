@@ -25,6 +25,11 @@ namespace IBudget.Core.Services
             await _incomeRepository.AddIncome(income);
         }
 
+        public async Task ClearCollection()
+        {
+            await _incomeRepository.ClearCollection();
+        }
+
         public async Task DeleteIncome(ObjectId id)
         {
             await _incomeRepository.DeleteIncome(id);

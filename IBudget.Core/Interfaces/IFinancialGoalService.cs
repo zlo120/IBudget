@@ -11,5 +11,6 @@ namespace IBudget.Core.Interfaces
         Task DeleteFinancialGoalByName(string name);
         Task DeleteFinancialGoalById(ObjectId id);
         Task UpdateFinancialGoal(FinancialGoal financialGoal);
+        Task ClearCollection();
     }
 }

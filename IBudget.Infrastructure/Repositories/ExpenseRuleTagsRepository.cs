@@ -71,5 +71,10 @@ namespace IBudget.Infrastructure.Repositories
             await _expenseRuleTagsCollection.ReplaceOneAsync(e => e.Id == expenseRuleTag.Id, expenseRuleTag);
             return expenseRuleTag;
         }
+
+        public async Task ClearCollection()
+        {
+            await _expenseRuleTagsCollection.DeleteManyAsync(FilterDefinition<ExpenseRuleTag>.Empty);
+        }
     }
 }

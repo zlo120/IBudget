@@ -8,6 +8,12 @@ namespace IBudget.Infrastructure.Repositories
     public class FinancialGoalRepository(MongoDbContext context) : IFinancialGoalRepository
     {
         private readonly IMongoCollection<FinancialGoal> _financialGoalsCollection = context.GetFinancialGoalsCollection();
+
+        public async Task ClearCollection()
+        {
+            await _financialGoalsCollection.DeleteManyAsync(FilterDefinition<FinancialGoal>.Empty);
+        }
+
         public async Task CreateFinancialGoal(FinancialGoal financialGoal)
         {
             await _financialGoalsCollection.InsertOneAsync(financialGoal);

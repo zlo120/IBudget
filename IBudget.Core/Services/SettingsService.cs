@@ -69,6 +69,7 @@ namespace IBudget.Core.Services
             }
 
             File.WriteAllText(_path, setting);
+            SetDatabaseType(DatabaseType.CustomMongoDbInstance);
         }
 
         public void SetDatabaseType(DatabaseType databaseType)
@@ -127,7 +128,7 @@ namespace IBudget.Core.Services
                 return (DatabaseType)Enum.Parse(typeof(DatabaseType), databaseType);
             }
 
-            throw new KeyNotFoundException("The key 'ConnectionString' was not found in the settings.");
+            throw new KeyNotFoundException("The key 'DatabaseType' was not found in the settings.");
         }
     }
 }
