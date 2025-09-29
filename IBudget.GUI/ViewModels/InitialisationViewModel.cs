@@ -97,7 +97,7 @@ namespace IBudget.GUI.ViewModels
         private async Task AttemptDatabaseConnection()
         {
             var databaseType = _settingsService.GetDatabaseType();
-            switch(databaseType)
+            switch (databaseType)
             {
                 case DatabaseType.Offline:
                     throw new NotImplementedException("Offline database mode is not implemented yet.");
@@ -111,7 +111,7 @@ namespace IBudget.GUI.ViewModels
                     break;
                 default:
                     throw new InvalidOperationException("Unsupported database type.");
-            }            
+            }
         }
 
         [RelayCommand]

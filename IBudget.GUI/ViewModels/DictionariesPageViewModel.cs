@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Data.Converters;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using IBudget.Core.Interfaces;
@@ -13,6 +15,31 @@ using MongoDB.Bson;
 
 namespace IBudget.GUI.ViewModels
 {
+    public enum EditType
+    {
+        ExpenseTag,
+        ExpenseRuleTag
+    }
+
+    public class EditTypeToFontFamilyConverter : IValueConverter
+    {
+        public static readonly EditTypeToFontFamilyConverter Instance = new();
+
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            if (value is EditType editType)
+            {
+                return editType == EditType.ExpenseRuleTag ? "Consolas, 'Courier New', monospace" : "Default";
+            }
+            return "Default";
+        }
+
+        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public partial class DictionariesPageViewModel : ViewModelBase
     {
         public ObservableCollection<InfoContainer> ExpenseTagsInfo { get; } = new();
@@ -20,21 +47,51 @@ namespace IBudget.GUI.ViewModels
 
         public List<ExpenseTag> ExpenseTags { get; set; }
         public List<ExpenseRuleTag> ExpenseRuleTags { get; set; }
+        public List<Tag> AllTags { get; set; } = new();
 
         [ObservableProperty]
         private bool _isLoadingED = true;
 
         [ObservableProperty]
         private bool _isLoadingRD = true;
+
+        [ObservableProperty]
+        private bool _isEditDialogOpen = false;
+
+        [ObservableProperty]
+        private string _editItemName = string.Empty;
+
+        [ObservableProperty]
+        private string _selectedTag = string.Empty;
+
+        [ObservableProperty]
+        private InfoContainer? _currentEditingItem;
+
+        [ObservableProperty]
+        private EditType _currentEditType;
+
+        [ObservableProperty]
+        private string _dialogTitle = string.Empty;
+
+        [ObservableProperty]
+        private string _dialogSubtitle = string.Empty;
+
+        [ObservableProperty]
+        private string _itemFieldLabel = string.Empty;
+
+        public ObservableCollection<string> AvailableTags { get; } = new();
+
         private readonly IExpenseTagService _expenseTagService;
         private readonly IExpenseRuleTagService _expenseRuleTagService;
         private readonly IMessageService _messageService;
+        private readonly ITagService _tagService;
 
-        public DictionariesPageViewModel(IExpenseTagService expenseTagService, IExpenseRuleTagService expenseRuleTagService, IMessageService messageService)
+        public DictionariesPageViewModel(IExpenseTagService expenseTagService, IExpenseRuleTagService expenseRuleTagService, IMessageService messageService, ITagService tagService)
         {
             _expenseTagService = expenseTagService;
             _expenseRuleTagService = expenseRuleTagService;
             _messageService = messageService;
+            _tagService = tagService;
             _ = InitializeDbSearchAsync(); // Change to async Task
         }
 
@@ -46,12 +103,15 @@ namespace IBudget.GUI.ViewModels
             {
                 var expenseTagsTask = GetExpenseTagsAsync();
                 var expenseRuleTagsTask = GetExpenseRuleTagsAsync();
+                var allTagsTask = GetAllTagsAsync();
 
-                await Task.WhenAll(expenseTagsTask, expenseRuleTagsTask);
+                await Task.WhenAll(expenseTagsTask, expenseRuleTagsTask, allTagsTask);
 
                 ExpenseTags = await expenseTagsTask;
                 ExpenseRuleTags = await expenseRuleTagsTask;
+                AllTags = await allTagsTask;
 
+                LoadAvailableTags();
                 FinishEdDbSearch();
                 IsLoadingED = false;
 
@@ -80,6 +140,110 @@ namespace IBudget.GUI.ViewModels
         {
             return await _expenseRuleTagService.GetAllExpenseRuleTags();
         }
+
+        private async Task<List<Tag>> GetAllTagsAsync()
+        {
+            return await _tagService.GetAll();
+        }
+
+        private void LoadAvailableTags()
+        {
+            AvailableTags.Clear();
+            foreach (var tag in AllTags)
+            {
+                AvailableTags.Add(tag.Name);
+            }
+        }
+
+        [RelayCommand]
+        private void OpenEditExpenseTagDialog(InfoContainer item)
+        {
+            CurrentEditingItem = item;
+            CurrentEditType = EditType.ExpenseTag;
+            EditItemName = item.Key;
+            SelectedTag = item.Value;
+            DialogTitle = "✏️ Edit Expense Tag";
+            DialogSubtitle = "Modify the tag assignment for this expense";
+            ItemFieldLabel = "Expense Description";
+            IsEditDialogOpen = true;
+        }
+
+        [RelayCommand]
+        private void OpenEditExpenseRuleTagDialog(InfoContainer item)
+        {
+            CurrentEditingItem = item;
+            CurrentEditType = EditType.ExpenseRuleTag;
+            EditItemName = item.Key;
+            SelectedTag = item.Value;
+            DialogTitle = "✏️ Edit Rule Tag";
+            DialogSubtitle = "Modify the tag assignment for this rule";
+            ItemFieldLabel = "Matching Rule";
+            IsEditDialogOpen = true;
+        }
+
+        [RelayCommand]
+        private void CloseEditDialog()
+        {
+            IsEditDialogOpen = false;
+            CurrentEditingItem = null;
+            EditItemName = string.Empty;
+            SelectedTag = string.Empty;
+            CurrentEditType = EditType.ExpenseTag;
+            DialogTitle = string.Empty;
+            DialogSubtitle = string.Empty;
+            ItemFieldLabel = string.Empty;
+        }
+
+        [RelayCommand]
+        private async Task HandleEditSubmit()
+        {
+            // This method provides access to:
+            // - EditItemName (expense description or rule)
+            // - SelectedTag (selected tag from dropdown)
+            // - CurrentEditType (ExpenseTag or ExpenseRuleTag)
+            // - CurrentEditingItem (original InfoContainer)            
+            try
+            {
+                if (CurrentEditType == EditType.ExpenseTag)
+                {
+                    await EditExpenseTag();
+                }
+                else
+                {
+                    await EditExpenseRuleTag();
+                }
+            }
+            catch(Exception ex)
+            {
+                await _messageService.ShowErrorAsync($"Error updating item: {ex.Message}");
+            }
+            finally
+            {
+                RefreshView();
+                CloseEditDialog();
+            }            
+        }
+
+        private async Task EditExpenseTag()
+        {
+            var newExpenseTag = new ExpenseTag
+            {
+                Title = EditItemName,
+                Tags = [SelectedTag],
+                CreatedAt = DateTime.UtcNow
+            };
+            await _expenseTagService.UpdateExpenseTag(newExpenseTag);
+        }
+
+        private async Task EditExpenseRuleTag()
+        {
+            var newExpenseRuleTag = new ExpenseRuleTag
+            {
+                Rule = EditItemName,
+                Tags = [SelectedTag],
+                CreatedAt = DateTime.UtcNow
+            }; 
+        }   
 
         private void FinishEdDbSearch()
         {
