@@ -51,30 +51,35 @@ namespace IBudget.Core.Services
                 var date = Calendar.ParseWeekStartFromWeekRange(worksheet.Name);
                 var week = await _summaryService.ReadWeek(date);
                 if (week.Income.Count == 0 && week.Expenses.Count == 0) continue;
-                var remainingExpenses = new List<Expense>(week.Expenses);
+                var remainingExpenses = new List<Expense>();
                 var weeklyIncome = week.Income.Where(income => !income.Tags.Contains(ignoredTag)).ToList();
                 // populate the income
                 var incomeQueue = new Queue<Income>(weeklyIncome);
                 PopulateColumn(new Queue<FinancialRecord>(incomeQueue.ToList()), ref worksheet, incomeColumnIndex, true);
 
                 // populate the expenses that fall into the "other" category
-                var otherExpenses = new Queue<FinancialRecord>(remainingExpenses
-                                                            .Where(expense => (expense.Tags!.Count == 0 || expense.Tags.All(tag => !tag.IsTracked)) && !expense.Tags.Contains(ignoredTag))
-                                                            .ToList());
+                var otherExpenses = new Queue<FinancialRecord>(week.Expenses
+                    .Where(expense => (expense.Tags!.Count == 0 || expense.Tags.All(tag => !tag.IsTracked)) && !expense.Tags.Contains(ignoredTag))
+                    .ToList()
+                );
+
+                remainingExpenses = [..week.Expenses
+                    .Where(expense => !otherExpenses.Contains(expense) && !expense.Tags!.Contains(ignoredTag))];
 
                 PopulateColumn(otherExpenses, ref worksheet, otherColumnIndex, true);
 
                 // populate the expenses that fall into the tracked tags
                 for (var columnCounter = 1; columnCounter <= trackedTagsList.Count; columnCounter++)
                 {
+                    var tagName = trackedTagsList[columnCounter - 1].Name;
                     // using all the data that exists in the db for this week and for this category
                     //   populate this column
                     var remainingExpenseInColumn = new Queue<FinancialRecord>(
-                        remainingExpenses
-                            .Where(e => e.Tags!
-                            .Any(t => t.Name.ToLower().Contains(trackedTagsList[columnCounter - 1].Name.ToLower())))
-                            .ToList()
+                        [..remainingExpenses
+                            .Where(e => e.Tags!.Any(t => t.Name.Contains(tagName, StringComparison.CurrentCultureIgnoreCase)))]
                     );
+
+                    remainingExpenses.RemoveAll(e => remainingExpenseInColumn.Contains(e));
 
                     PopulateColumn(remainingExpenseInColumn, ref worksheet, columnCounter);
 
