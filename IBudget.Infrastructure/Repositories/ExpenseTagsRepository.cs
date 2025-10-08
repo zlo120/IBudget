@@ -72,7 +72,7 @@ namespace IBudget.Infrastructure.Repositories
 
         public async Task<ExpenseTag> GetExpenseTagByTitle(string title)
         {
-            return await _expenseTagsCollection.Find(e => e.Title == title).FirstOrDefaultAsync();
+            return await _expenseTagsCollection.Find(e => e.Title.Equals(title, StringComparison.OrdinalIgnoreCase)).FirstOrDefaultAsync();
         }
 
         public async Task<ExpenseTag> UpdateExpenseTag(ExpenseTag expenseTag)
