@@ -41,26 +41,28 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddTransient<PatchNotesViewModel>();
 
             collection.AddTransient<ICSVParserService, CSVParserService>();
-            collection.AddScoped<IIncomeService, IncomeService>();
-            collection.AddScoped<IIncomeRepository, IncomeRepository>();
-            collection.AddScoped<IExpenseService, ExpenseService>();
-            collection.AddScoped<IExpenseRepository, ExpensesRepository>();
-            collection.AddScoped<ISummaryService, SummaryService>();
-            collection.AddScoped<ITagService, TagService>();
-            collection.AddScoped<ITagsRepository, TagsRepository>();
             collection.AddScoped<IBatchHashService, BatchHashService>();
             collection.AddScoped<ICalendarService, CalendarService>();
+            collection.AddScoped<ISummaryService, SummaryService>();
             collection.AddScoped<ISpreadSheetGeneratorService, SpreadSheetGeneratorService>();
             collection.AddScoped<IPopulator, SpreadSheetPopulatorService>();
             collection.AddScoped<ICSVParserService, CSVParserService>();
-            collection.AddScoped<IExpenseTagService, ExpenseTagService>();
-            collection.AddScoped<IExpenseTagsRepository, ExpenseTagsRepository>();
-            collection.AddScoped<IExpenseRuleTagService, ExpenseRuleTagService>();
-            collection.AddScoped<IExpenseRuleTagsRepository, ExpenseRuleTagsRepository>();
-            collection.AddScoped<IFinancialGoalService, FinancialGoalService>();
-            collection.AddScoped<IFinancialGoalRepository, FinancialGoalRepository>();
             collection.AddSingleton<IMessageService, MessageService>();
             collection.AddScoped<ISettingsService, SettingsService>();
+
+            collection.AddScoped<IIncomeRepository, IncomeRepository>();
+            collection.AddScoped<IExpenseRepository, ExpensesRepository>();
+            collection.AddScoped<ITagsRepository, TagsRepository>();
+            collection.AddScoped<IExpenseTagsRepository, ExpenseTagsRepository>();
+            collection.AddScoped<IExpenseRuleTagsRepository, ExpenseRuleTagsRepository>();
+            collection.AddScoped<IFinancialGoalRepository, FinancialGoalRepository>();
+
+            collection.AddScoped<IIncomeService, IncomeService>();
+            collection.AddScoped<IExpenseService, ExpenseService>();
+            collection.AddScoped<ITagService, TagService>();
+            collection.AddScoped<IExpenseTagService, ExpenseTagService>();
+            collection.AddScoped<IExpenseRuleTagService, ExpenseRuleTagService>();
+            collection.AddScoped<IFinancialGoalService, FinancialGoalService>();
 
             collection.AddSingleton<MongoDbContext>();
             collection.AddSingleton<IUpdateService, UpdateService>();

@@ -21,22 +21,6 @@ namespace IBudget.Infrastructure
             _database = client.GetDatabase("Stacks");
         }
 
-        public void ChangeDatabase(DatabaseType databaseType)
-        {
-            switch(databaseType)
-            {
-                case DatabaseType.Offline:
-                    throw new NotImplementedException("Offline database mode is not implemented yet.");
-                case DatabaseType.StacksBackend:
-                    throw new NotImplementedException("StacksBackend database mode is not implemented yet.");
-                case DatabaseType.CustomMongoDbInstance:
-                    var connectionString = _settingsService.GetDbConnectionString();
-                    var client = new MongoClient(connectionString);
-                    _database = client.GetDatabase("Stacks");
-                    break;
-            }
-        }
-
         public IMongoCollection<ExpenseRuleTag> GetExpenseRuleTagsCollection()
         {
             return _database.GetCollection<ExpenseRuleTag>("expenseRuleTags");
