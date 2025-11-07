@@ -5,12 +5,17 @@ using Avalonia.Markup.Xaml;
 using IBudget.GUI.ExtensionMethods;
 using IBudget.GUI.ViewModels;
 using IBudget.GUI.Views;
+using IBudget.GUI.Services;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading.Tasks;
 
 namespace IBudget.GUI
 {
     public partial class App : Application
     {
+        private IServiceProvider? _services;
+
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
@@ -27,6 +32,7 @@ namespace IBudget.GUI
             collection.AddCommonServices();
 
             var services = collection.BuildServiceProvider();
+            _services = services;
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
@@ -73,6 +79,66 @@ namespace IBudget.GUI
             }
 
             base.OnFrameworkInitializationCompleted();
+            
+            // Check for updates in the background
+            _ = Task.Run(CheckForUpdatesAsync);
+        }
+
+        private async Task CheckForUpdatesAsync()
+        {
+            try
+            {
+                // Wait a few seconds after startup before checking
+                await Task.Delay(TimeSpan.FromSeconds(10));
+
+                if (_services == null)
+                    return;
+
+                var updateService = _services.GetService<IUpdateService>();
+                if (updateService == null)
+                    return;
+
+                // Check if updates are available
+                var updateInfo = await updateService.CheckForUpdatesAsync();
+
+                if (updateInfo != null)
+                {
+                    // Show update notification on UI thread
+                    await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        ShowUpdateNotification(updateInfo);
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the error - updates failed but app continues working
+                Console.WriteLine($"Update check failed: {ex.Message}");
+            }
+        }
+
+        private void ShowUpdateNotification(UpdateInfo updateInfo)
+        {
+            if (_services == null)
+                return;
+
+            var updateViewModel = _services.GetRequiredService<UpdateNotificationViewModel>();
+            updateViewModel.SetPendingUpdate(updateInfo);
+
+            var updateWindow = new UpdateNotificationWindow
+            {
+                DataContext = updateViewModel
+            };
+
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop &&
+                desktop.MainWindow != null)
+            {
+                updateWindow.ShowDialog(desktop.MainWindow);
+            }
+            else
+            {
+                updateWindow.Show();
+            }
         }
     }
 }

@@ -1,0 +1,79 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:IBudget.GUI.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="250"
+        x:Class="IBudget.GUI.Views.UpdateNotificationWindow"
+        x:DataType="vm:UpdateNotificationViewModel"
+        Title="Update Available"
+        Width="500" Height="250"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Icon="/Assets/avalonia-logo.ico">
+
+    <Design.DataContext>
+        <vm:UpdateNotificationViewModel/>
+    </Design.DataContext>
+
+    <Grid Margin="20" RowDefinitions="Auto,*,Auto">
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Spacing="10">
+            <TextBlock Text="Update Available!" 
+                       FontSize="20" 
+                       FontWeight="Bold"/>
+            <TextBlock Text="{Binding StatusMessage}" 
+                       TextWrapping="Wrap"
+                       FontSize="14"/>
+        </StackPanel>
+
+        <!-- Status Area -->
+        <StackPanel Grid.Row="1" 
+                    VerticalAlignment="Center"
+                    Spacing="10"
+                    Margin="0,20">
+            
+            <!-- Download Progress -->
+            <ProgressBar IsIndeterminate="{Binding IsDownloading}"
+                        IsVisible="{Binding IsDownloading}"
+                        Height="4"/>
+            
+            <!-- Current vs New Version -->
+            <StackPanel Spacing="5" IsVisible="{Binding !IsDownloading}">
+                <TextBlock Text="{Binding NewVersion, StringFormat='New Version: v{0}'}" 
+                          FontSize="16"
+                          FontWeight="SemiBold"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Action Buttons -->
+        <StackPanel Grid.Row="2" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right"
+                    Spacing="10">
+            
+            <!-- Show different buttons based on state -->
+            <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding !IsUpdateReady}">
+                <Button Content="Remind Me Later"
+                        Command="{Binding RemindLaterCommand}"
+                        Click="RemindLater_Click"
+                        IsVisible="{Binding !IsDownloading}"/>
+                
+                <Button Content="Download &amp; Install"
+                        Command="{Binding DownloadAndInstallCommand}"
+                        IsVisible="{Binding !IsDownloading}"
+                        Classes="accent"/>
+            </StackPanel>
+            
+            <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding IsUpdateReady}">
+                <Button Content="Restart Later"
+                        Command="{Binding RemindLaterCommand}"
+                        Click="RemindLater_Click"/>
+                
+                <Button Content="Restart Now"
+                        Command="{Binding RestartNowCommand}"
+                        Classes="accent"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

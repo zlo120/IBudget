@@ -17,12 +17,14 @@ namespace IBudget.GUI.ViewModels
     {
         private readonly ISettingsService _settingsService;
         private readonly IMessageService _messageService;
+        private readonly IUpdateService _updateService;
         private readonly IExpenseRuleTagService _expenseRuleTagService;
         private readonly IExpenseService _expenseService;
         private readonly IExpenseTagService _expenseTagService;
         private readonly IFinancialGoalService _financialGoalService;
         private readonly IIncomeService _incomeService;
         private readonly ITagService _tagService;
+
         [ObservableProperty]
         private DatabaseType _selectedDatabaseType;
 
@@ -31,6 +33,15 @@ namespace IBudget.GUI.ViewModels
 
         [ObservableProperty]
         private bool _isResetInProgress = false;
+
+        [ObservableProperty]
+        private string _updateStatus = "Check for updates";
+
+        [ObservableProperty]
+        private string _currentVersion = "Unknown";
+
+        [ObservableProperty]
+        private bool _isCheckingForUpdates = false;
 
         public ObservableCollection<DatabaseType> DatabaseTypes { get; }
 
@@ -41,6 +52,7 @@ namespace IBudget.GUI.ViewModels
         public SettingsPageViewModel(
             ISettingsService settingsService,
             IMessageService messageService,
+            IUpdateService updateService,
             IExpenseRuleTagService expenseRuleTagService,
             IExpenseService expenseService,
             IExpenseTagService expenseTagService,
@@ -50,6 +62,7 @@ namespace IBudget.GUI.ViewModels
         {
             _settingsService = settingsService;
             _messageService = messageService;
+            _updateService = updateService;
             _expenseRuleTagService = expenseRuleTagService;
             _expenseService = expenseService;
             _expenseTagService = expenseTagService;
@@ -65,6 +78,7 @@ namespace IBudget.GUI.ViewModels
             };
 
             LoadCurrentDatabaseType();
+            CurrentVersion = _updateService.GetCurrentVersion();
         }
 
         private void LoadCurrentDatabaseType()
@@ -163,6 +177,52 @@ namespace IBudget.GUI.ViewModels
             if (confirmation)
             {
                 await _financialGoalService.ClearCollection();
+            }
+        }
+
+        [RelayCommand]
+        private async Task CheckForUpdates()
+        {
+            try
+            {
+                IsCheckingForUpdates = true;
+                UpdateStatus = "Checking for updates...";
+
+                var updateInfo = await _updateService.CheckForUpdatesAsync();
+
+                if (updateInfo == null)
+                {
+                    UpdateStatus = "You're up to date!";
+                    await _messageService.ShowMessageAsync("No updates available", $"You're running the latest version (v{CurrentVersion})");
+                    return;
+                }
+
+                UpdateStatus = $"Downloading v{updateInfo.Version}...";
+                await _updateService.DownloadUpdateAsync(updateInfo);
+
+                UpdateStatus = "Update ready! Restart to apply.";
+
+                var restart = await _messageService.ShowConfirmationAsync(
+                    "Update Downloaded",
+                    $"Version {updateInfo.Version} is ready to install. Restart now?");
+
+                if (restart)
+                {
+                    _updateService.ApplyUpdateAndRestart(updateInfo);
+                }
+                else
+                {
+                    UpdateStatus = "Update ready - restart when convenient";
+                }
+            }
+            catch (Exception ex)
+            {
+                UpdateStatus = "Update check failed";
+                await _messageService.ShowErrorAsync($"Failed to check for updates: {ex.Message}");
+            }
+            finally
+            {
+                IsCheckingForUpdates = false;
             }
         }
     }

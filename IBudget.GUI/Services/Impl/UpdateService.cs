@@ -8,6 +8,7 @@ namespace IBudget.GUI.Services.Impl
     public class UpdateService : IUpdateService
     {
         private readonly UpdateManager? _updateManager;
+        
         public UpdateService()
         {
             try
@@ -21,25 +22,63 @@ namespace IBudget.GUI.Services.Impl
                 _updateManager = null;
             }
         }
-        public async Task CheckForUpdatesAsync()
+
+        public async Task<UpdateInfo?> CheckForUpdatesAsync()
         {
-            if (_updateManager is null) return;
+            if (_updateManager is null)
+                return null;
 
             try
             {
                 var updateInfo = await _updateManager.CheckForUpdatesAsync();
-                if (updateInfo is not null)
-                {
-                    // Download and apply update
-                    await _updateManager.DownloadUpdatesAsync(updateInfo);
+                
+                if (updateInfo == null)
+                    return null;
 
-                    // Notify user and restart
-                    _updateManager.ApplyUpdatesAndRestart(updateInfo);
-                }
+                return new UpdateInfo
+                {
+                    Version = updateInfo.TargetFullRelease.Version.ToString(),
+                    NativeUpdateInfo = updateInfo
+                };
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Update check failed: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task DownloadUpdateAsync(UpdateInfo updateInfo)
+        {
+            if (_updateManager is null)
+                return;
+
+            if (updateInfo.NativeUpdateInfo is Velopack.UpdateInfo nativeInfo)
+            {
+                await _updateManager.DownloadUpdatesAsync(nativeInfo);
+            }
+        }
+
+        public void ApplyUpdateAndRestart(UpdateInfo updateInfo)
+        {
+            if (_updateManager is null)
+                return;
+    
+            if (updateInfo.NativeUpdateInfo is Velopack.UpdateInfo nativeInfo)
+            {
+                _updateManager.ApplyUpdatesAndRestart(nativeInfo);
+            }
+        }
+
+        public string GetCurrentVersion()
+        {
+            try
+            {
+                return _updateManager?.CurrentVersion?.ToString() ?? "Unknown";
+            }
+            catch
+            {
+                return "Unknown";
             }
         }
     }
