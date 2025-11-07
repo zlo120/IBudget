@@ -169,16 +169,12 @@
 
 											<!-- Actions -->
 											<StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-												<Button Content="🗑️"
-                                                       Width="32"
-                                                       Height="32"
-                                                       Padding="0"
-                                                       Background="{DynamicResource SystemControlErrorTextForegroundBrush}"
-                                                       Foreground="White"
-                                                       CornerRadius="16"
-                                                       ToolTip.Tip="Delete this tag"
-                                                       FontSize="12"
+												<Button Content="🗑️ Delete"
+                                                       Padding="8,4"
+                                                       FontSize="11"
+                                                       CornerRadius="4"
                                                        Click="OnIconButtonClick"
+                                                       ToolTip.Tip="Delete this tag"
                                                        IsVisible="{Binding TagName, Converter={x:Static converters:StringNotEqualConverter.Instance}, ConverterParameter=ignored}" />
 											</StackPanel>
 										</Grid>

@@ -64,21 +64,18 @@
 
 							<!-- Action Button with Accent Fill -->
 							<Button Padding="20,13"
-							        Background="{DynamicResource AccentFillColorDefaultBrush}"
-							        Foreground="White"
 							        FontSize="15"
 							        FontWeight="SemiBold"
 							        CornerRadius="10"
 							        HorizontalAlignment="Stretch"
 							        HorizontalContentAlignment="Center"
+							        Classes="accent"
 							        Command="{Binding GenerateExcelCommand}">
 								<StackPanel Orientation="Horizontal" Spacing="10">
 									<PathIcon Data="{StaticResource DataRegular}" 
-									         Width="18" Height="18"
-									         Foreground="White" />
+									         Width="18" Height="18" />
 									<TextBlock Text="Generate Excel Report" 
-									          VerticalAlignment="Center"
-									          Foreground="White" />
+									          VerticalAlignment="Center" />
 								</StackPanel>
 							</Button>
 						</StackPanel>
