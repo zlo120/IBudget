@@ -53,8 +53,8 @@
           </StackPanel>
           
           <!-- Edit Configuration Button -->
-          <Button Content="Edit Configuration"
-                  Command="{Binding EditConfigurationCommand}"
+          <Button Content="Reset Configuration"
+                  Command="{Binding ResetConfigurationCommand}"
                   IsVisible="{Binding IsEditConfigurationVisible}"
                   HorizontalAlignment="Left"
                   Padding="12,8"
@@ -63,7 +63,7 @@
             <Button.Content>
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <TextBlock Text="⚙️" FontSize="14"/>
-                <TextBlock Text="Edit Configuration"/>
+                <TextBlock Text="Reset Configuration"/>
               </StackPanel>
             </Button.Content>
           </Button>

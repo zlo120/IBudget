@@ -93,8 +93,13 @@ namespace IBudget.GUI.ViewModels
         }
 
         [RelayCommand]
-        private async Task EditConfiguration()
+        private async Task ResetConfiguration()
         {
+            var decision = await _messageService.ShowConfirmationAsync("Reset Stacks Configuration", "This will reset all your settings and you will need to input your MongoDB connection string again.");
+            if (!decision)
+            {
+                return;
+            }   
             try
             {
                 _settingsService.ResetDbConnectionString();
