@@ -26,7 +26,7 @@ namespace IBudget.GUI.ViewModels
         private readonly ITagService _tagService;
 
         [ObservableProperty]
-        private DatabaseType _selectedDatabaseType;
+        private DatabaseType? _selectedDatabaseType = null;
 
         [ObservableProperty]
         private string _statusMessage = string.Empty;
@@ -73,7 +73,7 @@ namespace IBudget.GUI.ViewModels
             DatabaseTypes = new ObservableCollection<DatabaseType>
             {
                 DatabaseType.CustomMongoDbInstance,
-                //DatabaseType.Offline,
+                DatabaseType.Offline,
                 //DatabaseType.StacksBackend
             };
 
@@ -83,13 +83,22 @@ namespace IBudget.GUI.ViewModels
 
         private void LoadCurrentDatabaseType()
         {
-            SelectedDatabaseType = _settingsService.GetDatabaseType();
+            var dbType = _settingsService.GetDatabaseType();
+            if (dbType is not null)
+            {
+                SelectedDatabaseType = dbType;
+            }
         }
 
-        partial void OnSelectedDatabaseTypeChanged(DatabaseType value)
+        partial void OnSelectedDatabaseTypeChanged(DatabaseType? oldValue, DatabaseType? newValue)
         {
-            _settingsService.SetDatabaseType(value);
-            RestartApplicationAsync();
+            _settingsService.SetDatabaseType(newValue);
+            OnPropertyChanged(nameof(IsResetCollectionsSectionVisible));
+            OnPropertyChanged(nameof(IsEditConfigurationVisible));
+            if (oldValue is not null)
+            {
+                RestartApplicationAsync();
+            }
         }
 
         [RelayCommand]

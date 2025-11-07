@@ -5,6 +5,7 @@
     {
         CustomMongoDbInstance,
         Offline,
-        StacksBackend
+        StacksBackend,
+        None
     }
 }

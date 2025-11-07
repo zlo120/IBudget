@@ -72,7 +72,7 @@ namespace IBudget.Core.Services
             SetDatabaseType(DatabaseType.CustomMongoDbInstance);
         }
 
-        public void SetDatabaseType(DatabaseType databaseType)
+        public void SetDatabaseType(DatabaseType? databaseType)
         {
             Dictionary<string, string> settings;
 
@@ -92,7 +92,7 @@ namespace IBudget.Core.Services
             }
 
             // Add or update the DatabaseType
-            settings["DatabaseType"] = databaseType.ToString();
+            settings["DatabaseType"] = databaseType.ToString() ?? DatabaseType.None.ToString();
 
             // Serialize and write back to file
             var updatedJson = JsonSerializer.Serialize(settings, new JsonSerializerOptions
@@ -109,7 +109,7 @@ namespace IBudget.Core.Services
             File.WriteAllText(_path, updatedJson);
         }
 
-        public DatabaseType GetDatabaseType()
+        public DatabaseType? GetDatabaseType()
         {
             if (!File.Exists(_path))
             {
@@ -125,7 +125,12 @@ namespace IBudget.Core.Services
 
             if (settings.TryGetValue("DatabaseType", out var databaseType))
             {
-                return (DatabaseType)Enum.Parse(typeof(DatabaseType), databaseType);
+                var dbType = (DatabaseType)Enum.Parse(typeof(DatabaseType), databaseType);
+                if (dbType == DatabaseType.None)
+                {
+                    return null;
+                }
+                return dbType;
             }
 
             throw new KeyNotFoundException("The key 'DatabaseType' was not found in the settings.");

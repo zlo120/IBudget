@@ -9,6 +9,7 @@ using IBudget.GUI.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
+using IBudget.Core.Enums;
 
 namespace IBudget.GUI
 {
@@ -30,6 +31,7 @@ namespace IBudget.GUI
             // Register all the services needed for the application to run
             var collection = new ServiceCollection();
             collection.AddCommonServices();
+            collection.AddDatabaseServices(DatabaseType.CustomMongoDbInstance);
 
             var services = collection.BuildServiceProvider();
             _services = services;
@@ -62,7 +64,7 @@ namespace IBudget.GUI
                             DataContext = mainViewModel,
                         };
                         desktop.MainWindow.Show();
-                        
+                            
                         // Check and show patch notes if needed (after main window is shown)
                         await CheckAndShowPatchNotesAsync();
                     }

@@ -7,7 +7,7 @@ namespace IBudget.Core.Interfaces
         string GetDbConnectionString();
         void SetDbConnectionString(string connectionString);
         void ResetDbConnectionString();
-        void SetDatabaseType(DatabaseType databaseType);
-        DatabaseType GetDatabaseType();
+        void SetDatabaseType(DatabaseType? databaseType);
+        DatabaseType? GetDatabaseType();
     }
 }

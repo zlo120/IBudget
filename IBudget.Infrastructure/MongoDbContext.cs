@@ -11,45 +11,53 @@ namespace IBudget.Infrastructure
 {
     public class MongoDbContext
     {
-        private IMongoDatabase _database;
+        private readonly Lazy<IMongoDatabase> _database;
         private readonly ISettingsService _settingsService;
+
         public MongoDbContext(ISettingsService settingsService)
         {
             _settingsService = settingsService;
-            var connectionString = settingsService.GetDbConnectionString();
-            var client = new MongoClient(connectionString);
-            _database = client.GetDatabase("Stacks");
+            
+            // Use lazy initialization to defer the blocking MongoClient creation
+            // until the database is actually needed
+            _database = new Lazy<IMongoDatabase>(() =>
+            {
+                var connectionString = _settingsService.GetDbConnectionString();
+                var client = new MongoClient(connectionString);
+                return client.GetDatabase("Stacks");
+            });
         }
+
+        private IMongoDatabase Database => _database.Value;
 
         public IMongoCollection<ExpenseRuleTag> GetExpenseRuleTagsCollection()
         {
-            return _database.GetCollection<ExpenseRuleTag>("expenseRuleTags");
+            return Database.GetCollection<ExpenseRuleTag>("expenseRuleTags");
         }
 
         public IMongoCollection<ExpenseTag> GetExpenseTagsCollection()
         {
-
-            return _database.GetCollection<ExpenseTag>("expenseTags");
+            return Database.GetCollection<ExpenseTag>("expenseTags");
         }
 
         public IMongoCollection<Expense> GetExpensesCollection()
         {
-            return _database.GetCollection<Expense>("expenses");
+            return Database.GetCollection<Expense>("expenses");
         }
 
         public IMongoCollection<Income> GetIncomeCollection()
         {
-            return _database.GetCollection<Income>("income");
+            return Database.GetCollection<Income>("income");
         }
 
         public IMongoCollection<Tag> GetTagsCollection()
         {
-            return _database.GetCollection<Tag>("tags");
+            return Database.GetCollection<Tag>("tags");
         }
 
         public IMongoCollection<FinancialGoal> GetFinancialGoalsCollection()
         {
-            return _database.GetCollection<FinancialGoal>("financialGoals");
+            return Database.GetCollection<FinancialGoal>("financialGoals");
         }
 
         public static async Task TestConnection(string connectionString)

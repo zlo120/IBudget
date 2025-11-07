@@ -42,16 +42,13 @@ namespace IBudget.GUI.ViewModels
             DatabaseTypes = new ObservableCollection<DatabaseType>
             {
                 DatabaseType.CustomMongoDbInstance,
-                //DatabaseType.Offline,
+                DatabaseType.Offline,
                 //DatabaseType.StacksBackend
             };
-            try
+            var dbType = _settingsService.GetDatabaseType();
+            if (dbType is not null)
             {
-                SelectedDatabaseType = _settingsService.GetDatabaseType();
-            }
-            catch
-            {
-                SelectedDatabaseType = DatabaseType.CustomMongoDbInstance;
+                SelectedDatabaseType = dbType.Value;
             }
         }
 
@@ -100,7 +97,7 @@ namespace IBudget.GUI.ViewModels
             switch (databaseType)
             {
                 case DatabaseType.Offline:
-                    throw new NotImplementedException("Offline database mode is not implemented yet.");
+                    break;
                 case DatabaseType.StacksBackend:
                     throw new NotImplementedException("StacksBackend database mode is not implemented yet.");
                 case DatabaseType.CustomMongoDbInstance:
