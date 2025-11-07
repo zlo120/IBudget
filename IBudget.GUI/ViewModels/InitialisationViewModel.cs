@@ -42,8 +42,8 @@ namespace IBudget.GUI.ViewModels
             DatabaseTypes = new ObservableCollection<DatabaseType>
             {
                 DatabaseType.CustomMongoDbInstance,
-                DatabaseType.Offline,
-                DatabaseType.StacksBackend
+                //DatabaseType.Offline,
+                //DatabaseType.StacksBackend
             };
             try
             {
