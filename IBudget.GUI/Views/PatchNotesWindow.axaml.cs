@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using IBudget.GUI.ViewModels;
 
 namespace IBudget.GUI.Views
 {

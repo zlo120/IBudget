@@ -10,7 +10,7 @@
         Width="500" Height="250"
         WindowStartupLocation="CenterOwner"
         CanResize="False"
-        Icon="/Assets/avalonia-logo.ico">
+        Icon="/Assets/stacks-logo.ico">
 
     <Design.DataContext>
         <vm:UpdateNotificationViewModel/>
