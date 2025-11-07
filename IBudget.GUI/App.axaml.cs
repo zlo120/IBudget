@@ -51,7 +51,7 @@ namespace IBudget.GUI
                 dbConnectionViewModel.SetParentWindow(dbConnectionWindow);
 
                 // Handle connection completion
-                dbConnectionViewModel.ConnectionCompleted += (sender, isConnected) =>
+                dbConnectionViewModel.ConnectionCompleted += async (sender, isConnected) =>
                 {
                     if (isConnected)
                     {
@@ -62,6 +62,9 @@ namespace IBudget.GUI
                             DataContext = mainViewModel,
                         };
                         desktop.MainWindow.Show();
+                        
+                        // Check and show patch notes if needed (after main window is shown)
+                        await CheckAndShowPatchNotesAsync();
                     }
                     else
                     {
@@ -82,6 +85,71 @@ namespace IBudget.GUI
             
             // Check for updates in the background
             _ = Task.Run(CheckForUpdatesAsync);
+        }
+
+        private async Task CheckAndShowPatchNotesAsync()
+        {
+            try
+            {
+                // Wait a moment for the main window to fully load
+                await Task.Delay(TimeSpan.FromSeconds(1));
+
+                if (_services == null)
+                    return;
+
+                var patchNotesService = _services.GetService<IPatchNotesService>();
+                if (patchNotesService == null)
+                    return;
+
+                // Check if we should show patch notes
+                var shouldShow = await patchNotesService.ShouldShowPatchNotesAsync();
+                
+                if (shouldShow)
+                {
+                    await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(async () =>
+                    {
+                        await ShowPatchNotesAsync();
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the error but don't crash the app
+                Console.WriteLine($"Error checking patch notes: {ex.Message}");
+            }
+        }
+
+        private async Task ShowPatchNotesAsync()
+        {
+            if (_services == null)
+                return;
+
+            try
+            {
+                var patchNotesViewModel = _services.GetRequiredService<PatchNotesViewModel>();
+                
+                var patchNotesWindow = new PatchNotesWindow
+                {
+                    DataContext = patchNotesViewModel
+                };
+
+                // Load patch notes content
+                await patchNotesViewModel.LoadPatchNotesAsync();
+
+                if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop &&
+                    desktop.MainWindow != null)
+                {
+                    await patchNotesWindow.ShowDialog(desktop.MainWindow);
+                }
+                else
+                {
+                    patchNotesWindow.Show();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error showing patch notes: {ex.Message}");
+            }
         }
 
         private async Task CheckForUpdatesAsync()

@@ -1,0 +1,64 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:IBudget.GUI.ViewModels"
+        xmlns:md="https://github.com/whistyun/Markdown.Avalonia"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="600"
+        x:Class="IBudget.GUI.Views.PatchNotesWindow"
+        x:DataType="vm:PatchNotesViewModel"
+        Title="What's New"
+        Width="700" Height="600"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True"
+        Icon="/Assets/avalonia-logo.ico">
+
+    <Design.DataContext>
+        <vm:PatchNotesViewModel/>
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="20">
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Spacing="10" Margin="0,0,0,20">
+            <TextBlock FontSize="24" FontWeight="Bold">
+                <Run Text="What's New in Version " />
+                <Run Text="{Binding Version}" />
+            </TextBlock>
+            <Separator/>
+        </StackPanel>
+
+        <!-- Patch Notes Content -->
+        <Border Grid.Row="1" 
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                BorderThickness="1"
+                CornerRadius="4"
+                Padding="15"
+                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+            
+            <Grid>
+                <!-- Loading Indicator -->
+                <ProgressBar IsIndeterminate="True" 
+                            IsVisible="{Binding IsLoading}"
+                            Height="4"
+                            VerticalAlignment="Top"/>
+                
+                <!-- Markdown Viewer -->
+                <md:MarkdownScrollViewer Markdown="{Binding PatchNotesContent}"
+                                         IsVisible="{Binding !IsLoading}" />
+            </Grid>
+        </Border>
+
+        <!-- Close Button -->
+        <StackPanel Grid.Row="2" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right"
+                    Margin="0,20,0,0">
+            <Button Content="Got it!"
+                    Command="{Binding CloseCommand}"
+                    Click="Close_Click"
+                    Classes="accent"
+                    Width="120"
+                    Height="35"/>
+        </StackPanel>
+    </Grid>
+</Window>

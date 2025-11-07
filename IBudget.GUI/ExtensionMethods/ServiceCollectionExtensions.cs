@@ -40,6 +40,7 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddTransient<DataTableViewModel>();
             collection.AddTransient<SettingsPageViewModel>();
             collection.AddTransient<UpdateNotificationViewModel>();
+            collection.AddTransient<PatchNotesViewModel>();
 
             collection.AddTransient<ICSVParserService, CSVParserService>();
             collection.AddScoped<IIncomeService, IncomeService>();
@@ -65,6 +66,11 @@ namespace IBudget.GUI.ExtensionMethods
 
             collection.AddSingleton<MongoDbContext>();
             collection.AddSingleton<IUpdateService, UpdateService>();
+            
+            // Patch Notes Service
+            // For local testing without Velopack, uncomment the line below and comment out the production line
+             collection.AddSingleton<IPatchNotesService, TestPatchNotesService>();
+            //collection.AddSingleton<IPatchNotesService, PatchNotesService>();  // Production
         }
     }
 }
