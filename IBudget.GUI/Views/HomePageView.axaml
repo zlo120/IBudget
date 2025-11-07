@@ -9,221 +9,326 @@
 			 x:CompileBindings="True">
 
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
-		<StackPanel Margin="40">
-			<!-- Header Section -->
-			<StackPanel Spacing="10" Margin="0,0,0,30">
-				<TextBlock Text="Welcome to Stacks Money Management Tool"
-                          FontSize="28"
-                          FontWeight="Bold"
-                          HorizontalAlignment="Center"
-                          Foreground="{DynamicResource TextControlForeground}" />
-				<TextBlock Text="Your personal finance management solution"
-                          FontSize="14"
-                          HorizontalAlignment="Center"
-                          Opacity="0.7"
-                          Foreground="{DynamicResource TextControlForeground}" />
+		<!-- Main Grid: Asymmetric Split Layout -->
+		<Grid ColumnDefinitions="3*,2*" Margin="0" MinHeight="600">
+			
+			<!-- LEFT SECTION: Main Content -->
+			<StackPanel Grid.Column="0" Margin="32,24" Spacing="24">
+				
+				<!-- Compact Header -->
+				<StackPanel Spacing="4">
+					<TextBlock Text="STACKS" 
+					          FontSize="11" 
+					          FontWeight="Bold" 
+					          LetterSpacing="2"
+					          Opacity="0.6"
+					          Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+					<TextBlock Text="Money Management" 
+					          FontSize="36" 
+					          FontWeight="Black" 
+					          LineHeight="40"
+					          Foreground="{DynamicResource TextControlForeground}" />
+					<TextBlock Text="Smart budgeting for modern life" 
+					          FontSize="14" 
+					          Opacity="0.65"
+					          Margin="0,4,0,0" />
+				</StackPanel>
+
+				<!-- Primary Action Card with Modern Styling -->
+				<Border Background="{DynamicResource LayerFillColorDefaultBrush}"
+				        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+				        BorderThickness="1"
+				        CornerRadius="16"
+				        Padding="0"
+				        BoxShadow="0 2 8 0 #10000000">
+					<Grid RowDefinitions="Auto,Auto,Auto">
+						<!-- Gradient Accent Bar -->
+						<Border Grid.Row="0"
+						        Height="4"
+						        Background="{DynamicResource AccentFillColorDefaultBrush}"
+						        CornerRadius="16,16,0,0" />
+						
+						<!-- Content Section -->
+						<StackPanel Grid.Row="1" Spacing="16" Margin="32,28,32,8">
+							<StackPanel Spacing="8">
+								<TextBlock Text="Generate Your Report" 
+								          FontSize="20" 
+								          FontWeight="Bold"
+								          Foreground="{DynamicResource TextControlForeground}" />
+								<TextBlock Text="Create a comprehensive Excel spreadsheet with spending analysis, budget tracking, and financial goal progress." 
+								          FontSize="13" 
+								          Opacity="0.75"
+								          TextWrapping="Wrap"
+								          LineHeight="20" />
+							</StackPanel>
+
+							<!-- Action Button with Accent Fill -->
+							<Button Padding="20,13"
+							        Background="{DynamicResource AccentFillColorDefaultBrush}"
+							        Foreground="White"
+							        FontSize="15"
+							        FontWeight="SemiBold"
+							        CornerRadius="10"
+							        HorizontalAlignment="Stretch"
+							        HorizontalContentAlignment="Center"
+							        Command="{Binding GenerateExcelCommand}">
+								<StackPanel Orientation="Horizontal" Spacing="10">
+									<PathIcon Data="{StaticResource DataRegular}" 
+									         Width="18" Height="18"
+									         Foreground="White" />
+									<TextBlock Text="Generate Excel Report" 
+									          VerticalAlignment="Center"
+									          Foreground="White" />
+								</StackPanel>
+							</Button>
+						</StackPanel>
+
+						<!-- Status Message -->
+						<Border Grid.Row="2"
+						        Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+						        CornerRadius="0,0,16,16"
+						        Padding="32,16,32,20"
+						        IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+							<Grid ColumnDefinitions="Auto,*">
+								<Border Grid.Column="0"
+								        Width="4" Height="4"
+								        Background="{DynamicResource AccentFillColorDefaultBrush}"
+								        CornerRadius="2"
+								        VerticalAlignment="Top"
+								        Margin="0,6,12,0" />
+								<TextBlock Grid.Column="1"
+								          Text="{Binding Message}"
+								          FontSize="12"
+								          TextWrapping="Wrap"
+								          Opacity="0.85"
+								          LineHeight="18" />
+							</Grid>
+						</Border>
+					</Grid>
+				</Border>
+
+				<!-- Features List - Compact Horizontal Cards -->
+				<StackPanel Spacing="12">
+					<TextBlock Text="FEATURES" 
+					          FontSize="11" 
+					          FontWeight="Bold" 
+					          LetterSpacing="1.5"
+					          Opacity="0.5" />
+					
+					<!-- Feature Item 1 -->
+					<Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+					        BorderThickness="0"
+					        CornerRadius="12"
+					        Padding="20,16">
+						<Grid ColumnDefinitions="Auto,*">
+							<Border Grid.Column="0" 
+							        Width="40" Height="40"
+							        Background="{DynamicResource AccentFillColorTertiaryBrush}"
+							        CornerRadius="10"
+							        Margin="0,0,16,0">
+								<PathIcon Data="{StaticResource DataRegular}" 
+								         Width="20" Height="20"
+								         Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+							</Border>
+							<StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+								<TextBlock Text="Financial Analytics" 
+								          FontSize="15" 
+								          FontWeight="SemiBold" />
+								<TextBlock Text="Real-time insights and trend analysis" 
+								          FontSize="12" 
+								          Opacity="0.7" />
+							</StackPanel>
+						</Grid>
+					</Border>
+
+					<!-- Feature Item 2 -->
+					<Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+					        BorderThickness="0"
+					        CornerRadius="12"
+					        Padding="20,16">
+						<Grid ColumnDefinitions="Auto,*">
+							<Border Grid.Column="0" 
+							        Width="40" Height="40"
+							        Background="{DynamicResource AccentFillColorTertiaryBrush}"
+							        CornerRadius="10"
+							        Margin="0,0,16,0">
+								<PathIcon Data="{StaticResource TagRegular}" 
+								         Width="20" Height="20"
+								         Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+							</Border>
+							<StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+								<TextBlock Text="Smart Categorization" 
+								          FontSize="15" 
+								          FontWeight="SemiBold" />
+								<TextBlock Text="Custom tags and automatic organization" 
+								          FontSize="12" 
+								          Opacity="0.7" />
+							</StackPanel>
+						</Grid>
+					</Border>
+
+					<!-- Feature Item 3 -->
+					<Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+					        BorderThickness="0"
+					        CornerRadius="12"
+					        Padding="20,16">
+						<Grid ColumnDefinitions="Auto,*">
+							<Border Grid.Column="0" 
+							        Width="40" Height="40"
+							        Background="{DynamicResource AccentFillColorTertiaryBrush}"
+							        CornerRadius="10"
+							        Margin="0,0,16,0">
+								<PathIcon Data="{StaticResource MoneyRegular}" 
+								         Width="20" Height="20"
+								         Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+							</Border>
+							<StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+								<TextBlock Text="Goal Tracking" 
+								          FontSize="15" 
+								          FontWeight="SemiBold" />
+								<TextBlock Text="Monitor savings and budget targets" 
+								          FontSize="12" 
+								          Opacity="0.7" />
+							</StackPanel>
+						</Grid>
+					</Border>
+				</StackPanel>
+
 			</StackPanel>
 
-			<!-- Main Action Card -->
-			<Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8"
-                    Padding="30"
-                    Margin="0,0,0,20">
-				<StackPanel Spacing="15">
+			<!-- RIGHT SECTION: Info Panel with Gradient Background -->
+			<Border Grid.Column="1" 
+			        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+			        BorderThickness="0"
+			        Padding="28,24">
+				<StackPanel Spacing="28" VerticalAlignment="Center">
+					
+					<!-- Report Details Header -->
 					<StackPanel Spacing="8">
-						<TextBlock Text="Generate Budget Report"
-                                  FontSize="20"
-                                  FontWeight="SemiBold"
-                                  HorizontalAlignment="Center" />
-						<TextBlock Text="Create a comprehensive Excel spreadsheet with your budget tracking, financial goals, and spending analysis."
-                                  FontSize="14"
-                                  TextWrapping="Wrap"
-                                  HorizontalAlignment="Center"
-                                  Opacity="0.8"
-                                  MaxWidth="400" />
+						<TextBlock Text="📊" FontSize="32" HorizontalAlignment="Left" />
+						<TextBlock Text="What's Inside" 
+						          FontSize="22" 
+						          FontWeight="Bold"
+						          Foreground="{DynamicResource TextControlForeground}" />
+						<TextBlock Text="Your comprehensive financial report includes:" 
+						          FontSize="13" 
+						          Opacity="0.7"
+						          TextWrapping="Wrap" />
 					</StackPanel>
 
-					<Button Content="Generate Excel Report"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Padding="20,12"
-                            FontSize="16"
-                            FontWeight="SemiBold"
-                            Command="{Binding GenerateExcelCommand}"
-                            Classes="accent" />
+					<!-- Report Items List -->
+					<StackPanel Spacing="20">
+						
+						<!-- Monthly Breakdown -->
+						<StackPanel Spacing="6">
+							<Grid ColumnDefinitions="Auto,*">
+								<Border Grid.Column="0"
+								        Width="6" Height="6"
+								        Background="{DynamicResource AccentFillColorDefaultBrush}"
+								        CornerRadius="3"
+								        VerticalAlignment="Top"
+								        Margin="0,6,12,0" />
+								<StackPanel Grid.Column="1" Spacing="4">
+									<TextBlock Text="Monthly Summaries" 
+									          FontSize="15" 
+									          FontWeight="SemiBold" />
+									<TextBlock Text="Complete breakdown of income and expenses by month" 
+									          FontSize="12" 
+									          Opacity="0.7"
+									          TextWrapping="Wrap"
+									          LineHeight="18" />
+								</StackPanel>
+							</Grid>
+						</StackPanel>
 
-					<TextBlock Text="{Binding Message}"
-                              FontSize="14"
-                              HorizontalAlignment="Center"
-                              TextWrapping="Wrap"
-                              MaxWidth="500"
-                              IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+						<!-- Weekly Insights -->
+						<StackPanel Spacing="6">
+							<Grid ColumnDefinitions="Auto,*">
+								<Border Grid.Column="0"
+								        Width="6" Height="6"
+								        Background="{DynamicResource AccentFillColorDefaultBrush}"
+								        CornerRadius="3"
+								        VerticalAlignment="Top"
+								        Margin="0,6,12,0" />
+								<StackPanel Grid.Column="1" Spacing="4">
+									<TextBlock Text="Weekly Analysis" 
+									          FontSize="15" 
+									          FontWeight="SemiBold" />
+									<TextBlock Text="Detailed spending patterns week by week" 
+									          FontSize="12" 
+									          Opacity="0.7"
+									          TextWrapping="Wrap"
+									          LineHeight="18" />
+								</StackPanel>
+							</Grid>
+						</StackPanel>
+
+						<!-- Goal Progress -->
+						<StackPanel Spacing="6">
+							<Grid ColumnDefinitions="Auto,*">
+								<Border Grid.Column="0"
+								        Width="6" Height="6"
+								        Background="{DynamicResource AccentFillColorDefaultBrush}"
+								        CornerRadius="3"
+								        VerticalAlignment="Top"
+								        Margin="0,6,12,0" />
+								<StackPanel Grid.Column="1" Spacing="4">
+									<TextBlock Text="Financial Goals" 
+									          FontSize="15" 
+									          FontWeight="SemiBold" />
+									<TextBlock Text="Track progress toward your savings objectives" 
+									          FontSize="12" 
+									          Opacity="0.7"
+									          TextWrapping="Wrap"
+									          LineHeight="18" />
+								</StackPanel>
+							</Grid>
+						</StackPanel>
+
+						<!-- CSV Data Import -->
+						<StackPanel Spacing="6">
+							<Grid ColumnDefinitions="Auto,*">
+								<Border Grid.Column="0"
+								        Width="6" Height="6"
+								        Background="{DynamicResource AccentFillColorDefaultBrush}"
+								        CornerRadius="3"
+								        VerticalAlignment="Top"
+								        Margin="0,6,12,0" />
+								<StackPanel Grid.Column="1" Spacing="4">
+									<TextBlock Text="Transaction History" 
+									          FontSize="15" 
+									          FontWeight="SemiBold" />
+									<TextBlock Text="All imported CSV data with smart categorization" 
+									          FontSize="12" 
+									          Opacity="0.7"
+									          TextWrapping="Wrap"
+									          LineHeight="18" />
+								</StackPanel>
+							</Grid>
+						</StackPanel>
+
+					</StackPanel>
+
+					<!-- Footer Info -->
+					<StackPanel Spacing="8" Margin="0,12,0,0">
+						<Rectangle Height="1" 
+						          Fill="{DynamicResource CardStrokeColorDefaultBrush}" 
+						          Opacity="0.3" />
+						<TextBlock Text="Navigate using the sidebar to manage your financial data" 
+						          FontSize="11" 
+						          Opacity="0.55"
+						          TextWrapping="Wrap"
+						          LineHeight="16" />
+						<TextBlock Text="{Binding Version}" 
+						          FontSize="10" 
+						          Opacity="0.4"
+						          FontStyle="Italic" />
+					</StackPanel>
+
 				</StackPanel>
 			</Border>
 
-			<!-- Feature Overview Grid -->
-			<Grid ColumnDefinitions="1*, 1*" RowDefinitions="Auto, Auto, Auto">
-
-				<!-- Upload CSV Card -->
-				<Border Grid.Column="0" Grid.Row="0"
-                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="20"
-                        Margin="0,0,10,10">
-					<StackPanel Spacing="10">
-						<PathIcon Data="{StaticResource DocumentRegular}"
-                                 Width="32"
-                                 Height="32"
-                                 Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
-                                 HorizontalAlignment="Left" />
-						<TextBlock Text="Upload CSV Data"
-                                  FontSize="16"
-                                  FontWeight="SemiBold" />
-						<TextBlock Text="Import your financial transactions from CSV files to automatically categorize and track your spending patterns."
-                                  FontSize="12"
-                                  TextWrapping="Wrap"
-                                  Opacity="0.8" />
-					</StackPanel>
-				</Border>
-
-				<!-- Financial Overview Card -->
-				<Border Grid.Column="1" Grid.Row="0"
-                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="20"
-                        Margin="10,0,0,10">
-					<StackPanel Spacing="10">
-						<PathIcon Data="{StaticResource DataRegular}"
-                                 Width="32"
-                                 Height="32"
-                                 Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
-                                 HorizontalAlignment="Left" />
-						<TextBlock Text="Financial Overview"
-                                  FontSize="16"
-                                  FontWeight="SemiBold" />
-						<TextBlock Text="View comprehensive analytics and insights about your spending habits, trends, and financial health."
-                                  FontSize="12"
-                                  TextWrapping="Wrap"
-                                  Opacity="0.8" />
-					</StackPanel>
-				</Border>
-
-				<!-- Tags Management Card -->
-				<Border Grid.Column="0" Grid.Row="1"
-                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="20"
-                        Margin="0,10,10,10">
-					<StackPanel Spacing="10">
-						<PathIcon Data="{StaticResource TagRegular}"
-                                 Width="32"
-                                 Height="32"
-                                 Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
-                                 HorizontalAlignment="Left" />
-						<TextBlock Text="Manage Tags"
-                                  FontSize="16"
-                                  FontWeight="SemiBold" />
-						<TextBlock Text="Create and organize spending categories with custom tags to better track where your money goes."
-                                  FontSize="12"
-                                  TextWrapping="Wrap"
-                                  Opacity="0.8" />
-					</StackPanel>
-				</Border>
-
-				<!-- Financial Goals Card -->
-				<Border Grid.Column="1" Grid.Row="1"
-                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="20"
-                        Margin="10,10,0,10">
-					<StackPanel Spacing="10">
-						<PathIcon Data="{StaticResource MoneyRegular}"
-                                 Width="32"
-                                 Height="32"
-                                 Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
-                                 HorizontalAlignment="Left" />
-						<TextBlock Text="Financial Goals"
-                                  FontSize="16"
-                                  FontWeight="SemiBold" />
-						<TextBlock Text="Set and monitor your savings targets, budget limits, and financial milestones to stay on track."
-                                  FontSize="12"
-                                  TextWrapping="Wrap"
-                                  Opacity="0.8" />
-					</StackPanel>
-				</Border>
-
-				<!-- Quick Stats Section -->
-				<Border Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"
-                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="20"
-                        Margin="0,10,0,0">
-					<StackPanel Spacing="15">
-						<TextBlock Text="What's Included in Your Report"
-                                  FontSize="16"
-                                  FontWeight="SemiBold"
-                                  HorizontalAlignment="Center" />
-
-						<Grid ColumnDefinitions="1*, 1*, 1*">
-							<StackPanel Grid.Column="0" Spacing="5" Margin="0,0,15,0">
-								<TextBlock Text="📊 Monthly Summaries"
-                                          FontSize="14"
-                                          FontWeight="Medium" />
-								<TextBlock Text="Detailed breakdown of income and expenses by month"
-                                          FontSize="12"
-                                          Opacity="0.8"
-                                          TextWrapping="Wrap" />
-							</StackPanel>
-
-							<StackPanel Grid.Column="1" Spacing="5" Margin="15,0">
-								<TextBlock Text="📈 Weekly Analysis"
-                                          FontSize="14"
-                                          FontWeight="Medium" />
-								<TextBlock Text="Week-by-week spending patterns and trends"
-                                          FontSize="12"
-                                          Opacity="0.8"
-                                          TextWrapping="Wrap" />
-							</StackPanel>
-
-							<StackPanel Grid.Column="2" Spacing="5" Margin="15,0,0,0">
-								<TextBlock Text="🎯 Goal Tracking"
-                                          FontSize="14"
-                                          FontWeight="Medium" />
-								<TextBlock Text="Progress monitoring for all your financial goals"
-                                          FontSize="12"
-                                          Opacity="0.8"
-                                          TextWrapping="Wrap" />
-							</StackPanel>
-						</Grid>
-					</StackPanel>
-				</Border>
-			</Grid>
-
-			<!-- Footer -->
-			<StackPanel Spacing="8" Margin="0,30,0,0">
-				<TextBlock Text="Navigate using the menu on the left to manage your data and settings."
-                          FontSize="12"
-                          HorizontalAlignment="Center"
-                          Opacity="0.6" />
-				<TextBlock Text="{Binding Version}"
-                          FontSize="11"
-                          HorizontalAlignment="Center"
-                          Opacity="0.5"
-                          FontStyle="Italic" />
-			</StackPanel>
-		</StackPanel>
+		</Grid>
 	</ScrollViewer>
 
 </UserControl>
