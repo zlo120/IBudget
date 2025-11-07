@@ -316,10 +316,6 @@
 						          Opacity="0.55"
 						          TextWrapping="Wrap"
 						          LineHeight="16" />
-						<TextBlock Text="{Binding Version}" 
-						          FontSize="10" 
-						          Opacity="0.4"
-						          FontStyle="Italic" />
 					</StackPanel>
 
 				</StackPanel>

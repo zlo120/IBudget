@@ -10,23 +10,13 @@ using IBudget.Spreadsheet.Interfaces;
 
 namespace IBudget.GUI.ViewModels
 {
-    public partial class HomePageViewModel : ViewModelBase
+    public partial class HomePageViewModel(ISpreadSheetGeneratorService spreadSheetGenerator, IMessageService messageService) : ViewModelBase
     {
-        private readonly ISpreadSheetGeneratorService _spreadSheetGenerator;
-        private readonly IMessageService _messageService;
-
-        [ObservableProperty]
-        private string? _version;
+        private readonly ISpreadSheetGeneratorService _spreadSheetGenerator = spreadSheetGenerator;
+        private readonly IMessageService _messageService = messageService;
 
         [ObservableProperty]
         private string? _message;
-
-        public HomePageViewModel(ISpreadSheetGeneratorService spreadSheetGenerator, IMessageService messageService)
-        {
-            _spreadSheetGenerator = spreadSheetGenerator;
-            _messageService = messageService;
-            Version = $"Version {Assembly.GetExecutingAssembly().GetName().Version}";
-        }
 
         [RelayCommand]
         private async Task GenerateExcel()
