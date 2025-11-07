@@ -1,5 +1,4 @@
-﻿using System.IO;
-using IBudget.Core.Interfaces;
+﻿using IBudget.Core.Interfaces;
 using IBudget.Core.RepositoryInterfaces;
 using IBudget.Core.Services;
 using IBudget.GUI.Services;
@@ -10,7 +9,6 @@ using IBudget.GUI.ViewModels.UploadCsv;
 using IBudget.Infrastructure;
 using IBudget.Infrastructure.Repositories;
 using IBudget.Spreadsheet.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace IBudget.GUI.ExtensionMethods
@@ -66,11 +64,12 @@ namespace IBudget.GUI.ExtensionMethods
 
             collection.AddSingleton<MongoDbContext>();
             collection.AddSingleton<IUpdateService, UpdateService>();
-            
-            // Patch Notes Service
-            // For local testing without Velopack, uncomment the line below and comment out the production line
-             collection.AddSingleton<IPatchNotesService, TestPatchNotesService>();
-            //collection.AddSingleton<IPatchNotesService, PatchNotesService>();  // Production
+
+#if DEBUG
+            collection.AddSingleton<IPatchNotesService, TestPatchNotesService>();
+#else
+            collection.AddSingleton<IPatchNotesService, PatchNotesService>();
+#endif
         }
     }
 }
