@@ -402,3 +402,5 @@ FodyWeavers.xsd
 /IBudget.API/appsettings.Development.json
 
 /IBudget.GUI/appsettings.json
+.env
+build-*.*

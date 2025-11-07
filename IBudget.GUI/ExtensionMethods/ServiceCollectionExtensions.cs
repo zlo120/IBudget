@@ -63,6 +63,7 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddScoped<ISettingsService, SettingsService>();
 
             collection.AddSingleton<MongoDbContext>();
+            collection.AddSingleton<IUpdateService, UpdateService>();
         }
     }
 }
