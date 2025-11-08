@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Velopack;
 using Velopack.Sources;
@@ -13,14 +14,33 @@ namespace IBudget.GUI.Services.Impl
         {
             try
             {
+                // Detect the current platform for platform-specific updates
+                var rid = GetRuntimeIdentifier();
+                
                 _updateManager = new UpdateManager(
-                    new GithubSource("https://github.com/zlo120/IBudget", null, false)
+                    new GithubSource("https://github.com/zlo120/IBudget", null, false),
+                    new UpdateOptions 
+                    { 
+                        ExplicitChannel = rid 
+                    }
                 );
             }
             catch
             {
                 _updateManager = null;
             }
+        }
+
+        private static string GetRuntimeIdentifier()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                return "win";
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                return "osx";
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                return "linux";
+            
+            return "unknown";
         }
 
         public async Task<UpdateInfo?> CheckForUpdatesAsync()
