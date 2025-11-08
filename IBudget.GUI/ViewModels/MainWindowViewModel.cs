@@ -21,6 +21,8 @@ namespace IBudget.GUI.ViewModels
         private readonly DataTableViewModel _dataTableViewModel;
         private readonly SettingsPageViewModel _settingsPageViewModel;
 
+        public bool DebugMode { get; }
+
         public MainWindowViewModel(
             HomePageViewModel homePageViewModel,
             UploadCsvPageViewModel uploadCsvPageViewModel,
@@ -42,13 +44,19 @@ namespace IBudget.GUI.ViewModels
             _settingsPageViewModel = settingsPageViewModel;
 
             CurrentPage = _homePageViewModel;
+
+#if DEBUG
+            DebugMode = true;
+#else
+            DebugMode = false;
+#endif
         }
 
         [ObservableProperty]
         private bool _isPaneOpen = true;
 
-        [ObservableProperty]
-        private ViewModelBase _currentPage = null;
+    [ObservableProperty]
+    private ViewModelBase? _currentPage = null;
 
         [ObservableProperty]
         private ListItemTemplate? _selectedListItem;

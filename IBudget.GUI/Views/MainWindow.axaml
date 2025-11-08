@@ -18,19 +18,27 @@
     </Design.DataContext>
 
 	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="Auto" />
 			<ColumnDefinition Width="*" />
 		</Grid.ColumnDefinitions>
-		
+
+		<!-- Debug Banner -->
+		<Border Grid.Row="0" Grid.ColumnSpan="2" Background="#FFFFBF00" IsVisible="{Binding DebugMode}" Height="32">
+			<TextBlock Text="DEBUG MODE" Foreground="Black" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+		</Border>
+
 		<!-- Side Panel -->
-		<StackPanel Grid.Column="0" 
+		<StackPanel Grid.Row="1" Grid.Column="0" 
 					Orientation="Vertical"
 					Spacing="5"
 					HorizontalAlignment="Left"
 					VerticalAlignment="Top"
 					Margin="5">
-			
 			<!-- Hamburger button - always visible -->
 			<Button HorizontalAlignment="Left"
 					Width="32"
@@ -39,7 +47,6 @@
 					Command="{Binding TogglePaneCommand}">
 				<PathIcon Data="{StaticResource LineHorizontal3Regular}" />
 			</Button>
-			
 			<!-- Panel content - only visible when pane is open -->
 			<Border Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
 					IsVisible="{Binding IsPaneOpen}">
@@ -62,9 +69,9 @@
 				</ListBox>
 			</Border>
 		</StackPanel>
-		
+
 		<!-- Main Content -->
-		<Border Grid.Column="1" CornerRadius="15 0 0 0">
+		<Border Grid.Row="1" Grid.Column="1" CornerRadius="15 0 0 0">
 			<TransitioningContentControl Content="{Binding CurrentPage}"/>
 		</Border>
 	</Grid>
