@@ -66,9 +66,8 @@ namespace IBudget.GUI.ViewModels
             }
             catch (FileNotFoundException)
             {
-                // Ignore, use default
-                SelectedDatabaseType = DatabaseType.CustomMongoDbInstance;
-                IsMongoTypeSelected = true;
+                // Default behaviour: Create settings file and use offline mode
+                _ = OfflineContinue();
             }
         }
 
