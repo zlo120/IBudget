@@ -68,6 +68,14 @@
 			<Setter Property="Width" Value="100"/>
 			<Setter Property="Height" Value="100"/>
 		</Style>
+
+		<!-- Loading Icon Style -->
+		<Style Selector="Border.loading-icon">
+			<Setter Property="Background" Value="#2196F3"/>
+			<Setter Property="CornerRadius" Value="50"/>
+			<Setter Property="Width" Value="100"/>
+			<Setter Property="Height" Value="100"/>
+		</Style>
 	</UserControl.Styles>
 
 	<ScrollViewer HorizontalScrollBarVisibility="Disabled"
@@ -86,9 +94,23 @@
                     HorizontalAlignment="Center">
 				<StackPanel Spacing="32" HorizontalAlignment="Center">
 
-					<!-- Success Icon -->
+					<!-- Loading Icon (visible when processing) -->
+					<Border Classes="loading-icon"
+                           HorizontalAlignment="Center"
+                           IsVisible="{Binding IsLoading}">
+						<ProgressBar IsIndeterminate="True"
+                                    Width="60"
+                                    Height="60"
+                                    Foreground="White"
+                                    Background="Transparent"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"/>
+					</Border>
+
+					<!-- Success Icon (visible when complete) -->
 					<Border Classes="success-icon"
-                           HorizontalAlignment="Center">
+                           HorizontalAlignment="Center"
+                           IsVisible="{Binding !IsLoading}">
 						<PathIcon Data="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"
                                  Width="48"
                                  Height="48"
