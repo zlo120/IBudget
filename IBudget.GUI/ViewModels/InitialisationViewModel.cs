@@ -31,6 +31,9 @@ namespace IBudget.GUI.ViewModels
         [ObservableProperty]
         private DatabaseType _selectedDatabaseType = DatabaseType.CustomMongoDbInstance;
 
+        [ObservableProperty]
+        private bool _isMongoTypeSelected = true;
+
         public ObservableCollection<DatabaseType> DatabaseTypes { get; }
 
         public event EventHandler<bool>? ConnectionCompleted;
@@ -45,10 +48,27 @@ namespace IBudget.GUI.ViewModels
                 DatabaseType.Offline,
                 //DatabaseType.StacksBackend
             };
-            var dbType = _settingsService.GetDatabaseType();
-            if (dbType is not null)
+            try
             {
-                SelectedDatabaseType = dbType.Value;
+                var dbType = _settingsService.GetDatabaseType();
+                if (dbType is not null)
+                {
+                    if (dbType == DatabaseType.CustomMongoDbInstance)
+                    {
+                        IsMongoTypeSelected = true;
+                    }
+                    else
+                    {
+                        IsMongoTypeSelected = false;
+                    }
+                    SelectedDatabaseType = dbType.Value;
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                // Ignore, use default
+                SelectedDatabaseType = DatabaseType.CustomMongoDbInstance;
+                IsMongoTypeSelected = true;
             }
         }
 
@@ -57,20 +77,38 @@ namespace IBudget.GUI.ViewModels
             _parentWindow = window;
         }
 
+        partial void OnSelectedDatabaseTypeChanged(DatabaseType value)
+        {
+            SelectedDatabaseType = value;
+            IsMongoTypeSelected = SelectedDatabaseType == DatabaseType.CustomMongoDbInstance;
+            if (SelectedDatabaseType == DatabaseType.Offline)
+            {
+                StatusMessage = "You may click continue to progress.";
+            }
+            else if (SelectedDatabaseType == DatabaseType.CustomMongoDbInstance)
+            {
+                _ = TestDatabaseConnectionAsync(SelectedDatabaseType);
+            }
+            else if (SelectedDatabaseType == DatabaseType.StacksBackend)
+            {
+                StatusMessage = "StacksBackend database mode is not implemented yet.";
+            }
+        }
+
         public async Task InitializeConnectionAsync()
         {
-            await TestDatabaseConnectionAsync();
+            await TestDatabaseConnectionAsync(null);
         }
 
         [RelayCommand]
-        private async Task TestDatabaseConnectionAsync()
+        private async Task TestDatabaseConnectionAsync(DatabaseType? dbType)
         {
             IsConnecting = true;
             StatusMessage = "Testing database connection...";
 
             try
             {
-                await AttemptDatabaseConnection();
+                await AttemptDatabaseConnection(dbType);
                 ConnectionCompleted?.Invoke(this, true);
             }
             catch (KeyNotFoundException)
@@ -91,30 +129,36 @@ namespace IBudget.GUI.ViewModels
             }
         }
 
-        private async Task AttemptDatabaseConnection()
+        private async Task AttemptDatabaseConnection(DatabaseType? dbType)
         {
-            var databaseType = _settingsService.GetDatabaseType();
+            var databaseType = dbType ?? _settingsService.GetDatabaseType();
             switch (databaseType)
             {
                 case DatabaseType.Offline:
+                    StatusMessage = "✅ Offline mode selected. No database connection required.";
                     break;
                 case DatabaseType.StacksBackend:
                     throw new NotImplementedException("StacksBackend database mode is not implemented yet.");
                 case DatabaseType.CustomMongoDbInstance:
-                    var settingsService = _serviceProvider.GetService(typeof(Core.Interfaces.ISettingsService)) as Core.Interfaces.ISettingsService
-                        ?? throw new InvalidOperationException("Settings service not available.");
-                    var connectionString = settingsService.GetDbConnectionString();
-                    await MongoDbContext.TestConnection(connectionString);
+                    await TestMongoDbConnection();
                     break;
                 default:
                     throw new InvalidOperationException("Unsupported database type.");
             }
         }
 
-        [RelayCommand]
-        private async Task Retry()
+        private async Task TestMongoDbConnection()
         {
-            await TestDatabaseConnectionAsync();
+            var settingsService = _serviceProvider.GetService(typeof(Core.Interfaces.ISettingsService)) as Core.Interfaces.ISettingsService
+                        ?? throw new InvalidOperationException("Settings service not available.");
+            var connectionString = settingsService.GetDbConnectionString();
+            await MongoDbContext.TestConnection(connectionString);
+        }
+
+        [RelayCommand]
+        private async Task TestConnection()
+        {
+            await TestDatabaseConnectionAsync(DatabaseType.CustomMongoDbInstance);
         }
 
         [RelayCommand]
@@ -132,11 +176,18 @@ namespace IBudget.GUI.ViewModels
             configurationViewModel.ConfigurationCompleted += async (sender, e) =>
             {
                 configurationWindow.Close();
-                await TestDatabaseConnectionAsync();
+                await TestDatabaseConnectionAsync(null);
             };
 
             // Use ShowDialog to make it modal - this keeps the parent window visible
             await configurationWindow.ShowDialog(_parentWindow);
+        }
+
+        [RelayCommand]
+        private async Task OfflineContinue()
+        {
+            _settingsService.SetDatabaseType(DatabaseType.Offline);
+            await TestDatabaseConnectionAsync(DatabaseType.Offline);
         }
     }
 }

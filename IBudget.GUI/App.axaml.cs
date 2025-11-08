@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 using IBudget.Core.Enums;
+using IBudget.Core.Interfaces;
 
 namespace IBudget.GUI
 {
@@ -29,12 +30,11 @@ namespace IBudget.GUI
             BindingPlugins.DataValidators.RemoveAt(0);
 
             // Register all the services needed for the application to run
-            var collection = new ServiceCollection();
-            collection.AddCommonServices();
-            collection.AddDatabaseServices(DatabaseType.CustomMongoDbInstance);
+            var tempCollection = new ServiceCollection();
+            tempCollection.AddCommonServices();
+            tempCollection.AddDatabaseServices(DatabaseType.CustomMongoDbInstance);
 
-            var services = collection.BuildServiceProvider();
-            _services = services;
+            var tempServices = tempCollection.BuildServiceProvider();
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
@@ -43,7 +43,7 @@ namespace IBudget.GUI
                 BindingPlugins.DataValidators.RemoveAt(0);
 
                 // Show database connection window first
-                var dbConnectionViewModel = services.GetRequiredService<InitialisationViewModel>();
+                var dbConnectionViewModel = tempServices.GetRequiredService<InitialisationViewModel>();
                 var dbConnectionWindow = new InitialisationWindow
                 {
                     DataContext = dbConnectionViewModel
@@ -55,6 +55,16 @@ namespace IBudget.GUI
                 // Handle connection completion
                 dbConnectionViewModel.ConnectionCompleted += async (sender, isConnected) =>
                 {
+                    var settingsService = tempServices.GetRequiredService<ISettingsService>();
+                    var dbType = settingsService.GetDatabaseType();
+                    if (dbType is null) desktop.Shutdown();
+
+                    var collection = new ServiceCollection();
+                    collection.AddCommonServices();
+                    collection.AddDatabaseServices(dbType!.Value);
+                    var services = collection.BuildServiceProvider();
+                    _services = services;
+
                     if (isConnected)
                     {
                         // Connection successful, show main window

@@ -40,18 +40,22 @@
                        HorizontalAlignment="Center"/>
 
 			<ProgressBar IsIndeterminate="{Binding IsConnecting}"
-                         Height="10"/>
+                         Height="10"
+						 IsVisible="{Binding IsMongoTypeSelected}" />
 
 			<StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center"
                         Spacing="10"
                         IsVisible="{Binding !IsConnecting}">
-				<Button Content="Retry"
-                        Command="{Binding RetryCommand}"
-                        IsVisible="{Binding !IsConnected}"/>
+				<Button Content="Test Connection"
+                        Command="{Binding TestConnectionCommand}"
+                        IsVisible="{Binding IsMongoTypeSelected}"/>
 				<Button Content="Configure Settings"
                         Command="{Binding ConfigureSettingsCommand}"
-                        IsVisible="{Binding !IsConnected}"/>
+                        IsVisible="{Binding IsMongoTypeSelected}"/>
+				<Button Content="Continue"
+                        Command="{Binding OfflineContinueCommand}"
+                        IsVisible="{Binding !IsMongoTypeSelected}"/>
 			</StackPanel>
 		</StackPanel>
 	</StackPanel>
