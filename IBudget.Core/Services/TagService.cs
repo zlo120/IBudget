@@ -38,9 +38,9 @@ namespace IBudget.Core.Services
             return await _tagRepository.GetAll();
         }
 
-        public async Task<Tag> GetTagByName(string name)
+        public async Task<Tag> GetOrCreateTagByName(string name)
         {
-            return await _tagRepository.GetTagByName(name);
+            return await _tagRepository.GetOrCreateTagByName(name);
         }
 
         public async Task UpdateTag(Tag tag)

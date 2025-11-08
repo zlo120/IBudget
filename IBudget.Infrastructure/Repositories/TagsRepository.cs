@@ -41,7 +41,7 @@ namespace IBudget.Infrastructure.Repositories
                 tagNames = [.. expenseRuleTags.Tags.Distinct()];
                 foreach (var tagName in tagNames)
                 {
-                    var tag = await GetTagByName(tagName);
+                    var tag = await GetOrCreateTagByName(tagName);
                     if (tag != null) tags.Add(tag);
                 }
                 return tags;
@@ -53,9 +53,10 @@ namespace IBudget.Infrastructure.Repositories
             if (tagNames.Count == 0) return [];
             foreach (var tagName in tagNames)
             {
-                var tag = await GetTagByName(tagName);
+                var tag = await GetOrCreateTagByName(tagName);
                 if (tag != null) tags.Add(tag);
             }
+
             return tags;
         }
 
@@ -64,9 +65,16 @@ namespace IBudget.Infrastructure.Repositories
             return await _tagsCollection.Find(_ => true).ToListAsync();
         }
 
-        public async Task<Tag> GetTagByName(string name)
+        public async Task<Tag> GetOrCreateTagByName(string name)
         {
-            return await _tagsCollection.Find(e => e.Name == name).FirstOrDefaultAsync();
+            var tag = await _tagsCollection.Find(e => e.Name == name).FirstOrDefaultAsync();
+            if (tag is null)
+            {
+                tag = new Tag { Name = name, IsTracked = false, CreatedAt = DateTime.Now };
+                await CreateTag(tag);
+            }
+
+            return tag;
         }
 
         public async Task UpdateTag(Tag tag)

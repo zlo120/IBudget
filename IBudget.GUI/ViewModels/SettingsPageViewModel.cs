@@ -8,7 +8,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using IBudget.Core.Enums;
 using IBudget.Core.Interfaces;
-using IBudget.Core.Services;
 using IBudget.GUI.Services;
 
 namespace IBudget.GUI.ViewModels
@@ -108,7 +107,7 @@ namespace IBudget.GUI.ViewModels
             if (!decision)
             {
                 return;
-            }   
+            }
             try
             {
                 _settingsService.ResetDbConnectionString();

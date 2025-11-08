@@ -72,7 +72,7 @@ namespace IBudget.GUI.ViewModels
                 await _tagService.CreateTag(tag);
                 
                 // Get the saved tag with the actual ID
-                var savedTag = await _tagService.GetTagByName(tagName);
+                var savedTag = await _tagService.GetOrCreateTagByName(tagName);
                 if (savedTag?.Id != null)
                 {
                     // Now create the template with the real ID
@@ -178,7 +178,7 @@ namespace IBudget.GUI.ViewModels
                 IsTracked = false;
                 return;
             }
-            var updatedTag = await _tagService.GetTagByName(TagName);
+            var updatedTag = await _tagService.GetOrCreateTagByName(TagName);
             updatedTag.IsTracked = IsTracked;
             await _tagService.UpdateTag(updatedTag);
 
@@ -200,7 +200,7 @@ namespace IBudget.GUI.ViewModels
 
             try
             {
-                var tagToDelete = await _tagService.GetTagByName(TagName);
+                var tagToDelete = await _tagService.GetOrCreateTagByName(TagName);
                 if (tagToDelete == null)
                 {
                     await _messageService.ShowErrorAsync($"Tag '{TagName}' not found.");

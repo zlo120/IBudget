@@ -162,7 +162,7 @@ namespace IBudget.GUI.ViewModels.DataView
         {
             try
             {
-                var ignoredTag = await _tagService.GetTagByName("ignored");
+                var ignoredTag = await _tagService.GetOrCreateTagByName("ignored");
                 var monthsData = await _summaryService.ReadMonth(monthNumber);
 
                 if (monthsData?.AllExpenses == null && monthsData?.AllIncome == null)
@@ -204,7 +204,7 @@ namespace IBudget.GUI.ViewModels.DataView
         {
             try
             {
-                var ignoredTag = await _tagService.GetTagByName("ignored");
+                var ignoredTag = await _tagService.GetOrCreateTagByName("ignored");
                 var weeksData = await _summaryService.ReadWeek(date);
 
                 if (weeksData?.Expenses == null && weeksData?.Income == null)

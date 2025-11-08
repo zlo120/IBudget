@@ -93,7 +93,7 @@ namespace IBudget.GUI.ViewModels.DataView
         {
             try
             {
-                var ignoredTag = await _tagService.GetTagByName("ignored");
+                var ignoredTag = await _tagService.GetOrCreateTagByName("ignored");
 
                 // Clear existing data
                 SummaryItems.Clear();

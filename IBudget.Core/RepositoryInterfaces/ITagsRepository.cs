@@ -6,7 +6,11 @@ namespace IBudget.Core.RepositoryInterfaces
     public interface ITagsRepository
     {
         Task<List<Tag>> GetAll();
-        Task<Tag> GetTagByName(string name);
+        /// <summary>
+        /// Tries to find a tag by name, if it doesn't exist it will create it.
+        /// </summary>
+        /// <returns>Returns a tag object from the database.</returns>
+        Task<Tag> GetOrCreateTagByName(string name);
         Task CreateTag(Tag tag);
         Task DeleteTagByName(string name);
         Task DeleteTagById(ObjectId id);

@@ -26,7 +26,7 @@ namespace IBudget.Core.Services
 
         public async Task<XLWorkbook> PopulateSpreadsheet(XLWorkbook workbook)
         {
-            var ignoredTag = await _tagService.GetTagByName("ignored");
+            var ignoredTag = await _tagService.GetOrCreateTagByName("ignored");
             var trackedTagsList = await GetAllTrackedTags();
             var otherColumnIndex = trackedTagsList.Count + 1;
             var incomeColumnIndex = otherColumnIndex + 3;

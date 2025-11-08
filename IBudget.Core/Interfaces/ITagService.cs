@@ -6,7 +6,7 @@ namespace IBudget.Core.Interfaces
     public interface ITagService
     {
         Task<List<Tag>> GetAll();
-        Task<Tag> GetTagByName(string name);
+        Task<Tag> GetOrCreateTagByName(string name);
         Task CreateTag(Tag tag);
         Task DeleteTagByName(string name);
         Task DeleteTagById(ObjectId id);

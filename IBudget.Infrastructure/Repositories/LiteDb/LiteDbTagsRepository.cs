@@ -51,7 +51,7 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
                 tagNames = [.. expenseRuleTags.Tags.Distinct()];
                 foreach (var tagName in tagNames)
                 {
-                    var tag = await GetTagByName(tagName);
+                    var tag = await GetOrCreateTagByName(tagName);
                     if (tag != null) tags.Add(tag);
                 }
                 return tags;
@@ -64,7 +64,7 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
             if (tagNames.Count == 0) return [];
             foreach (var tagName in tagNames)
             {
-                var tag = await GetTagByName(tagName);
+                var tag = await GetOrCreateTagByName(tagName);
                 if (tag != null) tags.Add(tag);
             }
             return tags;
@@ -75,9 +75,15 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
             return await Task.Run(() => _tagsCollection.FindAll().ToList());
         }
 
-        public async Task<Tag> GetTagByName(string name)
+        public async Task<Tag> GetOrCreateTagByName(string name)
         {
-            return await Task.Run(() => _tagsCollection.FindOne(t => t.Name == name));
+            var tag = _tagsCollection.FindOne(t => t.Name == name);
+            if (tag is null)
+            {
+                tag = new Tag { Name = name, IsTracked = false, CreatedAt = DateTime.Now };
+                await CreateTag(tag);
+            }
+            return tag;
         }
 
         public async Task UpdateTag(Tag tag)
