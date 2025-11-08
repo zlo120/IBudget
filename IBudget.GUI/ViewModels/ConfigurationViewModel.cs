@@ -21,6 +21,7 @@ namespace IBudget.GUI.ViewModels
         private bool _isSaving = false;
 
         public event EventHandler? ConfigurationCompleted;
+        public event EventHandler? CloseRequested;
 
         public ConfigurationViewModel(ISettingsService settingsService)
         {
@@ -71,7 +72,7 @@ namespace IBudget.GUI.ViewModels
         [RelayCommand]
         private void Cancel()
         {
-            Environment.Exit(0);
+            CloseRequested?.Invoke(this, EventArgs.Empty);
         }
     }
 }
