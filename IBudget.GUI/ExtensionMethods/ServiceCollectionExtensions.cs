@@ -52,6 +52,7 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddScoped<IPopulator, SpreadSheetPopulatorService>();
             collection.AddSingleton<IMessageService, MessageService>();
             collection.AddScoped<ISettingsService, SettingsService>();
+            collection.AddScoped<IImportExportService, ImportExportService>();
 
             // Business Logic Services
             collection.AddScoped<IIncomeService, IncomeService>();
@@ -87,6 +88,7 @@ namespace IBudget.GUI.ExtensionMethods
                     collection.AddScoped<IExpenseTagsRepository, LiteDbExpenseTagsRepository>();
                     collection.AddScoped<IExpenseRuleTagsRepository, LiteDbExpenseRuleTagsRepository>();
                     collection.AddScoped<IFinancialGoalRepository, LiteDbFinancialGoalRepository>();
+                    collection.AddScoped<IImportExportRepository, LiteDbImportExportRepository>();  
                     break;
 
                 case DatabaseType.CustomMongoDbInstance:
@@ -100,6 +102,7 @@ namespace IBudget.GUI.ExtensionMethods
                     collection.AddScoped<IExpenseTagsRepository, ExpenseTagsRepository>();
                     collection.AddScoped<IExpenseRuleTagsRepository, ExpenseRuleTagsRepository>();
                     collection.AddScoped<IFinancialGoalRepository, FinancialGoalRepository>();
+                    collection.AddScoped<IImportExportRepository, ImportExportRepository>();
                     break;
             }
         }

@@ -23,6 +23,7 @@ namespace IBudget.GUI.ViewModels
         private readonly IFinancialGoalService _financialGoalService;
         private readonly IIncomeService _incomeService;
         private readonly ITagService _tagService;
+        private readonly IImportExportService _importExportService;
 
         [ObservableProperty]
         private DatabaseType? _selectedDatabaseType = null;
@@ -38,6 +39,12 @@ namespace IBudget.GUI.ViewModels
 
         [ObservableProperty]
         private string _currentVersion = "Unknown";
+
+        [ObservableProperty]
+        private string _exportStatusMessage = string.Empty;
+
+        [ObservableProperty]
+        private string _importStatusMessage = string.Empty;
 
         [ObservableProperty]
         private bool _isCheckingForUpdates = false;
@@ -57,7 +64,8 @@ namespace IBudget.GUI.ViewModels
             IExpenseTagService expenseTagService,
             IFinancialGoalService financialGoalService,
             IIncomeService incomeService,
-            ITagService tagService)
+            ITagService tagService,
+            IImportExportService importExportService)
         {
             _settingsService = settingsService;
             _messageService = messageService;
@@ -78,6 +86,7 @@ namespace IBudget.GUI.ViewModels
 
             LoadCurrentDatabaseType();
             CurrentVersion = _updateService.GetCurrentVersion();
+            _importExportService = importExportService;
         }
 
         private void LoadCurrentDatabaseType()
@@ -236,6 +245,24 @@ namespace IBudget.GUI.ViewModels
             finally
             {
                 IsCheckingForUpdates = false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task Export()
+        {
+            ExportStatusMessage = "Exporting data...";
+            var exportDirectory = await _importExportService.ExportData();
+            ExportStatusMessage = $"Data export completed. Export directory is at {exportDirectory}";
+            var decision = await _messageService.ShowConfirmationAsync("Export Completed", "Click Yes to open the export directory.");
+            if (decision)
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = exportDirectory,
+                    UseShellExecute = true,
+                    Verb = "open"
+                });
             }
         }
     }

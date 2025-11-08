@@ -32,32 +32,32 @@ namespace IBudget.Infrastructure
 
         public IMongoCollection<ExpenseRuleTag> GetExpenseRuleTagsCollection()
         {
-            return Database.GetCollection<ExpenseRuleTag>("expenseRuleTags");
+            return Database.GetCollection<ExpenseRuleTag>(DatabaseCollections.ExpenseRuleTags);
         }
 
         public IMongoCollection<ExpenseTag> GetExpenseTagsCollection()
         {
-            return Database.GetCollection<ExpenseTag>("expenseTags");
+            return Database.GetCollection<ExpenseTag>(DatabaseCollections.ExpenseTags);
         }
 
         public IMongoCollection<Expense> GetExpensesCollection()
         {
-            return Database.GetCollection<Expense>("expenses");
+            return Database.GetCollection<Expense>(DatabaseCollections.Expenses);
         }
 
         public IMongoCollection<Income> GetIncomeCollection()
         {
-            return Database.GetCollection<Income>("income");
+            return Database.GetCollection<Income>(DatabaseCollections.Income);
         }
 
         public IMongoCollection<Tag> GetTagsCollection()
         {
-            return Database.GetCollection<Tag>("tags");
+            return Database.GetCollection<Tag>(DatabaseCollections.Tags);
         }
 
         public IMongoCollection<FinancialGoal> GetFinancialGoalsCollection()
         {
-            return Database.GetCollection<FinancialGoal>("financialGoals");
+            return Database.GetCollection<FinancialGoal>(DatabaseCollections.FinancialGoals);
         }
 
         public static async Task TestConnection(string connectionString)

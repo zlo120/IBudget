@@ -114,6 +114,52 @@
                        Margin="0,10,0,0"/>
         </StackPanel>
       </Border>
+
+      <!-- Back up all collections -->
+      <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" 
+              Padding="15" 
+              CornerRadius="8"
+              BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+              BorderThickness="1">
+        <StackPanel Spacing="10">
+          <StackPanel Spacing="15">
+              <TextBlock Text="Export All Data" 
+                         FontSize="18" 
+                         FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+          
+              <Button Content="Generate Export"
+                      Command="{Binding ExportCommand}"
+                      HorizontalAlignment="Left"
+                      Padding="12,8"
+                      CornerRadius="4"
+                      Classes="accent"/>
+              <TextBlock Text="{Binding ExportStatusMessage}" 
+                   FontWeight="Medium"
+                   TextWrapping="Wrap"
+                   Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+
+
+          </StackPanel>
+          <StackPanel Spacing="15">
+              <TextBlock Text="Import data" 
+                         FontSize="18" 
+                         FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+          
+              <Button Content="Select File"
+                      Command="{Binding ExportCommand}"
+                      HorizontalAlignment="Left"
+                      Padding="12,8"
+                      CornerRadius="4"
+                      Classes="accent"/>
+              <TextBlock Text="{Binding ImportStatusMessage}" 
+                   FontWeight="Medium"
+                   TextWrapping="Wrap"
+                   Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+          </StackPanel>
+        </StackPanel>
+      </Border>
       
       <!-- Reset Collections Section -->
       <Border Background="{DynamicResource SystemFillColorCautionBackgroundBrush}" 

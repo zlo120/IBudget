@@ -35,32 +35,32 @@ namespace IBudget.Infrastructure
 
         public ILiteCollection<ExpenseRuleTag> GetExpenseRuleTagsCollection()
         {
-            return Database.GetCollection<ExpenseRuleTag>("expenseRuleTags");
+            return Database.GetCollection<ExpenseRuleTag>(DatabaseCollections.ExpenseRuleTags);
         }
 
         public ILiteCollection<ExpenseTag> GetExpenseTagsCollection()
         {
-            return Database.GetCollection<ExpenseTag>("expenseTags");
+            return Database.GetCollection<ExpenseTag>(DatabaseCollections.ExpenseTags);
         }
 
         public ILiteCollection<Expense> GetExpensesCollection()
         {
-            return Database.GetCollection<Expense>("expenses");
+            return Database.GetCollection<Expense>(DatabaseCollections.Expenses);
         }
 
         public ILiteCollection<Income> GetIncomeCollection()
         {
-            return Database.GetCollection<Income>("income");
+            return Database.GetCollection<Income>(DatabaseCollections.Income);
         }
 
         public ILiteCollection<Tag> GetTagsCollection()
         {
-            return Database.GetCollection<Tag>("tags");
+            return Database.GetCollection<Tag>(DatabaseCollections.Tags);
         }
 
         public ILiteCollection<FinancialGoal> GetFinancialGoalsCollection()
         {
-            return Database.GetCollection<FinancialGoal>("financialGoals");
+            return Database.GetCollection<FinancialGoal>(DatabaseCollections.FinancialGoals);
         }
 
         public void Dispose()
