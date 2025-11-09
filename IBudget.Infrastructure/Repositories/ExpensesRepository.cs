@@ -8,9 +8,17 @@ namespace IBudget.Infrastructure.Repositories
     public class ExpensesRepository(MongoDbContext context) : IExpenseRepository
     {
         private readonly IMongoCollection<Expense> _expensesCollection = context.GetExpensesCollection();
+        
         public async Task AddExpense(Expense expense)
         {
-            await _expensesCollection.InsertOneAsync(expense);
+            try
+            {
+                await _expensesCollection.InsertOneAsync(expense);
+            }
+            catch (MongoWriteException ex) when (ex.WriteError?.Category == ServerErrorCategory.DuplicateKey)
+            {
+                // Silently ignore duplicate key errors
+            }
         }
 
         public async Task ClearCollection()

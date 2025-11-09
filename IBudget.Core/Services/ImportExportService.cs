@@ -11,5 +11,10 @@ namespace IBudget.Core.Services
         {
             return await _importExportRepository.ExportData();
         }
+
+        public async Task ImportData(string filePath)
+        {
+            await _importExportRepository.ImportData(filePath);
+        }
     }
 }

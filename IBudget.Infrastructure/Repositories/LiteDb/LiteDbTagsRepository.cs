@@ -1,12 +1,13 @@
 using IBudget.Core.RepositoryInterfaces;
 using LiteDB;
+using LiteDB.Async;
 using Tag = IBudget.Core.Model.Tag;
 
 namespace IBudget.Infrastructure.Repositories.LiteDb
 {
     public class LiteDbTagsRepository : ITagsRepository
     {
-        private readonly ILiteCollection<Tag> _tagsCollection;
+        private readonly ILiteCollectionAsync<Tag> _tagsCollection;
         private readonly IExpenseTagsRepository _expenseTagsRepository;
         private readonly IExpenseRuleTagsRepository _expenseRuleTagsRepository;
 
@@ -16,29 +17,39 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
             IExpenseRuleTagsRepository expenseRuleTagsRepository)
         {
             _tagsCollection = context.GetTagsCollection();
-            _tagsCollection.EnsureIndex(t => t.Name);
             _expenseTagsRepository = expenseTagsRepository;
             _expenseRuleTagsRepository = expenseRuleTagsRepository;
         }
 
         public async Task ClearCollection()
         {
-            await Task.Run(() => _tagsCollection.DeleteMany(t => t.Name != "ignored"));
+            await _tagsCollection.DeleteManyAsync(t => t.Name != "ignored");
         }
 
         public async Task CreateTag(Tag tag)
         {
-            await Task.Run(() => _tagsCollection.Insert(tag));
+            try
+            {
+                await _tagsCollection.InsertAsync(tag);
+            }
+            catch (LiteException ex) when (ex.ErrorCode == LiteException.INDEX_DUPLICATE_KEY || ex.Message.Contains("duplicate") || ex.Message.Contains("unique"))
+            {
+                // Silently ignore duplicate key errors
+            }
+            catch (LiteException)
+            {
+                // Silently ignore any other LiteDB errors during insert (per user request)
+            }
         }
 
         public async Task DeleteTagById(MongoDB.Bson.ObjectId id)
         {
-            await Task.Run(() => _tagsCollection.Delete(new LiteDB.BsonValue(id.ToString())));
+            await _tagsCollection.DeleteAsync(new BsonValue(id.ToString()));
         }
 
         public async Task DeleteTagByName(string name)
         {
-            await Task.Run(() => _tagsCollection.DeleteMany(t => t.Name == name));
+            await _tagsCollection.DeleteManyAsync(t => t.Name == name);
         }
 
         public async Task<List<Tag>> FindTagsByDescription(string description)
@@ -72,23 +83,45 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
 
         public async Task<List<Tag>> GetAll()
         {
-            return await Task.Run(() => _tagsCollection.FindAll().ToList());
+            return [.. await _tagsCollection.FindAllAsync()];
         }
 
         public async Task<Tag> GetOrCreateTagByName(string name)
         {
-            var tag = _tagsCollection.FindOne(t => t.Name == name);
-            if (tag is null)
+            try
             {
-                tag = new Tag { Name = name, IsTracked = false, CreatedAt = DateTime.Now };
-                await CreateTag(tag);
+                var tag = await _tagsCollection.FindOneAsync(t => t.Name == name);
+                if (tag is null)
+                {
+                    tag = new Tag { Name = name, IsTracked = false, CreatedAt = DateTime.Now };
+                    try
+                    {
+                        await CreateTag(tag);
+                    }
+                    catch (LiteException ex) when (ex.ErrorCode == LiteException.INDEX_DUPLICATE_KEY || ex.Message.Contains("duplicate") || ex.Message.Contains("unique"))
+                    {
+                        // Silently ignore duplicate key errors - tag was created by another thread
+                        tag = await _tagsCollection.FindOneAsync(t => t.Name == name);
+                    }
+                    catch (LiteException)
+                    {
+                        // Silently ignore any other LiteDB errors and retry fetch
+                        tag = await _tagsCollection.FindOneAsync(t => t.Name == name);
+                    }
+                }
+                return tag;
             }
-            return tag;
+            catch (LiteException)
+            {
+                // If all else fails, try one more time to get the tag
+                return await _tagsCollection.FindOneAsync(t => t.Name == name) 
+                    ?? new Tag { Name = name, IsTracked = false, CreatedAt = DateTime.Now };
+            }
         }
 
         public async Task UpdateTag(Tag tag)
         {
-            await Task.Run(() => _tagsCollection.Update(tag));
+            await _tagsCollection.UpdateAsync(tag);
         }
     }
 }

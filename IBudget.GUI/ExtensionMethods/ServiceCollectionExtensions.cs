@@ -64,6 +64,8 @@ namespace IBudget.GUI.ExtensionMethods
 
             // Other services
             collection.AddSingleton<IUpdateService, UpdateService>();
+            collection.AddSingleton<LiteDbContext>();
+            collection.AddSingleton<MongoDbContext>();
 
 #if DEBUG
             collection.AddSingleton<IPatchNotesService, TestPatchNotesService>();
@@ -81,7 +83,6 @@ namespace IBudget.GUI.ExtensionMethods
             {
                 case DatabaseType.Offline:
                     // Register LiteDB context and repositories
-                    collection.AddSingleton<LiteDbContext>();
                     collection.AddScoped<IIncomeRepository, LiteDbIncomeRepository>();
                     collection.AddScoped<IExpenseRepository, LiteDbExpensesRepository>();
                     collection.AddScoped<ITagsRepository, LiteDbTagsRepository>();
@@ -95,7 +96,6 @@ namespace IBudget.GUI.ExtensionMethods
                 case DatabaseType.StacksBackend:
                 default:
                     // Register MongoDB context and repositories
-                    collection.AddSingleton<MongoDbContext>();
                     collection.AddScoped<IIncomeRepository, IncomeRepository>();
                     collection.AddScoped<IExpenseRepository, ExpensesRepository>();
                     collection.AddScoped<ITagsRepository, TagsRepository>();

@@ -3,6 +3,8 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using IBudget.Core.Enums;
+using IBudget.Core.Interfaces;
 using IBudget.GUI.Utils;
 using IBudget.GUI.ViewModels.DataView;
 using System;
@@ -20,8 +22,15 @@ namespace IBudget.GUI.ViewModels
         private readonly FinancialGoalsPageViewModel _financialGoalsPageViewModel;
         private readonly DataTableViewModel _dataTableViewModel;
         private readonly SettingsPageViewModel _settingsPageViewModel;
+        private readonly ISettingsService _settingsService;
 
         public bool DebugMode { get; }
+
+        [ObservableProperty]
+        private bool _isOfflineMode;
+
+        [ObservableProperty]
+        private bool _isMongoDbMode;
 
         public MainWindowViewModel(
             HomePageViewModel homePageViewModel,
@@ -31,7 +40,8 @@ namespace IBudget.GUI.ViewModels
             TagsPageViewModel tagsPageViewModel,
             FinancialGoalsPageViewModel financialGoalsPageViewModel,
             DataTableViewModel dataTableViewModel,
-            SettingsPageViewModel settingsPageViewModel
+            SettingsPageViewModel settingsPageViewModel,
+            ISettingsService settingsService
         )
         {
             _homePageViewModel = homePageViewModel;
@@ -42,6 +52,7 @@ namespace IBudget.GUI.ViewModels
             _financialGoalsPageViewModel = financialGoalsPageViewModel;
             _dataTableViewModel = dataTableViewModel;
             _settingsPageViewModel = settingsPageViewModel;
+            _settingsService = settingsService;
 
             CurrentPage = _homePageViewModel;
 
@@ -50,6 +61,24 @@ namespace IBudget.GUI.ViewModels
 #else
             DebugMode = false;
 #endif
+
+            UpdateStorageMode();
+        }
+
+        private void UpdateStorageMode()
+        {
+            try
+            {
+                var databaseType = _settingsService.GetDatabaseType();
+                IsOfflineMode = databaseType == DatabaseType.Offline;
+                IsMongoDbMode = databaseType == DatabaseType.CustomMongoDbInstance;
+            }
+            catch
+            {
+                // Default to offline mode if settings can't be read
+                IsOfflineMode = true;
+                IsMongoDbMode = false;
+            }
         }
 
         [ObservableProperty]

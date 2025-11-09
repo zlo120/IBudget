@@ -16,7 +16,14 @@ namespace IBudget.Infrastructure.Repositories
 
         public async Task CreateFinancialGoal(FinancialGoal financialGoal)
         {
-            await _financialGoalsCollection.InsertOneAsync(financialGoal);
+            try
+            {
+                await _financialGoalsCollection.InsertOneAsync(financialGoal);
+            }
+            catch (MongoWriteException ex) when (ex.WriteError?.Category == ServerErrorCategory.DuplicateKey)
+            {
+                // Silently ignore duplicate key errors
+            }
         }
 
         public async Task DeleteFinancialGoalById(ObjectId id)

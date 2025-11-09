@@ -2,24 +2,24 @@ using IBudget.Core.Enums;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
 using LiteDB;
+using LiteDB.Async;
 using Tag = IBudget.Core.Model.Tag;
 
 namespace IBudget.Infrastructure
 {
     public class LiteDbContext : IDisposable
     {
-        private readonly Lazy<LiteDatabase> _database;
-        private readonly ISettingsService _settingsService;
+        private readonly Lazy<LiteDatabaseAsync> _database;
         private readonly string _databasePath;
+        private bool _disposed = false;
 
-        public LiteDbContext(ISettingsService settingsService)
+        public LiteDbContext()
         {
-            _settingsService = settingsService;
             _databasePath = GetLiteDbPath();
-            
+
             // Use lazy initialization to defer the LiteDatabase creation
             // until it's actually needed
-            _database = new Lazy<LiteDatabase>(() => new LiteDatabase(_databasePath));
+            _database = new Lazy<LiteDatabaseAsync>(() => new LiteDatabaseAsync(_databasePath));
         }
 
         private string GetLiteDbPath()
@@ -31,44 +31,73 @@ namespace IBudget.Infrastructure
             return Path.Combine(dbDirectory, "Stacks.db");
         }
 
-        private LiteDatabase Database => _database.Value;
+        private LiteDatabaseAsync Database => _database.Value;
 
-        public ILiteCollection<ExpenseRuleTag> GetExpenseRuleTagsCollection()
+        public ILiteCollectionAsync<ExpenseRuleTag> GetExpenseRuleTagsCollection()
         {
             return Database.GetCollection<ExpenseRuleTag>(DatabaseCollections.ExpenseRuleTags);
         }
 
-        public ILiteCollection<ExpenseTag> GetExpenseTagsCollection()
+        public ILiteCollectionAsync<ExpenseTag> GetExpenseTagsCollection()
         {
             return Database.GetCollection<ExpenseTag>(DatabaseCollections.ExpenseTags);
         }
 
-        public ILiteCollection<Expense> GetExpensesCollection()
+        public ILiteCollectionAsync<Expense> GetExpensesCollection()
         {
             return Database.GetCollection<Expense>(DatabaseCollections.Expenses);
         }
 
-        public ILiteCollection<Income> GetIncomeCollection()
+        public ILiteCollectionAsync<Income> GetIncomeCollection()
         {
-            return Database.GetCollection<Income>(DatabaseCollections.Income);
+            return Database.GetCollection<Income>(DatabaseCollections. Income);
         }
 
-        public ILiteCollection<Tag> GetTagsCollection()
+        public ILiteCollectionAsync<Tag> GetTagsCollection()
         {
-            return Database.GetCollection<Tag>(DatabaseCollections.Tags);
+            var collection = Database.GetCollection<Tag>(DatabaseCollections.Tags);
+            collection.EnsureIndexAsync(t => t.Name, true);
+            return collection;
         }
 
-        public ILiteCollection<FinancialGoal> GetFinancialGoalsCollection()
+        public ILiteCollectionAsync<FinancialGoal> GetFinancialGoalsCollection()
         {
-            return Database.GetCollection<FinancialGoal>(DatabaseCollections.FinancialGoals);
+            var collection = Database.GetCollection<FinancialGoal>(DatabaseCollections.FinancialGoals);
+            collection.EnsureIndexAsync(fg => fg.Name, true);
+            return collection;
         }
 
         public void Dispose()
         {
-            if (_database.IsValueCreated)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
             {
-                _database.Value?.Dispose();
+                if (_database.IsValueCreated)
+                {
+                    try
+                    {
+                        // LiteDatabaseAsync implements IDisposable
+                        _database.Value?.Dispose();
+                        
+                        // Give a small delay to allow background threads to complete
+                        System.Threading.Thread.Sleep(100);
+                    }
+                    catch (Exception)
+                    {
+                        // Suppress any exceptions during disposal
+                    }
+                }
             }
+
+            _disposed = true;
         }
     }
 }

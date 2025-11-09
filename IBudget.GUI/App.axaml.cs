@@ -17,6 +17,7 @@ namespace IBudget.GUI
     public partial class App : Application
     {
         private IServiceProvider? _services;
+        private IServiceProvider? _tempServices;
 
         public override void Initialize()
         {
@@ -35,12 +36,16 @@ namespace IBudget.GUI
             tempCollection.AddDatabaseServices(DatabaseType.CustomMongoDbInstance);
 
             var tempServices = tempCollection.BuildServiceProvider();
+            _tempServices = tempServices;
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 // Line below is needed to remove Avalonia data validation.
                 // Without this line you will get duplicate validations from both Avalonia and CT
                 BindingPlugins.DataValidators.RemoveAt(0);
+
+                // Handle application exit to dispose resources
+                desktop.Exit += OnApplicationExit;
 
                 // Show database connection window first
                 var dbConnectionViewModel = tempServices.GetRequiredService<InitialisationViewModel>();
@@ -97,6 +102,21 @@ namespace IBudget.GUI
             
             // Check for updates in the background
             _ = Task.Run(CheckForUpdatesAsync);
+        }
+
+        private void OnApplicationExit(object? sender, ControlledApplicationLifetimeExitEventArgs e)
+        {
+            // Dispose the main service provider
+            if (_services is IDisposable disposableServices)
+            {
+                disposableServices.Dispose();
+            }
+
+            // Dispose the temp service provider
+            if (_tempServices is IDisposable disposableTempServices)
+            {
+                disposableTempServices.Dispose();
+            }
         }
 
         private async Task CheckAndShowPatchNotesAsync()

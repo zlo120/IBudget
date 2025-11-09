@@ -1,5 +1,6 @@
 ﻿using IBudget.Core.Model;
 using LiteDB;
+using LiteDB.Async;
 using MongoDB.Driver;
 
 namespace IBudget.Infrastructure.Utils
@@ -36,19 +37,29 @@ namespace IBudget.Infrastructure.Utils
             var exportData = new ExportFile<T>() { CollectionName = collectionName, Data = allData };
             var jsonData = System.Text.Json.JsonSerializer.Serialize(exportData, new System.Text.Json.JsonSerializerOptions
             {
-                WriteIndented = true
+                WriteIndented = true,
+                Converters = 
+                { 
+                    new ObjectIdJsonConverter(),
+                    new NullableObjectIdJsonConverter()
+                }
             });
             await File.WriteAllTextAsync(exportFilePath, jsonData);
         }
 
-        public static void ExportLiteDbCollectionToFile<T>(string collectionName, string timestamp, ILiteCollection<T> collection)
+        public static async Task ExportLiteDbCollectionToFileAsync<T>(string collectionName, string timestamp, ILiteCollectionAsync<T> collection)
         {
             var exportFilePath = GetExportCollectionFilePath(collectionName, timestamp, "LiteDb");
-            var allData = collection.Find(_ => true).ToList();
+            var allData = (await collection.FindAllAsync()).ToList();
             var exportData = new ExportFile<T>() { CollectionName = collectionName, Data = allData };
             var jsonData = System.Text.Json.JsonSerializer.Serialize(exportData, new System.Text.Json.JsonSerializerOptions
             {
-                WriteIndented = true
+                WriteIndented = true,
+                Converters =
+                {
+                    new ObjectIdJsonConverter(),
+                    new NullableObjectIdJsonConverter()
+                }
             });
             File.WriteAllText(exportFilePath, jsonData);
         }

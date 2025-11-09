@@ -1,63 +1,69 @@
 using IBudget.Core.Model;
 using IBudget.Core.RepositoryInterfaces;
 using LiteDB;
+using LiteDB.Async;
 
 namespace IBudget.Infrastructure.Repositories.LiteDb
 {
     public class LiteDbExpensesRepository : IExpenseRepository
     {
-        private readonly ILiteCollection<Expense> _expensesCollection;
+        private readonly ILiteCollectionAsync<Expense> _expensesCollection;
 
         public LiteDbExpensesRepository(LiteDbContext context)
         {
             _expensesCollection = context.GetExpensesCollection();
-            _expensesCollection.EnsureIndex(e => e.Date);
-            _expensesCollection.EnsureIndex(e => e.BatchHash);
+            _expensesCollection.EnsureIndexAsync(e => e.Date);
+            _expensesCollection.EnsureIndexAsync(e => e.BatchHash);
         }
 
         public async Task AddExpense(Expense expense)
         {
-            await Task.Run(() => _expensesCollection.Insert(expense));
+            try
+            {
+                await _expensesCollection.InsertAsync(expense);
+            }
+            catch (LiteException ex) when (ex.ErrorCode == LiteException.INDEX_DUPLICATE_KEY)
+            {
+                // Silently ignore duplicate key errors
+            }
         }
 
         public async Task ClearCollection()
         {
-            await Task.Run(() => _expensesCollection.DeleteAll());
+            await _expensesCollection.DeleteAllAsync();
         }
 
         public async Task DeleteExpense(MongoDB.Bson.ObjectId id)
         {
-            await Task.Run(() => _expensesCollection.Delete(new LiteDB.BsonValue(id.ToString())));
+            await _expensesCollection.DeleteAsync(new LiteDB.BsonValue(id.ToString()));
         }
 
         public async Task<bool> DoesBatchHashExist(string batchHash)
         {
-            return await Task.Run(() => _expensesCollection.Exists(e => e.BatchHash == batchHash));
+            return await _expensesCollection.ExistsAsync(e => e.BatchHash == batchHash);
         }
 
         public async Task<Expense> GetExpense(MongoDB.Bson.ObjectId id)
         {
-            return await Task.Run(() => _expensesCollection.FindById(new LiteDB.BsonValue(id.ToString())));
+            return await _expensesCollection.FindByIdAsync(new LiteDB.BsonValue(id.ToString()));
         }
 
         public async Task<List<Expense>> GetExpenseByWeek(DateTime startDate)
         {
             var endDate = startDate.AddDays(6);
-            return await Task.Run(() => 
-                _expensesCollection.Find(e => e.Date >= startDate && e.Date <= endDate).ToList());
+            return [.. await _expensesCollection.FindAsync(e => e.Date >= startDate && e.Date <= endDate)];
         }
 
         public async Task<List<Expense>> GetExpensesByMonth(int month)
         {
             var startDate = new DateTime(DateTime.Today.Year, month, 1);
             var endDate = startDate.AddMonths(1).AddDays(-1);
-            return await Task.Run(() => 
-                _expensesCollection.Find(e => e.Date >= startDate && e.Date <= endDate).ToList());
+            return [.. await _expensesCollection.FindAsync(e => e.Date >= startDate && e.Date <= endDate)];
         }
 
         public async Task UpdateExpense(Expense expense)
         {
-            await Task.Run(() => _expensesCollection.Update(expense));
+            await _expensesCollection.UpdateAsync(expense);
         }
     }
 }

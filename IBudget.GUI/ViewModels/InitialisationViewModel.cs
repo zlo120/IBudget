@@ -10,6 +10,7 @@ using IBudget.Core.Enums;
 using IBudget.Core.Interfaces;
 using IBudget.GUI.Views;
 using IBudget.Infrastructure;
+using MongoDB.Driver;
 
 namespace IBudget.GUI.ViewModels
 {
@@ -17,6 +18,9 @@ namespace IBudget.GUI.ViewModels
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ISettingsService _settingsService;
+        private readonly MongoDbContext _mongoDbContext;
+        private readonly LiteDbContext _liteDbContext;
+
         private Window? _parentWindow;
 
         [ObservableProperty]
@@ -38,10 +42,13 @@ namespace IBudget.GUI.ViewModels
 
         public event EventHandler<bool>? ConnectionCompleted;
 
-        public InitialisationViewModel(IServiceProvider serviceProvider, ISettingsService settingsService)
+        public InitialisationViewModel(IServiceProvider serviceProvider, ISettingsService settingsService, MongoDbContext mongoDbContext, LiteDbContext liteDbContext)
         {
             _serviceProvider = serviceProvider;
             _settingsService = settingsService;
+            _mongoDbContext = mongoDbContext;
+            _liteDbContext = liteDbContext;
+
             DatabaseTypes = new ObservableCollection<DatabaseType>
             {
                 DatabaseType.CustomMongoDbInstance,

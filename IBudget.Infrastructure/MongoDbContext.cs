@@ -1,8 +1,6 @@
-﻿using System.Threading.Tasks;
-using IBudget.Core.Enums;
+﻿using IBudget.Core.Enums;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
-using IBudget.Core.Services;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Tag = IBudget.Core.Model.Tag;
@@ -17,7 +15,7 @@ namespace IBudget.Infrastructure
         public MongoDbContext(ISettingsService settingsService)
         {
             _settingsService = settingsService;
-            
+
             // Use lazy initialization to defer the blocking MongoClient creation
             // until the database is actually needed
             _database = new Lazy<IMongoDatabase>(() =>
@@ -52,12 +50,35 @@ namespace IBudget.Infrastructure
 
         public IMongoCollection<Tag> GetTagsCollection()
         {
-            return Database.GetCollection<Tag>(DatabaseCollections.Tags);
+            var collection = Database.GetCollection<Tag>(DatabaseCollections.Tags);
+            EnsureIndexExists(collection, t => t.Name, "Name_1", true);
+            return collection;
         }
 
         public IMongoCollection<FinancialGoal> GetFinancialGoalsCollection()
         {
-            return Database.GetCollection<FinancialGoal>(DatabaseCollections.FinancialGoals);
+            var collection = Database.GetCollection<FinancialGoal>(DatabaseCollections.FinancialGoals);
+            EnsureIndexExists(collection, fg => fg.Name, "Name_1", true);
+            return collection;
+        }
+
+        private void EnsureIndexExists<T>(IMongoCollection<T> collection, System.Linq.Expressions.Expression<Func<T, object>> field, string indexName, bool unique = false)
+        {
+            // Check if index already exists
+            var indexes = collection.Indexes.List().ToList();
+            var indexExists = indexes.Any(idx => 
+            {
+                var name = idx.GetValue("name", null);
+                return name != null && name.AsString == indexName;
+            });
+
+            if (!indexExists)
+            {
+                var indexKeysDefinition = Builders<T>.IndexKeys.Ascending(field);
+                var indexOptions = new CreateIndexOptions { Unique = unique };
+                var indexModel = new CreateIndexModel<T>(indexKeysDefinition, indexOptions);
+                collection.Indexes.CreateOne(indexModel);
+            }
         }
 
         public static async Task TestConnection(string connectionString)

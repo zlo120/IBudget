@@ -33,42 +33,78 @@
 		</Border>
 
 		<!-- Side Panel -->
-		<StackPanel Grid.Row="1" Grid.Column="0" 
-					Orientation="Vertical"
-					Spacing="5"
-					HorizontalAlignment="Left"
-					VerticalAlignment="Top"
-					Margin="5">
-			<!-- Hamburger button - always visible -->
-			<Button HorizontalAlignment="Left"
-					Width="32"
-					Height="32"
-					Margin="7 10"
-					Command="{Binding TogglePaneCommand}">
-				<PathIcon Data="{StaticResource LineHorizontal3Regular}" />
-			</Button>
-			<!-- Panel content - only visible when pane is open -->
-			<Border Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+		<Grid Grid.Row="1" Grid.Column="0">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+
+			<StackPanel Grid.Row="0"
+						Orientation="Vertical"
+						Spacing="5"
+						HorizontalAlignment="Left"
+						VerticalAlignment="Top"
+						Margin="5">
+				<!-- Hamburger button - always visible -->
+				<Button HorizontalAlignment="Left"
+						Width="32"
+						Height="32"
+						Margin="7 10"
+						Command="{Binding TogglePaneCommand}">
+					<PathIcon Data="{StaticResource LineHorizontal3Regular}" />
+				</Button>
+				<!-- Panel content - only visible when pane is open -->
+				<Border Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+						IsVisible="{Binding IsPaneOpen}">
+					<ListBox ItemsSource="{Binding Items}"
+							 SelectedItem="{Binding SelectedListItem}"
+							 Padding="0">
+						<ListBox.Styles>
+							<Style Selector="ListBoxItem">
+								<Setter Property="Padding" Value="12 8"></Setter>
+							</Style>
+						</ListBox.Styles>
+						<ListBox.ItemTemplate>
+							<DataTemplate DataType="{x:Type vm:ListItemTemplate}">
+								<StackPanel Spacing="17" Orientation="Horizontal">
+									<PathIcon Data="{Binding ListItemIcon}" />
+									<TextBlock Text="{Binding Label}" />
+								</StackPanel>
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
+				</Border>
+			</StackPanel>
+
+			<!-- Storage Mode Banner -->
+			<Border Grid.Row="1"
 					IsVisible="{Binding IsPaneOpen}">
-				<ListBox ItemsSource="{Binding Items}"
-						 SelectedItem="{Binding SelectedListItem}"
-						 Padding="0">
-					<ListBox.Styles>
-						<Style Selector="ListBoxItem">
-							<Setter Property="Padding" Value="12 8"></Setter>
-						</Style>
-					</ListBox.Styles>
-					<ListBox.ItemTemplate>
-						<DataTemplate DataType="{x:Type vm:ListItemTemplate}">
-							<StackPanel Spacing="17" Orientation="Horizontal">
-								<PathIcon Data="{Binding ListItemIcon}" />
-								<TextBlock Text="{Binding Label}" />
-							</StackPanel>
-						</DataTemplate>
-					</ListBox.ItemTemplate>
-				</ListBox>
+				<!-- Offline Mode Banner -->
+				<Border Background="#0078D4"
+						IsVisible="{Binding IsOfflineMode}"
+						Padding="12 8">
+					<TextBlock Text="Local Data Storage" 
+							   Foreground="White" 
+							   FontWeight="SemiBold"
+							   VerticalAlignment="Center" 
+							   HorizontalAlignment="Center"/>
+				</Border>
 			</Border>
-		</StackPanel>
+			
+			<Border Grid.Row="1"
+					IsVisible="{Binding IsPaneOpen}">
+				<!-- MongoDB Mode Banner -->
+				<Border Background="#107C10"
+						IsVisible="{Binding IsMongoDbMode}"
+						Padding="12 8">
+					<TextBlock Text="MongoDB Storage" 
+							   Foreground="White" 
+							   FontWeight="SemiBold"
+							   VerticalAlignment="Center" 
+							   HorizontalAlignment="Center"/>
+				</Border>
+			</Border>
+		</Grid>
 
 		<!-- Main Content -->
 		<Border Grid.Row="1" Grid.Column="1" CornerRadius="15 0 0 0">

@@ -8,9 +8,17 @@ namespace IBudget.Infrastructure.Repositories
     public class IncomeRepository(MongoDbContext context) : IIncomeRepository
     {
         private readonly IMongoCollection<Income> _incomeCollection = context.GetIncomeCollection();
+        
         public async Task AddIncome(Income income)
         {
-            await _incomeCollection.InsertOneAsync(income);
+            try
+            {
+                await _incomeCollection.InsertOneAsync(income);
+            }
+            catch (MongoWriteException ex) when (ex.WriteError?.Category == ServerErrorCategory.DuplicateKey)
+            {
+                // Silently ignore duplicate key errors
+            }
         }
 
         public async Task ClearCollection()

@@ -1,53 +1,60 @@
 using IBudget.Core.Model;
 using IBudget.Core.RepositoryInterfaces;
 using LiteDB;
-using MongoDB.Bson;
+using LiteDB.Async;
 
 namespace IBudget.Infrastructure.Repositories.LiteDb
 {
     public class LiteDbFinancialGoalRepository : IFinancialGoalRepository
     {
-        private readonly ILiteCollection<FinancialGoal> _financialGoalsCollection;
+        private readonly ILiteCollectionAsync<FinancialGoal> _financialGoalsCollection;
 
         public LiteDbFinancialGoalRepository(LiteDbContext context)
         {
             _financialGoalsCollection = context.GetFinancialGoalsCollection();
-            _financialGoalsCollection.EnsureIndex(f => f.Name);
+            _financialGoalsCollection.EnsureIndexAsync(f => f.Name);
         }
 
         public async Task ClearCollection()
         {
-            await Task.Run(() => _financialGoalsCollection.DeleteAll());
+            await _financialGoalsCollection.DeleteAllAsync();
         }
 
         public async Task CreateFinancialGoal(FinancialGoal financialGoal)
         {
-            await Task.Run(() => _financialGoalsCollection.Insert(financialGoal));
+            try
+            {
+                await _financialGoalsCollection.InsertAsync(financialGoal);
+            }
+            catch (LiteException ex) when (ex.ErrorCode == LiteException.INDEX_DUPLICATE_KEY)
+            {
+                // Silently ignore duplicate key errors
+            }
         }
 
         public async Task DeleteFinancialGoalById(MongoDB.Bson.ObjectId id)
         {
-            await Task.Run(() => _financialGoalsCollection.Delete(new LiteDB.BsonValue(id.ToString())));
+            await _financialGoalsCollection.DeleteAsync(new BsonValue(id.ToString()));
         }
 
         public async Task DeleteFinancialGoalByName(string name)
         {
-            await Task.Run(() => _financialGoalsCollection.DeleteMany(f => f.Name == name));
+            await _financialGoalsCollection.DeleteManyAsync(f => f.Name == name);
         }
 
         public async Task<List<FinancialGoal>> GetAll()
         {
-            return await Task.Run(() => _financialGoalsCollection.FindAll().ToList());
+            return [.. await _financialGoalsCollection.FindAllAsync()] ;
         }
 
         public async Task<FinancialGoal> GetFinancialGoalByName(string name)
         {
-            return await Task.Run(() => _financialGoalsCollection.FindOne(f => f.Name == name));
+            return await _financialGoalsCollection.FindOneAsync(f => f.Name == name);
         }
 
         public async Task UpdateFinancialGoal(FinancialGoal financialGoal)
         {
-            await Task.Run(() => _financialGoalsCollection.Update(financialGoal));
+            await _financialGoalsCollection.UpdateAsync(financialGoal);
         }
     }
 }

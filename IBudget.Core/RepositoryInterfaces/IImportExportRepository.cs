@@ -3,5 +3,6 @@
     public interface IImportExportRepository
     {
         Task<string> ExportData();
+        Task ImportData(string filePath);
     }
 }

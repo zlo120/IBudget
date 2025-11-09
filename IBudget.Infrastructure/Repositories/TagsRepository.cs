@@ -18,7 +18,18 @@ namespace IBudget.Infrastructure.Repositories
 
         public async Task CreateTag(Tag tag)
         {
-            await _tagsCollection.InsertOneAsync(tag);
+            try
+            {
+                await _tagsCollection.InsertOneAsync(tag);
+            }
+            catch (MongoWriteException ex) when (ex.WriteError?.Category == ServerErrorCategory.DuplicateKey)
+            {
+                // Silently ignore duplicate key errors
+            }
+            catch (MongoWriteException)
+            {
+                // Silently ignore any other MongoDB write errors during insert (per user request)
+            }
         }
 
         public async Task DeleteTagById(ObjectId id)
@@ -67,14 +78,36 @@ namespace IBudget.Infrastructure.Repositories
 
         public async Task<Tag> GetOrCreateTagByName(string name)
         {
-            var tag = await _tagsCollection.Find(e => e.Name == name).FirstOrDefaultAsync();
-            if (tag is null)
+            try
             {
-                tag = new Tag { Name = name, IsTracked = false, CreatedAt = DateTime.Now };
-                await CreateTag(tag);
-            }
+                var tag = await _tagsCollection.Find(e => e.Name == name).FirstOrDefaultAsync();
+                if (tag is null)
+                {
+                    tag = new Tag { Name = name, IsTracked = false, CreatedAt = DateTime.Now };
+                    try
+                    {
+                        await CreateTag(tag);
+                    }
+                    catch (MongoWriteException ex) when (ex.WriteError?.Category == ServerErrorCategory.DuplicateKey)
+                    {
+                        // Silently ignore duplicate key errors - tag was created by another thread
+                        tag = await _tagsCollection.Find(e => e.Name == name).FirstOrDefaultAsync();
+                    }
+                    catch (MongoWriteException)
+                    {
+                        // Silently ignore any other MongoDB write errors and retry fetch
+                        tag = await _tagsCollection.Find(e => e.Name == name).FirstOrDefaultAsync();
+                    }
+                }
 
-            return tag;
+                return tag;
+            }
+            catch (MongoException)
+            {
+                // If all else fails, try one more time to get the tag
+                return await _tagsCollection.Find(e => e.Name == name).FirstOrDefaultAsync()
+                    ?? new Tag { Name = name, IsTracked = false, CreatedAt = DateTime.Now };
+            }
         }
 
         public async Task UpdateTag(Tag tag)

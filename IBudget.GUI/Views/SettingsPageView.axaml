@@ -115,49 +115,105 @@
         </StackPanel>
       </Border>
 
-      <!-- Back up all collections -->
+      <!-- Export Data Section -->
       <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" 
               Padding="15" 
               CornerRadius="8"
               BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
               BorderThickness="1">
-        <StackPanel Spacing="10">
-          <StackPanel Spacing="15">
-              <TextBlock Text="Export All Data" 
-                         FontSize="18" 
-                         FontWeight="SemiBold"
-                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+        <StackPanel Spacing="15">
+          <StackPanel Spacing="5">
+            <TextBlock Text="Export Data" 
+                       FontSize="18" 
+                       FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+            <TextBlock Text="Create a backup of all your financial data including expenses, income, tags, and goals." 
+                       TextWrapping="Wrap"
+                       FontSize="13"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+          </StackPanel>
           
-              <Button Content="Generate Export"
-                      Command="{Binding ExportCommand}"
-                      HorizontalAlignment="Left"
-                      Padding="12,8"
-                      CornerRadius="4"
-                      Classes="accent"/>
+          <Button Command="{Binding ExportCommand}"
+                  HorizontalAlignment="Left"
+                  Padding="12,8"
+                  CornerRadius="4"
+                  Classes="accent">
+            <Button.Content>
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="💾" FontSize="14"/>
+                <TextBlock Text="Generate Export"/>
+              </StackPanel>
+            </Button.Content>
+          </Button>
+          
+          <!-- Export Status -->
+          <Border Background="{DynamicResource LayerFillColorDefaultBrush}"
+                  Padding="12"
+                  CornerRadius="4"
+                  IsVisible="{Binding ExportStatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+            <StackPanel Spacing="8">
+              <TextBlock Text="📋 Export Status" 
+                         FontWeight="SemiBold"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
               <TextBlock Text="{Binding ExportStatusMessage}" 
-                   FontWeight="Medium"
-                   TextWrapping="Wrap"
-                   Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
-
-
+                         TextWrapping="Wrap"
+                         FontSize="12"
+                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </Border>
+      
+      <!-- Import Data Section -->
+      <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" 
+              Padding="15" 
+              CornerRadius="8"
+              BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+              BorderThickness="1">
+        <StackPanel Spacing="15">
+          <StackPanel Spacing="5">
+            <TextBlock Text="Import Data" 
+                       FontSize="18" 
+                       FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+            <TextBlock TextWrapping="Wrap"
+                       FontSize="13"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}">
+              <Run Text="⚠️ Warning:"/>
+              <Run Text="Importing will replace existing data. Make sure to export your current data first."/>
+            </TextBlock>
           </StackPanel>
-          <StackPanel Spacing="15">
-              <TextBlock Text="Import data" 
-                         FontSize="18" 
-                         FontWeight="SemiBold"
-                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
           
-              <Button Content="Select File"
-                      Command="{Binding ExportCommand}"
-                      HorizontalAlignment="Left"
-                      Padding="12,8"
-                      CornerRadius="4"
-                      Classes="accent"/>
+          <Button Click="SelectFileButton_Clicked"
+                  HorizontalAlignment="Left"
+                  Padding="12,8"
+                  CornerRadius="4"
+                  Classes="accent">
+            <Button.Content>
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="📁" FontSize="14"/>
+                <TextBlock Text="Select Import File"/>
+              </StackPanel>
+            </Button.Content>
+          </Button>
+          
+          <!-- Import Status -->
+          <Border Background="{DynamicResource LayerFillColorDefaultBrush}"
+                  Padding="12"
+                  CornerRadius="4"
+                  IsVisible="{Binding ImportStatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+            <StackPanel Spacing="8">
+              <TextBlock Text="📥 Import Status" 
+                         FontWeight="SemiBold"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
               <TextBlock Text="{Binding ImportStatusMessage}" 
-                   FontWeight="Medium"
-                   TextWrapping="Wrap"
-                   Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
-          </StackPanel>
+                         TextWrapping="Wrap"
+                         FontSize="12"
+                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+            </StackPanel>
+          </Border>
         </StackPanel>
       </Border>
       

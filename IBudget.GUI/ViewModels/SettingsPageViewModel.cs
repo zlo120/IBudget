@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -251,18 +252,57 @@ namespace IBudget.GUI.ViewModels
         [RelayCommand]
         private async Task Export()
         {
-            ExportStatusMessage = "Exporting data...";
-            var exportDirectory = await _importExportService.ExportData();
-            ExportStatusMessage = $"Data export completed. Export directory is at {exportDirectory}";
-            var decision = await _messageService.ShowConfirmationAsync("Export Completed", "Click Yes to open the export directory.");
-            if (decision)
+            try
             {
-                Process.Start(new ProcessStartInfo
+                ExportStatusMessage = "Preparing export... This may take a moment.";
+                var exportDirectory = await _importExportService.ExportData();
+                ExportStatusMessage = $"✅ Export successful! Your data has been saved to:\n{exportDirectory}";
+                
+                var decision = await _messageService.ShowConfirmationAsync(
+                    "Export Completed", 
+                    $"Your financial data has been successfully exported.\n\nLocation: {exportDirectory}\n\nWould you like to open the export folder?");
+                
+                if (decision)
                 {
-                    FileName = exportDirectory,
-                    UseShellExecute = true,
-                    Verb = "open"
-                });
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = exportDirectory,
+                        UseShellExecute = true,
+                        Verb = "open"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                ExportStatusMessage = $"❌ Export failed: {ex.Message}";
+                await _messageService.ShowErrorAsync($"Failed to export data.\n\nError: {ex.Message}");
+            }
+        }
+
+        [RelayCommand]
+        private async Task ImportFile(string filePath)
+        {
+            try
+            {
+                ImportStatusMessage = $"Importing data from:\n{Path.GetFileName(filePath)}";
+                
+                var confirmation = await _messageService.ShowConfirmationAsync(
+                    "Confirm Import", 
+                    "This will replace your existing data with the imported data. Are you sure you want to continue?");
+                
+                if (!confirmation)
+                {
+                    ImportStatusMessage = "Import cancelled by user.";
+                    return;
+                }
+                
+                await _importExportService.ImportData(filePath);
+                ImportStatusMessage = "✅ Import completed successfully! Your data has been restored.";
+            }
+            catch (Exception ex)
+            {
+                ImportStatusMessage = $"❌ Import failed: {ex.Message}";
+                await _messageService.ShowErrorAsync($"Failed to import data.\n\nError: {ex.Message}");
             }
         }
     }

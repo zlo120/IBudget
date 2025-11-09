@@ -16,9 +16,17 @@ namespace IBudget.Infrastructure.Repositories
         private readonly IMongoCollection<Expense> _expensesCollection = context.GetExpensesCollection();
         private readonly IMongoCollection<Income> _incomesCollection = context.GetIncomeCollection();
         private readonly IMongoCollection<Tag> _tagsCollection = context.GetTagsCollection();
+        
         public async Task<ExpenseRuleTag> CreateExpenseRuleTag(ExpenseRuleTag expenseRuleTag)
         {
-            await _expenseRuleTagsCollection.InsertOneAsync(expenseRuleTag);
+            try
+            {
+                await _expenseRuleTagsCollection.InsertOneAsync(expenseRuleTag);
+            }
+            catch (MongoWriteException ex) when (ex.WriteError?.Category == ServerErrorCategory.DuplicateKey)
+            {
+                // Silently ignore duplicate key errors
+            }
             return expenseRuleTag;
         }
 
