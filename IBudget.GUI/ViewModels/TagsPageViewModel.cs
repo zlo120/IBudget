@@ -173,11 +173,6 @@ namespace IBudget.GUI.ViewModels
         [RelayCommand]
         private async void UpdateIsTracked()
         {
-            if (TagName == "ignored")  // special case: you can't track ignored tag
-            {
-                IsTracked = false;
-                return;
-            }
             var updatedTag = await _tagService.GetOrCreateTagByName(TagName);
             updatedTag.IsTracked = IsTracked;
             await _tagService.UpdateTag(updatedTag);

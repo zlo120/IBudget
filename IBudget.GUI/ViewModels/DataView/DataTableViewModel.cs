@@ -162,7 +162,6 @@ namespace IBudget.GUI.ViewModels.DataView
         {
             try
             {
-                var ignoredTag = await _tagService.GetOrCreateTagByName("ignored");
                 var monthsData = await _summaryService.ReadMonth(monthNumber);
 
                 if (monthsData?.AllExpenses == null && monthsData?.AllIncome == null)
@@ -173,7 +172,7 @@ namespace IBudget.GUI.ViewModels.DataView
 
                 if (IsViewingExpenses)
                 {
-                    var expenses = monthsData?.AllExpenses.Where(e => !e.Tags.Contains(ignoredTag)) ?? [];
+                    var expenses = monthsData?.AllExpenses.Where(e => !e.IsIgnored) ?? [];
                     TableData = new ObservableCollection<DataTableItem>(expenses.Select(e => new DataTableItem
                     {
                         Tag = e.Tags?.FirstOrDefault()?.Name ?? "No Tag",
@@ -184,7 +183,7 @@ namespace IBudget.GUI.ViewModels.DataView
                 }
                 else
                 {
-                    var incomes = monthsData?.AllIncome.Where(i => !i.Tags.Contains(ignoredTag)) ?? [];
+                    var incomes = monthsData?.AllIncome.Where(i => !i.IsIgnored) ?? [];
                     TableData = new ObservableCollection<DataTableItem>(incomes.Select(i => new DataTableItem
                     {
                         Tag = i.Tags?.FirstOrDefault()?.Name ?? "No Tag",
@@ -204,7 +203,6 @@ namespace IBudget.GUI.ViewModels.DataView
         {
             try
             {
-                var ignoredTag = await _tagService.GetOrCreateTagByName("ignored");
                 var weeksData = await _summaryService.ReadWeek(date);
 
                 if (weeksData?.Expenses == null && weeksData?.Income == null)
@@ -215,7 +213,7 @@ namespace IBudget.GUI.ViewModels.DataView
 
                 if (IsViewingExpenses)
                 {
-                    var expenses = weeksData?.Expenses.Where(e => !e.Tags.Contains(ignoredTag)) ?? [];
+                    var expenses = weeksData?.Expenses.Where(e => !e.IsIgnored) ?? [];
                     TableData = new ObservableCollection<DataTableItem>(expenses.Select(e => new DataTableItem
                     {
                         Tag = e.Tags?.FirstOrDefault()?.Name ?? "No Tag",
@@ -226,7 +224,7 @@ namespace IBudget.GUI.ViewModels.DataView
                 }
                 else
                 {
-                    var incomes = weeksData?.Income.Where(i => !i.Tags.Contains(ignoredTag)) ?? [];
+                    var incomes = weeksData?.Income.Where(i => !i.IsIgnored) ?? [];
                     TableData = new ObservableCollection<DataTableItem>(incomes.Select(i => new DataTableItem
                     {
                         Tag = i.Tags?.FirstOrDefault()?.Name ?? "No Tag",

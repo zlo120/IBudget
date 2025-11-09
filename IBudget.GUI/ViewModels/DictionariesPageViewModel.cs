@@ -79,6 +79,9 @@ namespace IBudget.GUI.ViewModels
         [ObservableProperty]
         private string _itemFieldLabel = string.Empty;
 
+        [ObservableProperty]
+        private bool _isIgnored = false;
+
         public ObservableCollection<string> AvailableTags { get; } = new();
 
         private readonly IExpenseTagService _expenseTagService;
@@ -162,6 +165,7 @@ namespace IBudget.GUI.ViewModels
             CurrentEditType = EditType.ExpenseTag;
             EditItemName = item.Key;
             SelectedTag = item.Value;
+            IsIgnored = item.IsIgnored;
             DialogTitle = "✏️ Edit Expense Tag";
             DialogSubtitle = "Modify the tag assignment for this expense";
             ItemFieldLabel = "Expense Description";
@@ -175,6 +179,7 @@ namespace IBudget.GUI.ViewModels
             CurrentEditType = EditType.ExpenseRuleTag;
             EditItemName = item.Key;
             SelectedTag = item.Value;
+            IsIgnored = item.IsIgnored;
             DialogTitle = "✏️ Edit Rule Tag";
             DialogSubtitle = "Modify the tag assignment for this rule";
             ItemFieldLabel = "Matching Rule";
@@ -188,6 +193,7 @@ namespace IBudget.GUI.ViewModels
             CurrentEditingItem = null;
             EditItemName = string.Empty;
             SelectedTag = string.Empty;
+            IsIgnored = false;
             CurrentEditType = EditType.ExpenseTag;
             DialogTitle = string.Empty;
             DialogSubtitle = string.Empty;
@@ -230,6 +236,7 @@ namespace IBudget.GUI.ViewModels
             {
                 Title = EditItemName,
                 Tags = [SelectedTag],
+                IsIgnored = IsIgnored,
                 CreatedAt = DateTime.UtcNow
             };
             await _expenseTagService.UpdateExpenseTag(newExpenseTag);
@@ -241,6 +248,7 @@ namespace IBudget.GUI.ViewModels
             {
                 Rule = EditItemName,
                 Tags = [SelectedTag],
+                IsIgnored = IsIgnored,
                 CreatedAt = DateTime.UtcNow
             }; 
             await _expenseRuleTagService.UpdateExpenseRuleTag(newExpenseRuleTag);
@@ -252,7 +260,7 @@ namespace IBudget.GUI.ViewModels
             {
                 foreach (var eD in ExpenseTags)
                 {
-                    var container = new InfoContainer() { Key = eD.Title, Value = eD.Tags.First() };
+                    var container = new InfoContainer() { Key = eD.Title, Value = eD.Tags.First(), IsIgnored = eD.IsIgnored };
                     container.SetExpenseTagData(eD, _expenseTagService, _messageService, RemoveExpenseTagFromCollection);
                     ExpenseTagsInfo.Add(container);
                 }
@@ -265,7 +273,7 @@ namespace IBudget.GUI.ViewModels
             {
                 foreach (var rD in ExpenseRuleTags)
                 {
-                    var container = new InfoContainer() { Key = rD.Rule, Value = rD.Tags.First() };
+                    var container = new InfoContainer() { Key = rD.Rule, Value = rD.Tags.First(), IsIgnored = rD.IsIgnored };
                     container.SetExpenseRuleTagData(rD, _expenseRuleTagService, _messageService, RemoveExpenseRuleTagFromCollection);
                     ExpenseRuleTagsInfo.Add(container);
                 }
@@ -287,6 +295,7 @@ namespace IBudget.GUI.ViewModels
     {
         public required string Key { get; set; }
         public required string Value { get; set; }
+        public required bool IsIgnored { get; set; }
 
         // Store references for deletion
         private ExpenseTag? _expenseTag;

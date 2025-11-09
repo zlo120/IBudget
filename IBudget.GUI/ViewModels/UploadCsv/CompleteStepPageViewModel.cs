@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using IBudget.Core.Constants;
 using IBudget.Core.DTO;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
@@ -114,6 +115,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
                 if (formattedFinancialCSV.Description is null) continue;
                 var tags = await _tagService.FindTagsByDescription(formattedFinancialCSV.Description!);
                 var formattedDescription = CsvFormatter.FormatDescription(formattedFinancialCSV.Description!);
+                var isIgnored = tags.Contains(ConstantTags.IgnoredTag);
                 if (formattedFinancialCSV.Amount > 0)
                 {
                     var income = new Income()
@@ -123,7 +125,8 @@ namespace IBudget.GUI.ViewModels.UploadCsv
                         Date = formattedFinancialCSV.Date.ToDateTime(new TimeOnly(0, 0)),
                         Tags = tags,
                         BatchHash = batchHash,
-                        CreatedAt = DateTime.UtcNow
+                        CreatedAt = DateTime.UtcNow,
+                        IsIgnored = isIgnored
                     };
                     await _incomeService.AddIncome(income);
                 }
@@ -136,7 +139,8 @@ namespace IBudget.GUI.ViewModels.UploadCsv
                         Date = formattedFinancialCSV.Date.ToDateTime(new TimeOnly(0, 0)),
                         Tags = tags,
                         BatchHash = batchHash,
-                        CreatedAt = DateTime.UtcNow
+                        CreatedAt = DateTime.UtcNow,
+                        IsIgnored = isIgnored
                     };
                     await _expenseService.AddExpense(expense);
                 }

@@ -92,12 +92,15 @@ namespace IBudget.GUI.ViewModels.UploadCsv
         [ObservableProperty]
         private string _tag = string.Empty;
 
+        [ObservableProperty]
+        private bool _isIgnored = false;
+
         [RelayCommand]
         private void SubmitTagging()
         {
             if (Tag == string.Empty) return;
-            if (IsCreatingRule) HandleCreateRule(Rule, Tag.ToLower());
-            else HandleCreateEntry(SelectedUntaggedItemName, Tag.ToLower());
+            if (IsCreatingRule) HandleCreateRule(Rule, Tag.ToLower(), IsIgnored);
+            else HandleCreateEntry(SelectedUntaggedItemName, Tag.ToLower(), IsIgnored);
             _tagsService.CreateTag(new Tag() { Name = Tag.ToLower(), IsTracked = false, CreatedAt = DateTime.Now });
             if (UntaggedItems.Count == 0)
             {
@@ -108,6 +111,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
                 return;
             }
             Tag = string.Empty;
+            IsIgnored = false;
             SelectedUntaggedItem = UntaggedItems[0];
             SelectedUntaggedItemName = SelectedUntaggedItem.Label;
             RemainingUntaggedRecords = $"{UntaggedItems.Count} entries left";
@@ -151,7 +155,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             IsLoading = false;
             RemainingUntaggedRecords = $"{distinctUntaggedRecords.Count} entries left";
         }
-        private void HandleCreateRule(string rule, string tag)
+        private void HandleCreateRule(string rule, string tag, bool isIgnored)
         {
             var removeFromCollection = UntaggedItems.Where(item => item.Label.Contains(rule, StringComparison.InvariantCultureIgnoreCase)).ToList();
             foreach (var removeItem in removeFromCollection)
@@ -162,12 +166,13 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             {
                 Rule = rule,
                 Tags = [tag],
+                IsIgnored = isIgnored,
                 CreatedAt = DateTime.Now
             };
             _expenseRuleTagService.CreateExpenseRuleTag(expenseRuleTags);
             Rule = string.Empty;
         }
-        private void HandleCreateEntry(string entryName, string tag)
+        private void HandleCreateEntry(string entryName, string tag, bool isIgnored)
         {
             if (SelectedUntaggedItemName == "Unselected") return;
             var entryFromCollection = UntaggedItems.Where(item => item.Label == entryName).First();
@@ -176,6 +181,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             {
                 Title = entryName,
                 Tags = [tag],
+                IsIgnored = isIgnored,
                 CreatedAt = DateTime.Now
             };
             _expenseTagService.CreateExpenseTag(expenseTag);
@@ -189,6 +195,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             SelectedUntaggedItemName = "Unselected";
             Tag = string.Empty;
             Rule = string.Empty;
+            IsIgnored = false;
             IsLoading = false;
         }
     }

@@ -7,6 +7,7 @@ namespace IBudget.Core.Model
     {
         public required string Title { get; set; }
         public required List<string> Tags { get; set; }
+        public required bool IsIgnored { get; set; }
         public required DateTime CreatedAt { get; set; }
         public static bool operator ==(ExpenseTag eD1, ExpenseTag eD2) => eD1.Equals(eD2);
         public static bool operator !=(ExpenseTag eD1, ExpenseTag eD2) => !eD1.Equals(eD2);

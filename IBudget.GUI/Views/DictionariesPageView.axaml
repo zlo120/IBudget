@@ -375,6 +375,13 @@
 									  CornerRadius="6"
 									  PlaceholderText="Choose a tag..." />
 						</StackPanel>
+
+						<!-- IsIgnored Checkbox -->
+						<CheckBox IsChecked="{Binding IsIgnored}"
+								  Content="Ignore this entry"
+								  FontSize="13"
+								  Margin="0,5,0,0"
+								  ToolTip.Tip="Mark this entry as ignored to exclude it from processing" />
 					</StackPanel>
 
 					<!-- Dialog Buttons -->

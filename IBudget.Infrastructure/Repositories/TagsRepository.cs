@@ -1,4 +1,6 @@
-﻿using IBudget.Core.RepositoryInterfaces;
+﻿using IBudget.Core.Constants;
+using IBudget.Core.Model;
+using IBudget.Core.RepositoryInterfaces;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Tag = IBudget.Core.Model.Tag;
@@ -13,7 +15,7 @@ namespace IBudget.Infrastructure.Repositories
 
         public async Task ClearCollection()
         {
-            await _tagsCollection.DeleteManyAsync(t => t.Name != "ignored");
+            await _tagsCollection.DeleteManyAsync(FilterDefinition<Tag>.Empty);
         }
 
         public async Task CreateTag(Tag tag)
@@ -49,6 +51,7 @@ namespace IBudget.Infrastructure.Repositories
             List<string> tagNames = [];
             if (expenseRuleTags is not null && expenseRuleTags.Tags.Count > 0)
             {
+                if (expenseRuleTags.IsIgnored) return [ConstantTags.IgnoredTag];
                 tagNames = [.. expenseRuleTags.Tags.Distinct()];
                 foreach (var tagName in tagNames)
                 {
@@ -57,9 +60,9 @@ namespace IBudget.Infrastructure.Repositories
                 }
                 return tags;
             }
-
-            tagNames = [.. (await _expenseTagsRepository.GetAllExpenseTags()).Where(e => e.Title.Contains(description, StringComparison.InvariantCultureIgnoreCase))
-                .SelectMany(e => e.Tags)
+            var expenseTags = (await _expenseTagsRepository.GetAllExpenseTags()).Where(e => e.Title.Contains(description, StringComparison.InvariantCultureIgnoreCase)).ToList();
+            if (expenseTags.Any(e => e.IsIgnored)) return [ConstantTags.IgnoredTag];
+            tagNames = [.. expenseTags.SelectMany(e => e.Tags)
                 .Distinct()];
             if (tagNames.Count == 0) return [];
             foreach (var tagName in tagNames)

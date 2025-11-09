@@ -11,5 +11,6 @@ namespace IBudget.Core.Model
         public required string BatchHash { get; set; }
         public required DateTime CreatedAt { get; set; }
         public override string ToString() => WriteObject.ToJsonString(this);
+        public required bool IsIgnored { get; set; }
     }
 }

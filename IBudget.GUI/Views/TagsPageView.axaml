@@ -175,7 +175,7 @@
                                                        CornerRadius="4"
                                                        Click="OnIconButtonClick"
                                                        ToolTip.Tip="Delete this tag"
-                                                       IsVisible="{Binding TagName, Converter={x:Static converters:StringNotEqualConverter.Instance}, ConverterParameter=ignored}" />
+                                                       IsVisible="{Binding TagName}" />
 											</StackPanel>
 										</Grid>
 									</Border>

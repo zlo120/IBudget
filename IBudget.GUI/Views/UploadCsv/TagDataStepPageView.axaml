@@ -268,6 +268,13 @@
                                            Text="{Binding Tag}"
                                            CornerRadius="8"
                                            Padding="12"/>
+							
+							<!-- IsIgnored Checkbox -->
+							<CheckBox IsChecked="{Binding IsIgnored}"
+									  Content="Ignore this entry"
+									  FontSize="13"
+									  Margin="0,5,0,0"
+									  ToolTip.Tip="Mark this entry as ignored to exclude it from processing" />
 						</StackPanel>
 
 						<!-- Rule Creation -->
@@ -290,6 +297,13 @@
                                            Text="{Binding Tag}"
                                            CornerRadius="8"
                                            Padding="12"/>
+							
+							<!-- IsIgnored Checkbox -->
+							<CheckBox IsChecked="{Binding IsIgnored}"
+									  Content="Ignore this rule"
+									  FontSize="13"
+									  Margin="0,5,0,0"
+									  ToolTip.Tip="Mark this rule as ignored to exclude it from processing" />
 						</StackPanel>
 					</StackPanel>
 

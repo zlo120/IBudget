@@ -93,8 +93,6 @@ namespace IBudget.GUI.ViewModels.DataView
         {
             try
             {
-                var ignoredTag = await _tagService.GetOrCreateTagByName("ignored");
-
                 // Clear existing data
                 SummaryItems.Clear();
                 FinancialGoals.Clear();
@@ -105,8 +103,8 @@ namespace IBudget.GUI.ViewModels.DataView
                 var financialGoalsResult = await _financialGoalService.GetAll();
                 var financialGoals = financialGoalsResult?.Select(goal => goal.Name) ?? Enumerable.Empty<string>();
                 var monthsData = await _summaryService.ReadMonth(monthNumber);
-                var allExpenses = monthsData?.AllExpenses.Where(e => !e.Tags.Contains(ignoredTag));
-                var allIncome = monthsData?.AllIncome.Where(i => !i.Tags.Contains(ignoredTag));
+                var allExpenses = monthsData?.AllExpenses.Where(e => !e.IsIgnored);
+                var allIncome = monthsData?.AllIncome.Where(i => !i.IsIgnored);
                 if (allExpenses is null && allIncome is null)
                 {
                     // No data available for this month

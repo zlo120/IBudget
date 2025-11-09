@@ -26,7 +26,6 @@ namespace IBudget.Core.Services
 
         public async Task<XLWorkbook> PopulateSpreadsheet(XLWorkbook workbook)
         {
-            var ignoredTag = await _tagService.GetOrCreateTagByName("ignored");
             var trackedTagsList = await GetAllTrackedTags();
             var otherColumnIndex = trackedTagsList.Count + 1;
             var incomeColumnIndex = otherColumnIndex + 3;
@@ -51,13 +50,13 @@ namespace IBudget.Core.Services
                 var date = Calendar.ParseWeekStartFromWeekRange(worksheet.Name);
                 var week = await _summaryService.ReadWeek(date);
                 if (week.Income.Count == 0 && week.Expenses.Count == 0) continue;
-                var weeklyIncome = week.Income.Where(income => !income.Tags.Contains(ignoredTag)).ToList();
+                var weeklyIncome = week.Income.Where(income => !income.IsIgnored).ToList();
                 // populate the income
                 var incomeQueue = new Queue<Income>(weeklyIncome);
                 PopulateColumn(new Queue<FinancialRecord>(incomeQueue.ToList()), ref worksheet, incomeColumnIndex, true);
 
                 var remainingExpenses = new List<FinancialRecord>(week.Expenses
-                    .Where(expense => !expense.Tags.Contains(ignoredTag))
+                    .Where(expense => !expense.IsIgnored)
                     .ToList()
                 );
 
