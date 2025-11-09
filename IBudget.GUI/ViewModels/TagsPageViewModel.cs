@@ -15,6 +15,7 @@ namespace IBudget.GUI.ViewModels
     {
         private readonly ITagService _tagService;
         private readonly IMessageService _messageService;
+        private readonly IFinancialGoalService _financialGoalService;
         public ObservableCollection<AllTagsListItemTemplate> Tags { get; } = new();
 
         [ObservableProperty]
@@ -24,10 +25,11 @@ namespace IBudget.GUI.ViewModels
         [ObservableProperty]
         private bool _isTracked = false;
 
-        public TagsPageViewModel(ITagService tagService, IMessageService messageService)
+        public TagsPageViewModel(ITagService tagService, IMessageService messageService, IFinancialGoalService financialGoalService)
         {
             _tagService = tagService;
             _messageService = messageService;
+            _financialGoalService = financialGoalService;
             _ = InitializeTagsAsync();
         }
 
@@ -39,7 +41,7 @@ namespace IBudget.GUI.ViewModels
                 var tags = await _tagService.GetAll();
                 foreach (var tag in tags)
                 {
-                    Tags.Add(new AllTagsListItemTemplate(tag.Name, tag.IsTracked, _tagService, _messageService, (ObjectId)tag.Id!, RemoveTagFromCollection));
+                    Tags.Add(new AllTagsListItemTemplate(tag.Name, tag.IsTracked, _tagService, _messageService, _financialGoalService, (ObjectId)tag.Id!, RemoveTagFromCollection));
                 }
             }
             catch (Exception ex)
@@ -80,7 +82,8 @@ namespace IBudget.GUI.ViewModels
                         savedTag.Name, 
                         savedTag.IsTracked, 
                         _tagService, 
-                        _messageService, 
+                        _messageService,
+                        _financialGoalService,
                         (ObjectId)savedTag.Id, 
                         RemoveTagFromCollection);
                     
@@ -121,7 +124,7 @@ namespace IBudget.GUI.ViewModels
                     }
                     else
                     {
-                        Tags.Add(new AllTagsListItemTemplate(tag.Name, tag.IsTracked, _tagService, _messageService, (ObjectId)tag.Id!, RemoveTagFromCollection));
+                        Tags.Add(new AllTagsListItemTemplate(tag.Name, tag.IsTracked, _tagService, _messageService, _financialGoalService, (ObjectId)tag.Id!, RemoveTagFromCollection));
                     }
                 }
             }
@@ -147,16 +150,18 @@ namespace IBudget.GUI.ViewModels
     {
         private readonly ITagService _tagService;
         private readonly IMessageService _messageService;
+        private readonly IFinancialGoalService _financialGoalService;
         private readonly Action<AllTagsListItemTemplate> _removeFromCollection;
         private const string IS_TRACKED_PREFIX = "⭐ ";
         private readonly ObjectId _id;
         
-        public AllTagsListItemTemplate(string label, bool isTracked, ITagService tagService, IMessageService messageService, ObjectId id, Action<AllTagsListItemTemplate> removeFromCollection)
+        public AllTagsListItemTemplate(string label, bool isTracked, ITagService tagService, IMessageService messageService, IFinancialGoalService financialGoalService, ObjectId id, Action<AllTagsListItemTemplate> removeFromCollection)
         {
             TagName = label;
             IsTracked = isTracked;
             _tagService = tagService;
             _messageService = messageService;
+            _financialGoalService = financialGoalService;
             _removeFromCollection = removeFromCollection;
             if (IsTracked) Label = IS_TRACKED_PREFIX + label;
             else Label = label;
@@ -173,17 +178,56 @@ namespace IBudget.GUI.ViewModels
         [RelayCommand]
         private async void UpdateIsTracked()
         {
+            // Check if we're trying to untrack a tag that has a financial goal
+            if (!IsTracked)
+            {
+                try
+                {
+                    var financialGoal = await _financialGoalService.GetFinancialGoalByName(TagName.ToLower());
+                    if (financialGoal != null)
+                    {
+                        // Show warning and revert the change
+                        await _messageService.ShowErrorAsync(
+                            $"Cannot untrack tag '{TagName}' because it is linked to a financial goal. Please delete the financial goal first.");
+                        
+                        // Revert the IsTracked property
+                        IsTracked = true;
+                        return;
+                    }
+                }
+                catch (Exception)
+                {
+                    // If GetFinancialGoalByName throws (e.g., not found), continue with untracking
+                }
+            }
+
             var updatedTag = await _tagService.GetOrCreateTagByName(TagName);
             updatedTag.IsTracked = IsTracked;
             await _tagService.UpdateTag(updatedTag);
 
-            if (IsTracked) Label = IS_TRACKED_PREFIX + Label;
+            if (IsTracked) Label = IS_TRACKED_PREFIX + TagName;
             else Label = TagName;
         }
 
         [RelayCommand]
         private async Task DeleteClick()
         {
+            // Check if tag has a financial goal
+            try
+            {
+                var financialGoal = await _financialGoalService.GetFinancialGoalByName(TagName.ToLower());
+                if (financialGoal != null)
+                {
+                    await _messageService.ShowErrorAsync(
+                        $"Cannot delete tag '{TagName}' because it is linked to a financial goal. Please delete the financial goal first.");
+                    return;
+                }
+            }
+            catch (Exception)
+            {
+                // If GetFinancialGoalByName throws (e.g., not found), continue with deletion
+            }
+
             var confirmedDelete = await _messageService.ShowConfirmationAsync(
                 "Delete Tag", 
                 $"Are you sure you want to delete tag '{TagName}'?");
