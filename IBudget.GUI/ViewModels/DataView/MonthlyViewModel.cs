@@ -6,8 +6,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using IBudget.Core.Interfaces;
+using IBudget.Core.Model;
 using IBudget.Core.Services;
 using IBudget.GUI.Services;
+using MongoDB.Bson;
 
 namespace IBudget.GUI.ViewModels.DataView
 {
@@ -25,13 +27,13 @@ namespace IBudget.GUI.ViewModels.DataView
         private int _selectedIndex = 0;
 
         [ObservableProperty]
-        private ObservableCollection<SummaryItem> _summaryItems = new();
+        private ObservableCollection<TrackedTagSpendingItem> _trackedTagSpending = new();
 
         [ObservableProperty]
-        private ObservableCollection<string> _financialGoals = new();
+        private ObservableCollection<FinancialGoalSpendingItem> _financialGoalSpending = new();
 
         [ObservableProperty]
-        private Dictionary<string, double> _summarySpending = new(); // not used in UI currently
+        private double _otherSpending = 0.0;
 
         [ObservableProperty]
         private double _totalSpending = 0.0;
@@ -100,42 +102,104 @@ namespace IBudget.GUI.ViewModels.DataView
             try
             {
                 // Clear existing data
-                SummaryItems.Clear();
-                FinancialGoals.Clear();
-                SummarySpending.Clear();
+                TrackedTagSpending.Clear();
+                FinancialGoalSpending.Clear();
                 TotalSpending = 0.0;
                 TotalIncome = 0.0;
+                OtherSpending = 0.0;
 
-                var financialGoalsResult = await _financialGoalService.GetAll();
-                var financialGoals = financialGoalsResult?.Select(goal => goal.Name) ?? Enumerable.Empty<string>();
+                // Get all tracked tags and financial goals
+                var allTags = await _tagService.GetAll();
+                var trackedTags = allTags.Where(tag => tag.IsTracked).ToList();
+                var financialGoals = await _financialGoalService.GetAll();
+                var financialGoalNames = financialGoals?.Select(g => g.Name.ToLower()).ToHashSet() ?? new HashSet<string>();
+
+                // Get month data
                 var monthsData = await _summaryService.ReadMonth(monthNumber);
-                var allExpenses = monthsData?.AllExpenses.Where(e => !e.IsIgnored);
-                var allIncome = monthsData?.AllIncome.Where(i => !i.IsIgnored);
-                if (allExpenses is null && allIncome is null)
+                var allExpenses = monthsData?.AllExpenses.Where(e => !e.IsIgnored).ToList();
+                var allIncome = monthsData?.AllIncome.Where(i => !i.IsIgnored).ToList();
+                
+                if (allExpenses is null || !allExpenses.Any())
                 {
                     // No data available for this month
                     return;
                 }
 
-                foreach (var goal in financialGoals)
-                {
-                    if (string.IsNullOrEmpty(goal)) continue;
-
-                    FinancialGoals.Add(goal);
-                    double totalMoneySpent = allExpenses
-                        .Where(e => e.Tags?.Select(t => t.Name).Contains(goal) == true)
-                        .Select(e => e.Amount)
-                        .Sum();
-                    SummarySpending.Add(goal, totalMoneySpent);
-                    SummaryItems.Add(new SummaryItem($"Total spending on {goal}", totalMoneySpent));
-                }
-
-                TotalSpending = allExpenses.Select(expense => expense.Amount).Sum();
-                TotalIncome = allIncome.Select(income => income.Amount).Sum();
+                // Calculate total spending and income
+                TotalSpending = allExpenses.Sum(e => e.Amount);
+                TotalIncome = allIncome?.Sum(i => i.Amount) ?? 0.0;
                 
                 // Calculate difference (Income - Expenses)
                 Difference = TotalIncome - TotalSpending;
                 IsDeficit = Difference < 0;
+
+                // Track which expenses have been categorized
+                var categorizedExpenseIds = new HashSet<ObjectId?>();
+
+                // Process financial goals (tracked tags that have financial goals)
+                if (financialGoals != null)
+                {
+                    foreach (var goal in financialGoals)
+                    {
+                        var goalExpenses = allExpenses
+                            .Where(e => e.Tags?.Any(t => t.Name.Equals(goal.Name, StringComparison.OrdinalIgnoreCase)) == true)
+                            .ToList();
+
+                        var actualSpending = goalExpenses.Sum(e => e.Amount);
+                        var difference = (double)goal.TargetAmount - actualSpending;
+                        var isOverBudget = actualSpending > (double)goal.TargetAmount;
+
+                        FinancialGoalSpending.Add(new FinancialGoalSpendingItem
+                        {
+                            TagName = goal.Name,
+                            GoalAmount = (double)goal.TargetAmount,
+                            ActualSpending = actualSpending,
+                            Difference = Math.Abs(difference),
+                            IsOverBudget = isOverBudget
+                        });
+
+                        // Mark these expenses as categorized
+                        foreach (var expense in goalExpenses)
+                        {
+                            categorizedExpenseIds.Add(expense.Id);
+                        }
+                    }
+                }
+
+                // Process tracked tags that don't have financial goals
+                foreach (var tag in trackedTags)
+                {
+                    // Skip if this tag is already a financial goal
+                    if (financialGoalNames.Contains(tag.Name.ToLower()))
+                        continue;
+
+                    var tagExpenses = allExpenses
+                        .Where(e => e.Tags?.Any(t => t.Name.Equals(tag.Name, StringComparison.OrdinalIgnoreCase)) == true)
+                        .ToList();
+
+                    if (tagExpenses.Any())
+                    {
+                        var spending = tagExpenses.Sum(e => e.Amount);
+                        TrackedTagSpending.Add(new TrackedTagSpendingItem
+                        {
+                            TagName = tag.Name,
+                            TotalSpending = spending
+                        });
+
+                        // Mark these expenses as categorized
+                        foreach (var expense in tagExpenses)
+                        {
+                            categorizedExpenseIds.Add(expense.Id);
+                        }
+                    }
+                }
+
+                // Calculate "Other" spending (expenses not in any tracked tag)
+                var otherExpenses = allExpenses
+                    .Where(e => !categorizedExpenseIds.Contains(e.Id))
+                    .ToList();
+                
+                OtherSpending = otherExpenses.Sum(e => e.Amount);
             }
             catch (Exception ex)
             {
@@ -149,14 +213,24 @@ namespace IBudget.GUI.ViewModels.DataView
         }
     }
 
-    public class SummaryItem
+    public class TrackedTagSpendingItem
     {
-        public SummaryItem(string title, double value)
-        {
-            SummaryTitle = title;
-            SummaryValue = $"${value:F2}";
-        }
-        public string SummaryTitle { get; set; }
-        public string SummaryValue { get; set; }
+        public string TagName { get; set; } = string.Empty;
+        public double TotalSpending { get; set; }
+        public string FormattedSpending => $"${TotalSpending:F2}";
+    }
+
+    public class FinancialGoalSpendingItem
+    {
+        public string TagName { get; set; } = string.Empty;
+        public double GoalAmount { get; set; }
+        public double ActualSpending { get; set; }
+        public double Difference { get; set; }
+        public bool IsOverBudget { get; set; }
+        
+        public string FormattedGoalAmount => $"${GoalAmount:F2}";
+        public string FormattedActualSpending => $"${ActualSpending:F2}";
+        public string FormattedDifference => $"${Difference:F2}";
+        public string DifferenceLabel => IsOverBudget ? "Over Budget" : "Under Budget";
     }
 }

@@ -20,8 +20,31 @@
 			<Setter Property="Margin" Value="0,0,0,16"/>
 		</Style>
 
-		<!-- Summary Card Style -->
-		<Style Selector="Border.summary-card">
+		<!-- Goal Card Style - Under Budget (White) -->
+		<Style Selector="Border.goal-card-under">
+			<Setter Property="Background" Value="White"/>
+			<Setter Property="CornerRadius" Value="12"/>
+			<Setter Property="Padding" Value="20"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="BoxShadow" Value="0 2 8 0 #0D000000"/>
+			<Setter Property="Margin" Value="8"/>
+			<Setter Property="MinWidth" Value="280"/>
+		</Style>
+
+		<!-- Goal Card Style - Over Budget (Yellow) -->
+		<Style Selector="Border.goal-card-over">
+			<Setter Property="Background" Value="#FFC107"/>
+			<Setter Property="CornerRadius" Value="12"/>
+			<Setter Property="Padding" Value="20"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="BoxShadow" Value="0 2 8 0 #0D000000"/>
+			<Setter Property="Margin" Value="8"/>
+			<Setter Property="MinWidth" Value="280"/>
+		</Style>
+
+		<!-- Tracked Tag Card Style -->
+		<Style Selector="Border.tracked-tag-card">
 			<Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}"/>
 			<Setter Property="CornerRadius" Value="12"/>
 			<Setter Property="Padding" Value="20"/>
@@ -30,23 +53,24 @@
 			<Setter Property="BoxShadow" Value="0 2 8 0 #0D000000"/>
 			<Setter Property="Margin" Value="8"/>
 			<Setter Property="MinWidth" Value="200"/>
-			<Setter Property="MinHeight" Value="140"/>
-			<Setter Property="Transitions">
-				<Transitions>
-					<BrushTransition Property="Background" Duration="0:0:0.2"/>
-				</Transitions>
-			</Setter>
 		</Style>
 
-		<Style Selector="Border.summary-card:pointerover">
-			<Setter Property="Background" Value="{DynamicResource LayerFillColorDefaultBrush}"/>
+		<!-- Other Card Style -->
+		<Style Selector="Border.other-card">
+			<Setter Property="Background" Value="#E0E0E0"/>
+			<Setter Property="CornerRadius" Value="12"/>
+			<Setter Property="Padding" Value="20"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="BoxShadow" Value="0 2 8 0 #0D000000"/>
+			<Setter Property="Margin" Value="8"/>
+			<Setter Property="MinWidth" Value="200"/>
 		</Style>
 
 		<!-- Total Spending Card Style -->
 		<Style Selector="Border.total-card">
 			<Setter Property="Background" Value="#2196F3"/>
 			<Setter Property="CornerRadius" Value="12"/>
-			<Setter Property="Padding" Value="16"/>
+			<Setter Property="Padding" Value="20"/>
 			<Setter Property="BorderThickness" Value="0"/>
 			<Setter Property="BoxShadow" Value="0 4 12 0 #1A000000"/>
 			<Setter Property="MinWidth" Value="250"/>
@@ -56,7 +80,7 @@
 		<Style Selector="Border.total-income-card">
 			<Setter Property="Background" Value="#4CAF50"/>
 			<Setter Property="CornerRadius" Value="12"/>
-			<Setter Property="Padding" Value="16"/>
+			<Setter Property="Padding" Value="20"/>
 			<Setter Property="BorderThickness" Value="0"/>
 			<Setter Property="BoxShadow" Value="0 4 12 0 #1A000000"/>
 			<Setter Property="MinWidth" Value="250"/>
@@ -66,9 +90,9 @@
 		<Style Selector="Border.difference-card">
 			<Setter Property="Background" Value="White"/>
 			<Setter Property="CornerRadius" Value="12"/>
-			<Setter Property="Padding" Value="16"/>
-			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="Padding" Value="20"/>
 			<Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}"/>
+			<Setter Property="BorderThickness" Value="1"/>
 			<Setter Property="BoxShadow" Value="0 4 12 0 #1A000000"/>
 			<Setter Property="MinWidth" Value="250"/>
 		</Style>
@@ -77,52 +101,10 @@
 		<Style Selector="Border.difference-card-deficit">
 			<Setter Property="Background" Value="#FFC107"/>
 			<Setter Property="CornerRadius" Value="12"/>
-			<Setter Property="Padding" Value="16"/>
+			<Setter Property="Padding" Value="20"/>
 			<Setter Property="BorderThickness" Value="0"/>
 			<Setter Property="BoxShadow" Value="0 4 12 0 #1A000000"/>
 			<Setter Property="MinWidth" Value="250"/>
-		</Style>
-
-		<!-- Summary Section Card -->
-		<Style Selector="Border.summary-section">
-			<Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}"/>
-			<Setter Property="CornerRadius" Value="12"/>
-			<Setter Property="Padding" Value="24"/>
-			<Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}"/>
-			<Setter Property="BorderThickness" Value="1"/>
-			<Setter Property="BoxShadow" Value="0 2 8 0 #0D000000"/>
-		</Style>
-
-		<!-- Title Style -->
-		<Style Selector="TextBlock.title">
-			<Setter Property="FontSize" Value="16"/>
-			<Setter Property="FontWeight" Value="SemiBold"/>
-			<Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
-			<Setter Property="Margin" Value="0,0,0,8"/>
-			<Setter Property="TextWrapping" Value="Wrap"/>
-		</Style>
-
-		<!-- Value Style -->
-		<Style Selector="TextBlock.value">
-			<Setter Property="FontSize" Value="22"/>
-			<Setter Property="FontWeight" Value="Bold"/>
-			<Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
-		</Style>
-
-		<!-- Total Value Style -->
-		<Style Selector="TextBlock.total-value">
-			<Setter Property="FontSize" Value="36"/>
-			<Setter Property="FontWeight" Value="Bold"/>
-			<Setter Property="Foreground" Value="White"/>
-		</Style>
-
-		<!-- Total Title Style -->
-		<Style Selector="TextBlock.total-title">
-			<Setter Property="FontSize" Value="18"/>
-			<Setter Property="FontWeight" Value="Medium"/>
-			<Setter Property="Foreground" Value="White"/>
-			<Setter Property="Opacity" Value="0.9"/>
-			<Setter Property="Margin" Value="0,0,0,8"/>
 		</Style>
 
 		<!-- Section Header Style -->
@@ -150,9 +132,9 @@
 			<Border Classes="header-card" Grid.Row="0">
 				<Grid ColumnDefinitions="Auto,*,Auto">
 					<StackPanel Grid.Column="0" Spacing="4">
-						<TextBlock Text="Monthly Overview"
+						<TextBlock Text="Monthly Spending Overview"
 	                              Classes="section-header"/>
-						<TextBlock Text="Track your spending and financial goals"
+						<TextBlock Text="Track your spending by category and financial goals"
 	                              FontSize="14"
 	                              Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
 					</StackPanel>
@@ -177,65 +159,196 @@
 				</Grid>
 			</Border>
 
-			<!-- Main Content - Horizontal Layout -->
+			<!-- Main Content -->
 			<Grid Grid.Row="1" ColumnDefinitions="2*,1*" Margin="0,16,0,0">
+				
+				<!-- Left Side: Spending Breakdown -->
+				<ScrollViewer Grid.Column="0" 
+				             VerticalScrollBarVisibility="Auto"
+				             HorizontalScrollBarVisibility="Disabled"
+				             Padding="0,0,8,0">
+					<StackPanel Spacing="24">
 
-				<!-- Left Side: Goal-based Spending Cards -->
-				<Border Classes="summary-section" Grid.Column="0">
-					<Grid RowDefinitions="Auto,*">
-						<TextBlock Grid.Row="0"
-	                              Text="Spending by Financial Goals"
-	                              Classes="section-header"/>
-
-						<ScrollViewer Grid.Row="1"
-	                                 HorizontalScrollBarVisibility="Disabled"
-	                                 VerticalScrollBarVisibility="Auto"
-	                                 Padding="0,0,8,0">
-							<ItemsControl ItemsSource="{Binding SummaryItems}">
+						<!-- Financial Goals Section -->
+						<StackPanel Spacing="12" IsVisible="{Binding FinancialGoalSpending.Count}">
+							<TextBlock Text="Financial Goals"
+							          Classes="section-header"/>
+							
+							<ItemsControl ItemsSource="{Binding FinancialGoalSpending}">
 								<ItemsControl.ItemsPanel>
 									<ItemsPanelTemplate>
-										<UniformGrid Columns="2" HorizontalAlignment="Stretch"/>
+										<WrapPanel Orientation="Horizontal"/>
 									</ItemsPanelTemplate>
 								</ItemsControl.ItemsPanel>
 								<ItemsControl.ItemTemplate>
 									<DataTemplate>
-										<Border Classes="summary-card">
-											<StackPanel Spacing="12">
-												<!-- Card Header with Icon -->
-												<Grid ColumnDefinitions="Auto,*">
-													<Border Grid.Column="0"
-	                                                       Background="#FF9800"
-	                                                       CornerRadius="8"
-	                                                       Width="40"
-	                                                       Height="40"
-	                                                       Margin="0,0,12,0">
-														<PathIcon Data="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z"
-	                                                             Width="20"
-	                                                             Height="20"
-	                                                             Foreground="White"
-	                                                             HorizontalAlignment="Center"
-	                                                             VerticalAlignment="Center"/>
-													</Border>
-													<StackPanel Grid.Column="1" VerticalAlignment="Center">
-														<TextBlock Text="{Binding SummaryTitle}"
-	                                                              Classes="title"/>
-													</StackPanel>
-												</Grid>
+										<Panel>
+											<!-- Under Budget Card (White) -->
+											<Border Classes="goal-card-under" IsVisible="{Binding !IsOverBudget}">
+												<StackPanel Spacing="12">
+													<TextBlock Text="{Binding TagName}"
+													          FontSize="18"
+													          FontWeight="SemiBold"
+													          Foreground="#333333"/>
+												
+													<Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*">
+														<!-- Goal Amount -->
+														<TextBlock Grid.Row="0" Grid.Column="0"
+														          Text="Goal:"
+														          FontSize="14"
+														          Foreground="#666666"
+														          Margin="0,0,8,4"/>
+														<TextBlock Grid.Row="0" Grid.Column="1"
+														          Text="{Binding FormattedGoalAmount}"
+														          FontSize="14"
+														          FontWeight="SemiBold"
+														          Foreground="#333333"
+														          HorizontalAlignment="Right"
+														          Margin="0,0,0,4"/>
+													
+														<!-- Actual Spending -->
+														<TextBlock Grid.Row="1" Grid.Column="0"
+														          Text="Actual:"
+														          FontSize="14"
+														          Foreground="#666666"
+														          Margin="0,0,8,4"/>
+														<TextBlock Grid.Row="1" Grid.Column="1"
+														          Text="{Binding FormattedActualSpending}"
+														          FontSize="14"
+														          FontWeight="SemiBold"
+														          Foreground="#333333"
+														          HorizontalAlignment="Right"
+														          Margin="0,0,0,4"/>
+													
+														<!-- Difference -->
+														<TextBlock Grid.Row="2" Grid.Column="0"
+														          Text="{Binding DifferenceLabel}"
+														          FontSize="14"
+														          Foreground="#4CAF50"
+														          FontWeight="Medium"
+														          Margin="0,0,8,0"/>
+														<TextBlock Grid.Row="2" Grid.Column="1"
+														          Text="{Binding FormattedDifference}"
+														          FontSize="16"
+														          FontWeight="Bold"
+														          Foreground="#4CAF50"
+														          HorizontalAlignment="Right"/>
+													</Grid>
+												</StackPanel>
+											</Border>
 
-												<!-- Value Display -->
-												<TextBlock Text="{Binding SummaryValue}"
-	                                                      Classes="value"
-	                                                      HorizontalAlignment="Left"/>
+											<!-- Over Budget Card (Yellow) -->
+											<Border Classes="goal-card-over" IsVisible="{Binding IsOverBudget}">
+												<StackPanel Spacing="12">
+													<TextBlock Text="{Binding TagName}"
+													          FontSize="18"
+													          FontWeight="SemiBold"
+													          Foreground="#333333"/>
+												
+													<Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*">
+														<!-- Goal Amount -->
+														<TextBlock Grid.Row="0" Grid.Column="0"
+														          Text="Goal:"
+														          FontSize="14"
+														          Foreground="#666666"
+														          Margin="0,0,8,4"/>
+														<TextBlock Grid.Row="0" Grid.Column="1"
+														          Text="{Binding FormattedGoalAmount}"
+														          FontSize="14"
+														          FontWeight="SemiBold"
+														          Foreground="#333333"
+														          HorizontalAlignment="Right"
+														          Margin="0,0,0,4"/>
+													
+														<!-- Actual Spending -->
+														<TextBlock Grid.Row="1" Grid.Column="0"
+														          Text="Actual:"
+														          FontSize="14"
+														          Foreground="#666666"
+														          Margin="0,0,8,4"/>
+														<TextBlock Grid.Row="1" Grid.Column="1"
+														          Text="{Binding FormattedActualSpending}"
+														          FontSize="14"
+														          FontWeight="SemiBold"
+														          Foreground="#333333"
+														          HorizontalAlignment="Right"
+														          Margin="0,0,0,4"/>
+													
+														<!-- Difference -->
+														<TextBlock Grid.Row="2" Grid.Column="0"
+														          Text="{Binding DifferenceLabel}"
+														          FontSize="14"
+														          Foreground="#D32F2F"
+														          FontWeight="Medium"
+														          Margin="0,0,8,0"/>
+														<TextBlock Grid.Row="2" Grid.Column="1"
+														          Text="{Binding FormattedDifference}"
+														          FontSize="16"
+														          FontWeight="Bold"
+														          Foreground="#D32F2F"
+														          HorizontalAlignment="Right"/>
+													</Grid>
+												</StackPanel>
+											</Border>
+										</Panel>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+						</StackPanel>
+
+						<!-- Tracked Tags Section -->
+						<StackPanel Spacing="12" IsVisible="{Binding TrackedTagSpending.Count}">
+							<TextBlock Text="Other Tracked Tags"
+							          Classes="section-header"/>
+							
+							<ItemsControl ItemsSource="{Binding TrackedTagSpending}">
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<WrapPanel Orientation="Horizontal"/>
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<Border Classes="tracked-tag-card">
+											<StackPanel Spacing="8">
+												<TextBlock Text="{Binding TagName}"
+												          FontSize="16"
+												          FontWeight="SemiBold"
+												          Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+												<TextBlock Text="{Binding FormattedSpending}"
+												          FontSize="20"
+												          FontWeight="Bold"
+												          Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
 											</StackPanel>
 										</Border>
 									</DataTemplate>
 								</ItemsControl.ItemTemplate>
 							</ItemsControl>
-						</ScrollViewer>
-					</Grid>
-				</Border>
+						</StackPanel>
 
-				<!-- Right Side: Total Spending, Income, and Difference Cards -->
+						<!-- Other Spending Section -->
+						<StackPanel Spacing="12">
+							<TextBlock Text="Uncategorized Spending"
+							          Classes="section-header"/>
+							
+							<Border Classes="other-card" HorizontalAlignment="Left">
+								<StackPanel Spacing="8">
+									<TextBlock Text="Other"
+									          FontSize="16"
+									          FontWeight="SemiBold"
+									          Foreground="#333333"/>
+									<TextBlock Text="{Binding OtherSpending, StringFormat='${0:F2}'}"
+									          FontSize="20"
+									          FontWeight="Bold"
+									          Foreground="#333333"/>
+								</StackPanel>
+							</Border>
+						</StackPanel>
+
+					</StackPanel>
+				</ScrollViewer>
+
+				<!-- Right Side: Summary Cards -->
 				<Grid Grid.Column="1" RowDefinitions="*,*,*" Margin="16,0,0,0">
 					
 					<!-- Total Spending Card -->
@@ -314,7 +427,9 @@
 					<Border Classes="difference-card" Grid.Row="2" Margin="0,8,0,0" IsVisible="{Binding !IsDeficit}">
 						<StackPanel VerticalAlignment="Center" Spacing="12">
 							<!-- Difference Icon -->
-							<Border Background="#4CAF50"
+							<Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+									BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+									BorderThickness="1"
 									CornerRadius="12"
 									Width="60"
 									Height="60"
@@ -322,7 +437,7 @@
 								<PathIcon Data="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
 										 Width="28"
 										 Height="28"
-										 Foreground="White"
+										 Foreground="#4CAF50"
 										 HorizontalAlignment="Center"
 										 VerticalAlignment="Center"/>
 							</Border>
@@ -333,7 +448,6 @@
 										  FontSize="15"
 										  FontWeight="Medium"
 										  Foreground="#333333"
-										  Opacity="0.9"
 										  HorizontalAlignment="Center"
 										  TextWrapping="Wrap"
 										  TextAlignment="Center"/>
@@ -369,7 +483,6 @@
 										  FontSize="15"
 										  FontWeight="Medium"
 										  Foreground="#333333"
-										  Opacity="0.9"
 										  HorizontalAlignment="Center"
 										  TextWrapping="Wrap"
 										  TextAlignment="Center"/>

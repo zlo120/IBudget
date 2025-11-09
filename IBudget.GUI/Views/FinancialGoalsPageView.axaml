@@ -182,12 +182,13 @@
 												<TextBlock Text="Goal Name"
 														  FontSize="11"
 														  FontWeight="Medium"
-														  Opacity="0.7" />
+														  Opacity="0.7"
+														  Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
 												<TextBlock Text="{Binding Key}"
 														  FontSize="16"
 														  FontWeight="SemiBold"
 														  TextWrapping="Wrap"
-														  Foreground="{DynamicResource TextControlForeground}" />
+														  Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
 											</StackPanel>
 
 											<!-- Target Amount -->
@@ -195,8 +196,9 @@
 												<TextBlock Text="Monthly Target"
 														  FontSize="11"
 														  FontWeight="Medium"
-														  Opacity="0.7" />
-												<Border Background="{DynamicResource AccentTextFillColorPrimaryBrush}"
+														  Opacity="0.7"
+														  Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+												<Border Background="{DynamicResource AccentFillColorDefaultBrush}"
 													   CornerRadius="6"
 													   Padding="10,6"
 													   HorizontalAlignment="Left">
@@ -209,7 +211,7 @@
 
 											<!-- Status Badge -->
 											<StackPanel Grid.Row="2" Spacing="5" Margin="0,0,0,15">
-												<Border Background="{DynamicResource AccentTextFillColorSecondaryBrush}"
+												<Border Background="{DynamicResource AccentFillColorDefaultBrush}"
 													   CornerRadius="12"
 													   Padding="8,4"
 													   HorizontalAlignment="Left">
@@ -232,7 +234,7 @@
 													   Width="36"
 													   Height="36"
 													   Padding="0"
-													   Background="{DynamicResource SystemControlErrorTextForegroundBrush}"
+													   Background="#D32F2F"
 													   Foreground="White"
 													   CornerRadius="18"
 													   CommandParameter="{Binding Key}"

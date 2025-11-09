@@ -36,8 +36,8 @@
 			<Setter Property="CornerRadius" Value="8"/>
 			<Setter Property="FontWeight" Value="Medium"/>
 			<Setter Property="MinWidth" Value="150"/>
-			<Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
-			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="Background" Value="{DynamicResource AccentButtonBackground}"/>
+			<Setter Property="Foreground" Value="{DynamicResource AccentButtonForeground}"/>
 			<Setter Property="BorderThickness" Value="0"/>
 			<Setter Property="Transitions">
 				<Transitions>
@@ -47,11 +47,11 @@
 		</Style>
 
 		<Style Selector="Button.toggle-button:pointerover">
-			<Setter Property="Background" Value="{DynamicResource AccentFillColorSecondaryBrush}"/>
+			<Setter Property="Background" Value="{DynamicResource AccentButtonBackgroundPointerOver}"/>
 		</Style>
 
 		<Style Selector="Button.toggle-button:pressed">
-			<Setter Property="Background" Value="{DynamicResource AccentFillColorTertiaryBrush}"/>
+			<Setter Property="Background" Value="{DynamicResource AccentButtonBackgroundPressed}"/>
 		</Style>
 
 		<!-- Table Header Style -->
@@ -115,8 +115,8 @@
 		<!-- Amount Text Style -->
 		<Style Selector="TextBlock.amount-text">
 			<Setter Property="FontSize" Value="13"/>
-			<Setter Property="FontWeight" Value="Medium"/>
-			<Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
+			<Setter Property="FontWeight" Value="SemiBold"/>
+			<Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
 			<Setter Property="VerticalAlignment" Value="Center"/>
 			<Setter Property="HorizontalAlignment" Value="Right"/>
 		</Style>
