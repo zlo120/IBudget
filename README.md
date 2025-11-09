@@ -1,62 +1,138 @@
-# IBudget 💸
+# IBudget
+> Note: IBudget is the development name, the application name is Stacks
 
-Welcome to the documentation for IBudget. This document provides an overview of the API calls available for interacting with the backend of IBudget.
+A personal finance management application built with .NET 8 and Avalonia UI. Track expenses, manage income, set financial goals, and get insights into your spending habits.
 
-## 📖 SQLite db 
-The console application will create a `IBudget.db` file wherever the data string specifies. An example data string is `"Data Source=C:\\Users\\Zac.Lo\\AppData\\Local\\IBudget\\IBudgetDB\\IBudget.db"` and therefore if that directory and the `IBudget.db` file doesn't exist, both directory and file will be created at `C:\Users\Zac.Lo\AppData\Local\IBudget\IBudgetDB\IBudget.db`.
+## Prerequisites
 
-## 🐍 Python script - init db 
-Running the python script `ibudget_init_db.py` should build the db migration and update the database. If you do not wish to do this automatically you can run the following commands.
+Before you start, make sure you have these installed:
 
-## 🧑‍💻 Entity Framework Commands 
-- **Install EFCore in CLI:** `dotnet tool install --global dotnet-ef`
-- **Create migration:** `dotnet-ef migrations add MyMigration --context Context --project IBudget.Infrastructure --startup-project IBudget.ConsoleUI`
-- **Update db:** `dotnet-ef database update --context Context --project IBudget.Infrastructure  --startup-project IBudget.ConsoleUI`
+- .NET 8 SDK or later
+- MongoDB Community Server (for database storage)
+- Git (to clone the repository)
 
-## 📄 MongoDB 
-This application uses MongoDB. For your local environment, you must install MongoDB Community Server, Mongo Shell (or MongoSh) and it is recommended you to install MongoDB compass too.
+Optional but recommended:
+- MongoDB Compass (GUI for viewing your data)
+- MongoSH (MongoDB shell for command-line operations)
 
-- **MongoDB Community Server:** https://www.mongodb.com/try/download/community
-- **MongoSH & MongoDB compass:** https://www.mongodb.com/try/download/compass 
+## Getting Started
 
-### **Recommended DB name and collection name**
-The application looks for DB called `IBudget` with the collection name `userDictionaries`.
+### Clone the Repository
 
-### **Helpful MongoDB commands**
-#### To find your DB connection string:
-1. Open mongo shell, but using the command `> mongosh` in terminal
-2. Use your db, `> use db-name`. For example, I would run `> use IBudget`
-3. `> db.getMongo()`
-
-## ⚙️ AppSettings 
-Both `appsettings.json` for the `IBudget.ConsoleUI` project and `IBudget.API` project are untracked. Here are templates to create your own `appsettings.json` in the root directory of both projects. 
-
-### IBudget.ConsoleUI\appsettings.json
+```bash
+git clone https://github.com/zlo120/IBudget.git
+cd IBudget
 ```
-{
-  "Logging": {
-    "LogLevel": {
-      "Default" : "None"
-    }
-  },
-  "DBtype": "SQLite",
-  "ConnectionStrings": {
-    "SQLite": "",
-    "MongoDB": ""
-  },
-  "MongoDbUserId": 1
-}
+
+### Database Setup
+
+The application supports both LiteDB and MongoDB. For most users, MongoDB is recommended.
+
+#### MongoDB Setup
+
+1. Install MongoDB Community Server from https://www.mongodb.com/try/download/community
+2. Install MongoDB Compass and MongoSH from https://www.mongodb.com/try/download/compass
+
+Once MongoDB is running, the application will automatically create a database named `IBudget` with the necessary collections on first run. The main collection used is `userDictionaries`.
+
+If you need to find your MongoDB connection string:
+```bash
+mongosh
+use IBudget
+db.getMongo()
 ```
-### IBudget.API\appsettings.json
+
+### Building the Application
+
+The simplest way to build the entire solution:
+
+```bash
+dotnet build IBudget.sln
 ```
-{
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
-  "AllowedHosts": "*",
-  "MongoDbUserId": 1
-}
+
+This compiles all three projects in the solution:
+- `IBudget.Core` - Core business logic and models
+- `IBudget.Infrastructure` - Database context and repositories
+- `IBudget.GUI` - Avalonia-based user interface
+
+For a release build:
+
+```bash
+dotnet build IBudget.sln -c Release
 ```
+
+### Running the Application
+
+#### Development Mode
+
+To run the GUI application in development mode:
+
+```bash
+dotnet run --project IBudget.GUI/IBudget.GUI.csproj
+```
+
+Or if you're using Visual Studio, just set `IBudget.GUI` as the startup project and hit F5.
+
+#### Using VS Code Tasks
+
+If you're working in VS Code, there are predefined tasks available:
+
+- `build` - Builds the solution
+- `publish` - Publishes the solution for distribution
+- `watch` - Runs the app with hot reload enabled
+
+You can run these from the Command Palette (Ctrl+Shift+P) by selecting "Tasks: Run Task".
+
+### Project Structure
+
+The solution follows a clean architecture approach:
+
+- **IBudget.Core** - Domain models, interfaces, services, and business logic. No dependencies on external frameworks.
+- **IBudget.Infrastructure** - Implementation of data access using MongoDB and LiteDB, repository patterns.
+- **IBudget.GUI** - Avalonia UI application with MVVM pattern, views, and view models.
+
+### Configuration Notes
+
+The application uses LiteDB by default for local storage. If you prefer MongoDB or need to customize database settings, you can modify the connection strings in the application's settings after first launch.
+
+Database files are typically stored in:
+```
+C:\Users\{YourUsername}\AppData\Local\IBudget\IBudgetDB\
+```
+
+### Common Issues
+
+**Build fails with missing dependencies**
+```bash
+dotnet restore IBudget.sln
+dotnet build IBudget.sln
+```
+
+**MongoDB connection issues**
+
+Make sure MongoDB service is running. On Windows, check Services for "MongoDB Server". On macOS/Linux, run:
+```bash
+sudo systemctl status mongod
+```
+
+**Application won't start**
+
+Check that you have .NET 8 runtime installed:
+```bash
+dotnet --list-runtimes
+```
+
+## Development
+
+The application uses:
+- Avalonia 11.2 for cross-platform UI
+- CommunityToolkit.Mvvm for MVVM implementation
+- MongoDB.EntityFrameworkCore for database operations
+- ClosedXML for spreadsheet generation
+- CsvHelper for CSV import/export
+
+When adding new features or fixing bugs, run the build task regularly to catch any compilation issues early.
+
+## License
+
+See the LICENSE file for details.
