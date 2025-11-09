@@ -39,6 +39,12 @@ namespace IBudget.GUI.ViewModels.DataView
         [ObservableProperty]
         private double _totalIncome = 0.0;
 
+        [ObservableProperty]
+        private double _difference = 0.0;
+
+        [ObservableProperty]
+        private bool _isDeficit = false;
+
         public MonthlyViewModel(ITagService tagService, ISummaryService summaryService, IMessageService messageService, IFinancialGoalService financialGoalService)
         {
             ThisMonth = DateTime.Now.ToString("MMMM");
@@ -126,6 +132,10 @@ namespace IBudget.GUI.ViewModels.DataView
 
                 TotalSpending = allExpenses.Select(expense => expense.Amount).Sum();
                 TotalIncome = allIncome.Select(income => income.Amount).Sum();
+                
+                // Calculate difference (Income - Expenses)
+                Difference = TotalIncome - TotalSpending;
+                IsDeficit = Difference < 0;
             }
             catch (Exception ex)
             {

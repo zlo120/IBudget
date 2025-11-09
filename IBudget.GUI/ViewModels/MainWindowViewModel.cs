@@ -89,6 +89,7 @@ namespace IBudget.GUI.ViewModels
 
         [ObservableProperty]
         private ListItemTemplate? _selectedListItem;
+        
         partial void OnSelectedListItemChanged(ListItemTemplate? value)
         {
             if (value is null) return;
@@ -113,6 +114,16 @@ namespace IBudget.GUI.ViewModels
 
             if (instance is null) return;
             CurrentPage = instance;
+            
+            // Refresh the view when navigating to it
+            TryRefreshView(instance);
+        }
+
+        private static void TryRefreshView(ViewModelBase instance)
+        {
+            // Use reflection to call RefreshView if it exists
+            var refreshMethod = instance.GetType().GetMethod("RefreshView");
+            refreshMethod?.Invoke(instance, null);
         }
 
         public ObservableCollection<ListItemTemplate> Items { get; } = new()

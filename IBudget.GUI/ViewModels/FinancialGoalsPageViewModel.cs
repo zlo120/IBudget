@@ -36,8 +36,9 @@ namespace IBudget.GUI.ViewModels
 
         private void RemoveGoalFromCollection()
         {
-            InitializeFinancialGoalsAsync();
+            _ = InitializeFinancialGoalsAsync();
         }
+        
         private async Task InitializeFinancialGoalsAsync()
         {
             try
@@ -120,6 +121,10 @@ namespace IBudget.GUI.ViewModels
             await InitializeFinancialGoalsAsync();
         }
 
+        public void RefreshView()
+        {
+            _ = InitializeFinancialGoalsAsync();
+        }
     }
 
     public partial class FinancialGoalListItem(Action removeFromCollection, IFinancialGoalService financialGoalService, IMessageService messageService)

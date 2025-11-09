@@ -2,6 +2,8 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
+using IBudget.GUI.ViewModels;
 
 namespace IBudget.GUI.Views
 {
@@ -12,6 +14,16 @@ namespace IBudget.GUI.Views
         public FinancialGoalsPageView()
         {
             InitializeComponent();
+            Loaded += OnLoaded;
+        }
+
+        private void OnLoaded(object? sender, RoutedEventArgs e)
+        {
+            // Refresh the data when the page is loaded/navigated to
+            if (DataContext is FinancialGoalsPageViewModel viewModel)
+            {
+                viewModel.RefreshView();
+            }
         }
 
         private void OnAmountTextInput(object? sender, TextInputEventArgs e)
