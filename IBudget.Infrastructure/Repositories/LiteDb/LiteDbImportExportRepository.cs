@@ -33,7 +33,7 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
             return exportDirectory;
         }
 
-        public Task ImportData(string filePath)
+        public async Task ImportData(string filePath)
         {
             // Read the JSON file
             var jsonContent = File.ReadAllText(filePath);
@@ -59,39 +59,37 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
             {
                 case var name when name == DatabaseCollections.ExpenseRuleTags:
                     var expenseRuleTagsData = System.Text.Json.JsonSerializer.Deserialize<ExportFile<ExpenseRuleTag>>(jsonContent, options);
-                    ImportUtils.ImportCollectionIntoLiteDb(_expenseRuleTagsCollection, expenseRuleTagsData!.Data);
+                    await ImportUtils.ImportCollectionIntoLiteDb(_expenseRuleTagsCollection, expenseRuleTagsData!.Data);
                     break;
 
                 case var name when name == DatabaseCollections.ExpenseTags:
                     var expenseTagsData = System.Text.Json.JsonSerializer.Deserialize<ExportFile<ExpenseTag>>(jsonContent, options);
-                    ImportUtils.ImportCollectionIntoLiteDb(_expenseTagsCollection, expenseTagsData!.Data);
+                    await ImportUtils.ImportCollectionIntoLiteDb(_expenseTagsCollection, expenseTagsData!.Data);
                     break;
 
                 case var name when name == DatabaseCollections.Expenses:
                     var expensesData = System.Text.Json.JsonSerializer.Deserialize<ExportFile<Expense>>(jsonContent, options);
-                    ImportUtils.ImportCollectionIntoLiteDb(_expensesCollection, expensesData!.Data);
+                    await ImportUtils.ImportCollectionIntoLiteDb(_expensesCollection, expensesData!.Data);
                     break;
 
                 case var name when name == DatabaseCollections.Income:
                     var incomeData = System.Text.Json.JsonSerializer.Deserialize<ExportFile<Income>>(jsonContent, options);
-                    ImportUtils.ImportCollectionIntoLiteDb(_incomeCollection, incomeData!.Data);
+                    await ImportUtils.ImportCollectionIntoLiteDb(_incomeCollection, incomeData!.Data);
                     break;
 
                 case var name when name == DatabaseCollections.Tags:
                     var tagsData = System.Text.Json.JsonSerializer.Deserialize<ExportFile<Tag>>(jsonContent, options);
-                    ImportUtils.ImportCollectionIntoLiteDb(_tagsCollection, tagsData!.Data);
+                    await ImportUtils.ImportCollectionIntoLiteDb(_tagsCollection, tagsData!.Data);
                     break;
 
                 case var name when name == DatabaseCollections.FinancialGoals:
                     var financialGoalsData = System.Text.Json.JsonSerializer.Deserialize<ExportFile<FinancialGoal>>(jsonContent, options);
-                    ImportUtils.ImportCollectionIntoLiteDb(_financialGoalsCollection, financialGoalsData!.Data);
+                    await ImportUtils.ImportCollectionIntoLiteDb(_financialGoalsCollection, financialGoalsData!.Data);
                     break;
 
                 default:
                     throw new ArgumentException($"Unknown collection name: {collectionName}");
             }
-
-            return Task.CompletedTask;
         }
     }
 }

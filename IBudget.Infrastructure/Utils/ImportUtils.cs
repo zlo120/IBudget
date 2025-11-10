@@ -60,11 +60,11 @@ namespace IBudget.Infrastructure.Utils
         }
 
         /// <summary>
-        /// Imports data into LiteDB collection (synchronous version).
+        /// Imports data into LiteDB collection (async version).
         /// If an item with the same Id exists, it will be replaced. Otherwise, it will be inserted.
         /// Handles duplicate IDs in import data by keeping the last occurrence.
         /// </summary>
-        public static void ImportCollectionIntoLiteDb<T>(ILiteCollectionAsync<T> collection, List<T> data) where T : BaseModel
+        public static async Task ImportCollectionIntoLiteDb<T>(ILiteCollectionAsync<T> collection, List<T> data) where T : BaseModel
         {
             if (data == null || data.Count == 0)
                 return;
@@ -81,18 +81,23 @@ namespace IBudget.Infrastructure.Utils
                     if (item.Id == null || item.Id == MongoDB.Bson.ObjectId.Empty)
                     {
                         item.Id = MongoDB.Bson.ObjectId.GenerateNewId();
-                        collection.InsertAsync(item);
+                        await collection.InsertAsync(item);
                     }
                     else
                     {
-                        var existingItem = collection.FindByIdAsync(new BsonValue(item.Id.ToString()));
-                        if (existingItem != null) collection.UpdateAsync(item);
-                        else collection.InsertAsync(item);
+                        var existingItem = await collection.FindByIdAsync(new BsonValue(item.Id.ToString()));
+                        if (existingItem != null)
+                        {
+                            await collection.UpdateAsync(item);
+                        }
+                        else
+                        {
+                            await collection.InsertAsync(item);
+                        }
                     }
                 }
-                catch (LiteException ex) when (ex.ErrorCode == LiteException.INDEX_DUPLICATE_KEY)
+                catch (LiteAsyncException)
                 {
-                    // Silently ignore duplicate key errors
                     continue;
                 }
             }
