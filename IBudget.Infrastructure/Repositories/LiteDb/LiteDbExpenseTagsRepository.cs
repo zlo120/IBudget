@@ -91,6 +91,11 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
             return await _expenseTagsCollection.FindOneAsync(e => e.Title.Equals(title, StringComparison.OrdinalIgnoreCase));
         }
 
+        public async Task<List<ExpenseTag>> Search(string searchString)
+        {
+            return [..await _expenseTagsCollection.FindAsync(e => e.Title.Contains(searchString))];
+        }
+
         public async Task<ExpenseTag> UpdateExpenseTag(ExpenseTag expenseTag)
         {
             var existingTag = await _expenseTagsCollection.FindOneAsync(e => e.Title == expenseTag.Title);

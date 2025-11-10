@@ -50,6 +50,11 @@ namespace IBudget.Core.Services
             return await _expenseTagsRepository.GetExpenseTagByTitle(title);
         }
 
+        public async Task<List<ExpenseTag>> Search(string searchString)
+        {
+            return await _expenseTagsRepository.Search(searchString);
+        }
+
         public async Task<ExpenseTag> UpdateExpenseTag(ExpenseTag expenseTag)
         {
             return await _expenseTagsRepository.UpdateExpenseTag(expenseTag);

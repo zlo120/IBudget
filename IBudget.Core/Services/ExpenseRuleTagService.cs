@@ -53,5 +53,10 @@ namespace IBudget.Core.Services
         {
             await _expenseRuleTagRepository.ClearCollection();
         }
+
+        public async Task<List<ExpenseRuleTag>> Search(string searchString)
+        {
+            return await _expenseRuleTagRepository.Search(searchString);
+        }
     }
 }

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Timers;
 using Avalonia.Data.Converters;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -82,12 +83,19 @@ namespace IBudget.GUI.ViewModels
         [ObservableProperty]
         private bool _isIgnored = false;
 
+        [ObservableProperty]
+        private string _searchText = string.Empty;
+
+        [ObservableProperty]
+        private bool _isSearchActive = false;
+
         public ObservableCollection<string> AvailableTags { get; } = new();
 
         private readonly IExpenseTagService _expenseTagService;
         private readonly IExpenseRuleTagService _expenseRuleTagService;
         private readonly IMessageService _messageService;
         private readonly ITagService _tagService;
+        private readonly System.Timers.Timer _searchDebounceTimer;
 
         public DictionariesPageViewModel(IExpenseTagService expenseTagService, IExpenseRuleTagService expenseRuleTagService, IMessageService messageService, ITagService tagService)
         {
@@ -95,7 +103,135 @@ namespace IBudget.GUI.ViewModels
             _expenseRuleTagService = expenseRuleTagService;
             _messageService = messageService;
             _tagService = tagService;
+            
+            // Initialize debounce timer (500ms delay)
+            _searchDebounceTimer = new System.Timers.Timer(500);
+            _searchDebounceTimer.Elapsed += OnSearchDebounceTimerElapsed;
+            _searchDebounceTimer.AutoReset = false;
+            
             _ = InitializeDbSearchAsync(); // Change to async Task
+        }
+
+        partial void OnSearchTextChanged(string value)
+        {
+            // Reset and restart the debounce timer
+            _searchDebounceTimer.Stop();
+            
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                _searchDebounceTimer.Start();
+            }
+            else
+            {
+                // If search text is empty, reset immediately
+                _ = ResetSearch();
+            }
+        }
+
+        private async void OnSearchDebounceTimerElapsed(object? sender, ElapsedEventArgs e)
+        {
+            await PerformSearch();
+        }
+
+        [RelayCommand]
+        private async Task PerformSearch()
+        {
+            var currentSearchText = SearchText;
+            if (string.IsNullOrWhiteSpace(currentSearchText))
+            {
+                await ResetSearch();
+                return;
+            }
+
+            IsLoadingED = true;
+            IsLoadingRD = true;
+            IsSearchActive = true;
+
+            try
+            {
+                var expenseTagsTask = _expenseTagService.Search(currentSearchText);
+                var expenseRuleTagsTask = _expenseRuleTagService.Search(currentSearchText);
+
+                await Task.WhenAll(expenseTagsTask, expenseRuleTagsTask);
+
+                ExpenseTags = await expenseTagsTask;
+                ExpenseRuleTags = await expenseRuleTagsTask;
+
+                UpdateExpenseTagsCollection();
+                UpdateExpenseRuleTagsCollection();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error performing search: {ex.Message}");
+                await _messageService.ShowErrorAsync($"Error performing search: {ex.Message}");
+            }
+            finally
+            {
+                IsLoadingED = false;
+                IsLoadingRD = false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task ResetSearch()
+        {
+            SearchText = string.Empty;
+            IsSearchActive = false;
+            _searchDebounceTimer.Stop();
+
+            IsLoadingED = true;
+            IsLoadingRD = true;
+
+            try
+            {
+                var expenseTagsTask = GetExpenseTagsAsync();
+                var expenseRuleTagsTask = GetExpenseRuleTagsAsync();
+
+                await Task.WhenAll(expenseTagsTask, expenseRuleTagsTask);
+
+                ExpenseTags = await expenseTagsTask;
+                ExpenseRuleTags = await expenseRuleTagsTask;
+
+                UpdateExpenseTagsCollection();
+                UpdateExpenseRuleTagsCollection();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error resetting search: {ex.Message}");
+            }
+            finally
+            {
+                IsLoadingED = false;
+                IsLoadingRD = false;
+            }
+        }
+
+        private void UpdateExpenseTagsCollection()
+        {
+            ExpenseTagsInfo.Clear();
+            if (ExpenseTags is not null)
+            {
+                foreach (var eD in ExpenseTags)
+                {
+                    var container = new InfoContainer() { Key = eD.Title, Value = eD.Tags.First(), IsIgnored = eD.IsIgnored };
+                    container.SetExpenseTagData(eD, _expenseTagService, _messageService, RemoveExpenseTagFromCollection);
+                    ExpenseTagsInfo.Add(container);
+                }
+            }
+        }
+
+        private void UpdateExpenseRuleTagsCollection()
+        {
+            ExpenseRuleTagsInfo.Clear();
+            if (ExpenseRuleTags is not null)
+            {
+                foreach (var rD in ExpenseRuleTags)
+                {
+                    var container = new InfoContainer() { Key = rD.Rule, Value = rD.Tags.First(), IsIgnored = rD.IsIgnored };
+                    container.SetExpenseRuleTagData(rD, _expenseRuleTagService, _messageService, RemoveExpenseRuleTagFromCollection);
+                    ExpenseRuleTagsInfo.Add(container);
+                }
+            }
         }
 
         private async Task InitializeDbSearchAsync() // Changed from async void
@@ -256,28 +392,12 @@ namespace IBudget.GUI.ViewModels
 
         private void FinishEdDbSearch()
         {
-            if (ExpenseTags is not null)
-            {
-                foreach (var eD in ExpenseTags)
-                {
-                    var container = new InfoContainer() { Key = eD.Title, Value = eD.Tags.First(), IsIgnored = eD.IsIgnored };
-                    container.SetExpenseTagData(eD, _expenseTagService, _messageService, RemoveExpenseTagFromCollection);
-                    ExpenseTagsInfo.Add(container);
-                }
-            }
+            UpdateExpenseTagsCollection();
         }
 
         private void FinishRdDbSearch()
         {
-            if (ExpenseRuleTags is not null)
-            {
-                foreach (var rD in ExpenseRuleTags)
-                {
-                    var container = new InfoContainer() { Key = rD.Rule, Value = rD.Tags.First(), IsIgnored = rD.IsIgnored };
-                    container.SetExpenseRuleTagData(rD, _expenseRuleTagService, _messageService, RemoveExpenseRuleTagFromCollection);
-                    ExpenseRuleTagsInfo.Add(container);
-                }
-            }
+            UpdateExpenseRuleTagsCollection();
         }
 
         private void RemoveExpenseTagFromCollection(InfoContainer item)

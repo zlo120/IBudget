@@ -129,5 +129,10 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
 
             return expenseRuleTag;
         }
+
+        public async Task<List<ExpenseRuleTag>> Search(string searchString)
+        {
+            return [.. await _expenseRuleTagsCollection.FindAsync(e => e.Rule.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))];
+        }
     }
 }

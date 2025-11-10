@@ -26,6 +26,56 @@
                               Foreground="{DynamicResource TextControlForeground}" />
 				</StackPanel>
 
+				<!-- Search Bar Section -->
+				<Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="20"
+                        Margin="0,0,0,20">
+					<StackPanel Spacing="10">
+						<TextBlock Text="🔍 Search Dictionary"
+                                  FontSize="14"
+                                  FontWeight="SemiBold"
+                                  HorizontalAlignment="Center"
+                                  Foreground="{DynamicResource TextControlForeground}" />
+						
+						<Grid ColumnDefinitions="*, Auto">
+							<!-- Search TextBox -->
+							<TextBox Grid.Column="0"
+									 Text="{Binding SearchText}"
+									 Watermark="Search by description, rule, or tag..."
+									 FontSize="13"
+									 Padding="12,8"
+									 CornerRadius="6"
+									 Background="{DynamicResource ControlFillColorDefaultBrush}"
+									 BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+									 Margin="0,0,10,0" />
+							
+							<!-- Reset Button -->
+							<Button Grid.Column="1"
+									Content="🔄 Reset"
+									Command="{Binding ResetSearchCommand}"
+									IsVisible="{Binding IsSearchActive}"
+									Padding="15,8"
+									FontSize="13"
+									CornerRadius="6"
+									Background="{DynamicResource ControlFillColorDefaultBrush}"
+									BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+									BorderThickness="1"
+									ToolTip.Tip="Clear search and show all items" />
+						</Grid>
+						
+						<!-- Search Status -->
+						<TextBlock Text="{Binding ExpenseTagsInfo.Count, StringFormat='Found {0} expense tag(s)'}"
+								   IsVisible="{Binding IsSearchActive}"
+								   FontSize="12"
+								   HorizontalAlignment="Center"
+								   Opacity="0.7"
+								   Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+					</StackPanel>
+				</Border>
+
 				<!-- Content Grid -->
 				<Grid ColumnDefinitions="1*, 1*">
 

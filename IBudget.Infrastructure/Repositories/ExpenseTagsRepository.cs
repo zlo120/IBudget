@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Office2010.Excel;
-using IBudget.Core.DatabaseModel;
+﻿using IBudget.Core.DatabaseModel;
 using IBudget.Core.Exceptions;
 using IBudget.Core.Model;
 using IBudget.Core.RepositoryInterfaces;
@@ -15,7 +14,7 @@ namespace IBudget.Infrastructure.Repositories
         private readonly IMongoCollection<Expense> _expensesCollection = context.GetExpensesCollection();
         private readonly IMongoCollection<Income> _incomeCollection = context.GetIncomeCollection();
         private readonly IMongoCollection<Tag> _tagsCollection = context.GetTagsCollection();
-        
+
         public async Task ClearCollection()
         {
             await _expenseTagsCollection.DeleteManyAsync(FilterDefinition<ExpenseTag>.Empty);
@@ -93,7 +92,7 @@ namespace IBudget.Infrastructure.Repositories
             );
             var tag = await _tagsCollection.Find(e => e.Name == expenseTag.Tags[0]).FirstOrDefaultAsync()
                 ?? throw new RecordNotFoundException();
-            
+
             var expenseFilter = Builders<Expense>.Filter.Eq("Notes", expenseTag.Title);
             await _expensesCollection.UpdateManyAsync(
                 expenseFilter,
@@ -120,6 +119,11 @@ namespace IBudget.Infrastructure.Repositories
                     .Set(e => e.Tags, replacement.Tags)
             );
             return (int)result.ModifiedCount;
+        }
+
+        public async Task<List<ExpenseTag>> Search(string searchString)
+        {
+            return await _expenseTagsCollection.Find(e => e.Title.Contains(searchString, StringComparison.CurrentCultureIgnoreCase)).ToListAsync();
         }
     }
 }

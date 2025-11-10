@@ -111,5 +111,12 @@ namespace IBudget.Infrastructure.Repositories
         {
             await _expenseRuleTagsCollection.DeleteManyAsync(FilterDefinition<ExpenseRuleTag>.Empty);
         }
+
+        public async Task<List<ExpenseRuleTag>> Search(string searchString)
+        {
+            return await _expenseRuleTagsCollection.Find(e => e.Rule.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
+                .SortByDescending(e => e.CreatedAt)
+                .ToListAsync();
+        }
     }
 }
