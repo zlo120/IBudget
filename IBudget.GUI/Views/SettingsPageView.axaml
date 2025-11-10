@@ -15,14 +15,25 @@
   </UserControl.Resources>
   
   <ScrollViewer>
-    <StackPanel Margin="20" Spacing="20">
+    <StackPanel Margin="32,24" Spacing="20">
       
-      <!-- Page Title -->
-      <TextBlock Text="Settings" 
-                 FontSize="24" 
-                 FontWeight="Bold" 
-                 Margin="0,0,0,10"
-                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+      <!-- Page Header -->
+      <StackPanel Spacing="8" Margin="0,0,0,24">
+        <TextBlock Text="SETTINGS" 
+                   FontSize="11" 
+                   FontWeight="Bold" 
+                   LetterSpacing="2"
+                   Opacity="0.6"
+                   Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+        <TextBlock Text="Configure Your Experience" 
+                   FontSize="32" 
+                   FontWeight="Black" 
+                   LineHeight="38"
+                   Foreground="{DynamicResource TextControlForeground}" />
+        <TextBlock Text="Manage database, updates, and data operations" 
+                   FontSize="14" 
+                   Opacity="0.65" />
+      </StackPanel>
       
       <!-- Database Configuration Section -->
       <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" 

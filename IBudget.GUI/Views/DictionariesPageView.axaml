@@ -11,19 +11,23 @@
 	<Grid>
 		<!-- Main Content -->
 		<ScrollViewer VerticalScrollBarVisibility="Auto">
-			<StackPanel Margin="30">
-				<!-- Header Section -->
-				<StackPanel Spacing="10" Margin="0,0,0,30">
-					<TextBlock Text="Tag Dictionary Management"
-                              FontSize="24"
-                              FontWeight="Bold"
-                              HorizontalAlignment="Center"
-                              Foreground="{DynamicResource TextControlForeground}" />
-					<TextBlock Text="View and manage expense categorization rules and mappings"
-                              FontSize="14"
-                              HorizontalAlignment="Center"
-                              Opacity="0.7"
-                              Foreground="{DynamicResource TextControlForeground}" />
+			<StackPanel Margin="32,24">
+				<!-- Page Header -->
+				<StackPanel Spacing="8" Margin="0,0,0,24">
+					<TextBlock Text="DICTIONARIES" 
+							  FontSize="11" 
+							  FontWeight="Bold" 
+							  LetterSpacing="2"
+							  Opacity="0.6"
+							  Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+					<TextBlock Text="Tag Mapping Rules" 
+							  FontSize="32" 
+							  FontWeight="Black" 
+							  LineHeight="38"
+							  Foreground="{DynamicResource TextControlForeground}" />
+					<TextBlock Text="View and manage expense categorization rules and mappings" 
+							  FontSize="14" 
+							  Opacity="0.65" />
 				</StackPanel>
 
 				<!-- Search Bar Section -->

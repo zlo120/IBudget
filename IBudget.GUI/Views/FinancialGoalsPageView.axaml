@@ -9,19 +9,23 @@
 			 x:CompileBindings="True">
 
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
-		<StackPanel Margin="30">
-			<!-- Header Section -->
-			<StackPanel Spacing="10" Margin="0,0,0,30">
-				<TextBlock Text="Financial Goals Management"
-                          FontSize="24"
-                          FontWeight="Bold"
-                          HorizontalAlignment="Center"
-                          Foreground="{DynamicResource TextControlForeground}" />
-				<TextBlock Text="Set and track your monthly spending targets and savings goals"
-                          FontSize="14"
-                          HorizontalAlignment="Center"
-                          Opacity="0.7"
-                          Foreground="{DynamicResource TextControlForeground}" />
+		<StackPanel Margin="32,24">
+			<!-- Page Header -->
+			<StackPanel Spacing="8" Margin="0,0,0,24">
+				<TextBlock Text="FINANCIAL GOALS" 
+						  FontSize="11" 
+						  FontWeight="Bold" 
+						  LetterSpacing="2"
+						  Opacity="0.6"
+						  Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+				<TextBlock Text="Budget Your Future" 
+						  FontSize="32" 
+						  FontWeight="Black" 
+						  LineHeight="38"
+						  Foreground="{DynamicResource TextControlForeground}" />
+				<TextBlock Text="Set and track your monthly spending targets and savings goals" 
+						  FontSize="14" 
+						  Opacity="0.65" />
 			</StackPanel>
 
 			<!-- Create Financial Goal Section -->

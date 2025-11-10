@@ -150,15 +150,22 @@
 
 			<!-- Header Section -->
 			<StackPanel Spacing="8" HorizontalAlignment="Center">
-				<TextBlock Text="Upload CSV File"
+				<TextBlock Text="CSV UPLOAD" 
+						  FontSize="11" 
+						  FontWeight="Bold" 
+						  LetterSpacing="2"
+						  Opacity="0.6"
+						  HorizontalAlignment="Center"
+						  Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+				<TextBlock Text="Import Your Transactions"
                           FontSize="28"
-                          FontWeight="Bold"
+                          FontWeight="Black"
                           HorizontalAlignment="Center"
                           Foreground="{DynamicResource TextControlForeground}"/>
 				<TextBlock Text="Select or drag and drop your CSV file to get started"
-                          FontSize="16"
+                          FontSize="14"
+						  Opacity="0.65"
                           HorizontalAlignment="Center"
-                          Foreground="{DynamicResource TextControlForeground}"
                           TextAlignment="Center"/>
 			</StackPanel>
 
