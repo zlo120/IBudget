@@ -93,7 +93,10 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
 
         public async Task<List<ExpenseTag>> Search(string searchString)
         {
-            return [..await _expenseTagsCollection.FindAsync(e => e.Title.Contains(searchString))];
+            // Search for ExpenseTags where either the title contains the search string OR any tag contains it
+            return [..await _expenseTagsCollection.FindAsync(e => 
+                e.Title.Contains(searchString, StringComparison.CurrentCultureIgnoreCase) || 
+                e.Tags.Any(tag => tag.Contains(searchString, StringComparison.CurrentCultureIgnoreCase)))];
         }
 
         public async Task<ExpenseTag> UpdateExpenseTag(ExpenseTag expenseTag)

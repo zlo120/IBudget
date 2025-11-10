@@ -132,7 +132,10 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
 
         public async Task<List<ExpenseRuleTag>> Search(string searchString)
         {
-            return [.. await _expenseRuleTagsCollection.FindAsync(e => e.Rule.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))];
+            // Search for ExpenseRuleTags where either the rule contains the search string OR any tag contains it
+            return [.. await _expenseRuleTagsCollection.FindAsync(e => 
+                e.Rule.Contains(searchString, StringComparison.CurrentCultureIgnoreCase) || 
+                e.Tags.Any(tag => tag.Contains(searchString, StringComparison.CurrentCultureIgnoreCase)))];
         }
     }
 }

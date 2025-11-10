@@ -123,7 +123,15 @@ namespace IBudget.Infrastructure.Repositories
 
         public async Task<List<ExpenseTag>> Search(string searchString)
         {
-            return await _expenseTagsCollection.Find(e => e.Title.Contains(searchString, StringComparison.CurrentCultureIgnoreCase)).ToListAsync();
+            var titleFilter = Builders<ExpenseTag>.Filter.Where(e => e.Title.Contains(searchString, StringComparison.CurrentCultureIgnoreCase));
+            var tagsFilter = Builders<ExpenseTag>.Filter.AnyIn(e => e.Tags, new[] { searchString });
+            
+            // Combine filters with OR - returns ExpenseTag if either title contains search string OR any tag contains it
+            var combinedFilter = Builders<ExpenseTag>.Filter.Or(titleFilter, tagsFilter);
+            
+            return await _expenseTagsCollection.Find(combinedFilter)
+                .SortByDescending(e => e.CreatedAt)
+                .ToListAsync();
         }
     }
 }

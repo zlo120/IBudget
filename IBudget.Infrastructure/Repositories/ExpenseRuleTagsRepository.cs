@@ -114,7 +114,13 @@ namespace IBudget.Infrastructure.Repositories
 
         public async Task<List<ExpenseRuleTag>> Search(string searchString)
         {
-            return await _expenseRuleTagsCollection.Find(e => e.Rule.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
+            var ruleFilter = Builders<ExpenseRuleTag>.Filter.Where(e => e.Rule.Contains(searchString, StringComparison.CurrentCultureIgnoreCase));
+            var tagsFilter = Builders<ExpenseRuleTag>.Filter.AnyIn(e => e.Tags, new[] { searchString });
+            
+            // Combine filters with OR - returns ExpenseRuleTag if either rule contains search string OR any tag contains it
+            var combinedFilter = Builders<ExpenseRuleTag>.Filter.Or(ruleFilter, tagsFilter);
+            
+            return await _expenseRuleTagsCollection.Find(combinedFilter)
                 .SortByDescending(e => e.CreatedAt)
                 .ToListAsync();
         }
