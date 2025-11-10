@@ -67,12 +67,10 @@ namespace IBudget.Infrastructure.Repositories
                 .Limit(pageSize)
                 .ToListAsync();
 
+            var hasMoreData = pageNumber < totalPageCount;
             return new PaginatedResponse<ExpenseTag>
             {
-                PageNumber = pageNumber,
-                PageSize = pageSize,
-                TotalDataCount = (int)totalDataCount,
-                TotalPageCount = totalPageCount,
+                HasMoreData = hasMoreData,
                 Data = data
             };
         }

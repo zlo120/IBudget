@@ -80,12 +80,10 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
                     .Limit(pageSize)
                     .ToListAsync();
 
+                var hasMoreData = pageNumber < totalPageCount;
                 return new PaginatedResponse<ExpenseRuleTag>
                 {
-                    PageNumber = pageNumber,
-                    PageSize = pageSize,
-                    TotalDataCount = totalDataCount,
-                    TotalPageCount = totalPageCount,
+                    HasMoreData = hasMoreData,
                     Data = data
                 };
             });
