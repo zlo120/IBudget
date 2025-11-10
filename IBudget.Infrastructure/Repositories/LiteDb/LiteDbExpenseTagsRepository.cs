@@ -89,12 +89,30 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
             return await _expenseTagsCollection.FindOneAsync(e => e.Title.Equals(title, StringComparison.OrdinalIgnoreCase));
         }
 
-        public async Task<List<ExpenseTag>> Search(string searchString)
+        public async Task<PaginatedResponse<ExpenseTag>> Search(string searchString, int pageNumber)
         {
+            var pageSize = 10;
+            var skip = (pageNumber - 1) * pageSize;
+
             // Search for ExpenseTags where either the title contains the search string OR any tag contains it
-            return [..await _expenseTagsCollection.FindAsync(e => 
+            var allResults = (await _expenseTagsCollection.FindAsync(e => 
                 e.Title.Contains(searchString, StringComparison.CurrentCultureIgnoreCase) || 
-                e.Tags.Any(tag => tag.Contains(searchString, StringComparison.CurrentCultureIgnoreCase)))];
+                e.Tags.Any(tag => tag.Contains(searchString, StringComparison.CurrentCultureIgnoreCase)))).ToList();
+            
+            var totalDataCount = allResults.Count();
+            var totalPageCount = (int)Math.Ceiling((double)totalDataCount / pageSize);
+            var data = allResults
+                .OrderByDescending(e => e.CreatedAt)
+                .Skip(skip)
+                .Take(pageSize)
+                .ToList();
+
+            var hasMoreData = pageNumber < totalPageCount;
+            return new PaginatedResponse<ExpenseTag>
+            {
+                HasMoreData = hasMoreData,
+                Data = data
+            };
         }
 
         public async Task<ExpenseTag> UpdateExpenseTag(ExpenseTag expenseTag)

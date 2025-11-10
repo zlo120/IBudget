@@ -110,17 +110,31 @@ namespace IBudget.Infrastructure.Repositories
             await _expenseRuleTagsCollection.DeleteManyAsync(FilterDefinition<ExpenseRuleTag>.Empty);
         }
 
-        public async Task<List<ExpenseRuleTag>> Search(string searchString)
+        public async Task<PaginatedResponse<ExpenseRuleTag>> Search(string searchString, int pageNumber)
         {
+            var pageSize = 10;
+            var skip = (pageNumber - 1) * pageSize;
+            
             var ruleFilter = Builders<ExpenseRuleTag>.Filter.Where(e => e.Rule.Contains(searchString, StringComparison.CurrentCultureIgnoreCase));
             var tagsFilter = Builders<ExpenseRuleTag>.Filter.AnyIn(e => e.Tags, new[] { searchString });
             
             // Combine filters with OR - returns ExpenseRuleTag if either rule contains search string OR any tag contains it
             var combinedFilter = Builders<ExpenseRuleTag>.Filter.Or(ruleFilter, tagsFilter);
             
-            return await _expenseRuleTagsCollection.Find(combinedFilter)
+            var totalDataCount = _expenseRuleTagsCollection.CountDocuments(combinedFilter);
+            var totalPageCount = (int)Math.Ceiling((double)totalDataCount / pageSize);
+            var data = await _expenseRuleTagsCollection.Find(combinedFilter)
                 .SortByDescending(e => e.CreatedAt)
+                .Skip(skip)
+                .Limit(pageSize)
                 .ToListAsync();
+
+            var hasMoreData = pageNumber < totalPageCount;
+            return new PaginatedResponse<ExpenseRuleTag>
+            {
+                HasMoreData = hasMoreData,
+                Data = data
+            };
         }
     }
 }

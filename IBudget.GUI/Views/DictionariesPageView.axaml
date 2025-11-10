@@ -124,73 +124,88 @@
 								<ScrollViewer IsVisible="{Binding !IsLoadingED}"
 			                                 VerticalScrollBarVisibility="Auto"
 			                                 Padding="15">
-									<ItemsControl ItemsSource="{Binding ExpenseTagsInfo}">
-										<ItemsControl.ItemTemplate>
-											<DataTemplate DataType="{x:Type vm:InfoContainer}">
-												<Border Background="{DynamicResource ControlFillColorDefaultBrush}"
-			                                           BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
-			                                           BorderThickness="1"
-			                                           CornerRadius="6"
-			                                           Padding="15"
-			                                           Margin="0,0,0,8">
-													<Grid RowDefinitions="Auto, Auto, Auto">
-														<StackPanel Grid.Row="0" Spacing="5">
-															<TextBlock Text="Expense Description"
-			                                                          FontSize="11"
-			                                                          FontWeight="Medium"
-			                                                          Opacity="0.7"
-			                                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-															<TextBlock Text="{Binding Key}"
-			                                                          FontSize="13"
-			                                                          TextWrapping="Wrap"
-			                                                          FontWeight="Medium"
-			                                                          Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
-														</StackPanel>
+									<StackPanel Spacing="10">
+										<ItemsControl ItemsSource="{Binding ExpenseTagsInfo}">
+											<ItemsControl.ItemTemplate>
+												<DataTemplate DataType="{x:Type vm:InfoContainer}">
+													<Border Background="{DynamicResource ControlFillColorDefaultBrush}"
+				                                           BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+				                                           BorderThickness="1"
+				                                           CornerRadius="6"
+				                                           Padding="15"
+				                                           Margin="0,0,0,8">
+														<Grid RowDefinitions="Auto, Auto, Auto">
+															<StackPanel Grid.Row="0" Spacing="5">
+																<TextBlock Text="Expense Description"
+				                                                          FontSize="11"
+				                                                          FontWeight="Medium"
+				                                                          Opacity="0.7"
+				                                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+																<TextBlock Text="{Binding Key}"
+				                                                          FontSize="13"
+				                                                          TextWrapping="Wrap"
+				                                                          FontWeight="Medium"
+				                                                          Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+															</StackPanel>
 
-														<StackPanel Grid.Row="1" Spacing="5" Margin="0,10,0,0">
-															<TextBlock Text="Assigned Tag"
-			                                                          FontSize="11"
-			                                                          FontWeight="Medium"
-			                                                          Opacity="0.7"
-			                                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-															<Border Background="{DynamicResource AccentFillColorDefaultBrush}"
-			                                                       CornerRadius="12"
-			                                                       Padding="8,4"
-			                                                       HorizontalAlignment="Left">
-																<TextBlock Text="{Binding Value}"
-			                                                              FontSize="11"
-			                                                              FontWeight="SemiBold"
-			                                                              Foreground="White" />
-															</Border>
-														</StackPanel>
+															<StackPanel Grid.Row="1" Spacing="5" Margin="0,10,0,0">
+																<TextBlock Text="Assigned Tag"
+				                                                          FontSize="11"
+				                                                          FontWeight="Medium"
+				                                                          Opacity="0.7"
+				                                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+																<Border Background="{DynamicResource AccentFillColorDefaultBrush}"
+				                                                       CornerRadius="12"
+				                                                       Padding="8,4"
+				                                                       HorizontalAlignment="Left">
+																	<TextBlock Text="{Binding Value}"
+				                                                              FontSize="11"
+				                                                              FontWeight="SemiBold"
+				                                                              Foreground="White" />
+																</Border>
+															</StackPanel>
 
-														<!-- Action Buttons -->
-														<StackPanel Grid.Row="2" Margin="0,10,0,0" Orientation="Horizontal" Spacing="8">
-															<Button Content="✏️ Edit"
-																	HorizontalAlignment="Left"
-																	Padding="8,4"
-																	FontSize="11"
-																	CornerRadius="4"
-																	Classes="accent"
-																	Command="{Binding $parent[UserControl].((vm:DictionariesPageViewModel)DataContext).OpenEditExpenseTagDialogCommand}"
-																	CommandParameter="{Binding}"
-																	ToolTip.Tip="Edit this expense dictionary entry" />
+															<!-- Action Buttons -->
+															<StackPanel Grid.Row="2" Margin="0,10,0,0" Orientation="Horizontal" Spacing="8">
+																<Button Content="✏️ Edit"
+																		HorizontalAlignment="Left"
+																		Padding="8,4"
+																		FontSize="11"
+																		CornerRadius="4"
+																		Classes="accent"
+																		Command="{Binding $parent[UserControl].((vm:DictionariesPageViewModel)DataContext).OpenEditExpenseTagDialogCommand}"
+																		CommandParameter="{Binding}"
+																		ToolTip.Tip="Edit this expense dictionary entry" />
 
-															<Button Content="🗑️ Delete"
-																	HorizontalAlignment="Right"
-																	Padding="8,4"
-																	FontSize="11"
-																	CornerRadius="4"
-																	Background="#D32F2F"
-																	Foreground="White"
-																	Command="{Binding DeleteExpenseTagCommand}"
-																	ToolTip.Tip="Delete this expense dictionary entry" />
-														</StackPanel>
-													</Grid>
-												</Border>
-											</DataTemplate>
-										</ItemsControl.ItemTemplate>
-									</ItemsControl>
+																<Button Content="🗑️ Delete"
+																		HorizontalAlignment="Right"
+																		Padding="8,4"
+																		FontSize="11"
+																		CornerRadius="4"
+																		Background="#D32F2F"
+																		Foreground="White"
+																		Command="{Binding DeleteExpenseTagCommand}"
+																		ToolTip.Tip="Delete this expense dictionary entry" />
+															</StackPanel>
+														</Grid>
+													</Border>
+												</DataTemplate>
+											</ItemsControl.ItemTemplate>
+										</ItemsControl>
+										
+										<!-- Load More Button -->
+										<Button Content="📥 Load More"
+												Command="{Binding LoadMoreExpenseTagsCommand}"
+												IsVisible="{Binding HasMoreExpenseTags}"
+												HorizontalAlignment="Center"
+												Padding="20,10"
+												FontSize="13"
+												CornerRadius="6"
+												Margin="0,10,0,0"
+												Background="{DynamicResource AccentFillColorDefaultBrush}"
+												Foreground="White"
+												ToolTip.Tip="Load more expense tags" />
+									</StackPanel>
 								</ScrollViewer>
 							</Grid>
 						</Border>
@@ -241,78 +256,93 @@
 								<ScrollViewer IsVisible="{Binding !IsLoadingRD}"
 			                                 VerticalScrollBarVisibility="Auto"
 			                                 Padding="15">
-									<ItemsControl ItemsSource="{Binding ExpenseRuleTagsInfo}">
-										<ItemsControl.ItemTemplate>
-											<DataTemplate DataType="{x:Type vm:InfoContainer}">
-												<Border Background="{DynamicResource ControlFillColorDefaultBrush}"
-			                                           BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
-			                                           BorderThickness="1"
-			                                           CornerRadius="6"
-			                                           Padding="15"
-			                                           Margin="0,0,0,8">
-													<Grid RowDefinitions="Auto, Auto, Auto">
-														<StackPanel Grid.Row="0" Spacing="5">
-															<TextBlock Text="Matching Rule"
-			                                                          FontSize="11"
-			                                                          FontWeight="Medium"
-			                                                          Opacity="0.7"
-			                                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-															<Border Background="{DynamicResource ControlFillColorInputActiveBrush}"
-			                                                       BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
-			                                                       BorderThickness="1"
-			                                                       CornerRadius="4"
-			                                                       Padding="8,6">
-																<TextBlock Text="{Binding Key}"
-			                                                              FontSize="12"
-			                                                              FontFamily="Consolas, 'Courier New', monospace"
-			                                                              TextWrapping="Wrap"
-			                                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
-															</Border>
-														</StackPanel>
+									<StackPanel Spacing="10">
+										<ItemsControl ItemsSource="{Binding ExpenseRuleTagsInfo}">
+											<ItemsControl.ItemTemplate>
+												<DataTemplate DataType="{x:Type vm:InfoContainer}">
+													<Border Background="{DynamicResource ControlFillColorDefaultBrush}"
+				                                           BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+				                                           BorderThickness="1"
+				                                           CornerRadius="6"
+				                                           Padding="15"
+				                                           Margin="0,0,0,8">
+														<Grid RowDefinitions="Auto, Auto, Auto">
+															<StackPanel Grid.Row="0" Spacing="5">
+																<TextBlock Text="Matching Rule"
+				                                                          FontSize="11"
+				                                                          FontWeight="Medium"
+				                                                          Opacity="0.7"
+				                                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+																<Border Background="{DynamicResource ControlFillColorInputActiveBrush}"
+				                                                       BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+				                                                       BorderThickness="1"
+				                                                       CornerRadius="4"
+				                                                       Padding="8,6">
+																	<TextBlock Text="{Binding Key}"
+				                                                              FontSize="12"
+				                                                              FontFamily="Consolas, 'Courier New', monospace"
+				                                                              TextWrapping="Wrap"
+				                                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+																</Border>
+															</StackPanel>
 
-														<StackPanel Grid.Row="1" Spacing="5" Margin="0,10,0,0">
-															<TextBlock Text="Applied Tag"
-			                                                          FontSize="11"
-			                                                          FontWeight="Medium"
-			                                                          Opacity="0.7"
-			                                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-															<Border Background="{DynamicResource AccentFillColorDefaultBrush}"
-			                                                       CornerRadius="12"
-			                                                       Padding="8,4"
-			                                                       HorizontalAlignment="Left">
-																<TextBlock Text="{Binding Value}"
-			                                                              FontSize="11"
-			                                                              FontWeight="SemiBold"
-			                                                              Foreground="White" />
-															</Border>
-														</StackPanel>
+															<StackPanel Grid.Row="1" Spacing="5" Margin="0,10,0,0">
+																<TextBlock Text="Applied Tag"
+				                                                          FontSize="11"
+				                                                          FontWeight="Medium"
+				                                                          Opacity="0.7"
+				                                                          Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+																<Border Background="{DynamicResource AccentFillColorDefaultBrush}"
+				                                                       CornerRadius="12"
+				                                                       Padding="8,4"
+				                                                       HorizontalAlignment="Left">
+																	<TextBlock Text="{Binding Value}"
+				                                                              FontSize="11"
+				                                                              FontWeight="SemiBold"
+				                                                              Foreground="White" />
+																</Border>
+															</StackPanel>
 
-														<!-- Action Buttons -->
-														<StackPanel Grid.Row="2" Margin="0,10,0,0" Orientation="Horizontal" Spacing="8">
-															<Button Content="✏️ Edit"
-																	HorizontalAlignment="Left"
-																	Padding="8,4"
-																	FontSize="11"
-																	CornerRadius="4"
-																	Command="{Binding $parent[UserControl].((vm:DictionariesPageViewModel)DataContext).OpenEditExpenseRuleTagDialogCommand}"
-																	CommandParameter="{Binding}"
-																	ToolTip.Tip="Edit this rule dictionary entry" />
+															<!-- Action Buttons -->
+															<StackPanel Grid.Row="2" Margin="0,10,0,0" Orientation="Horizontal" Spacing="8">
+																<Button Content="✏️ Edit"
+																		HorizontalAlignment="Left"
+																		Padding="8,4"
+																		FontSize="11"
+																		CornerRadius="4"
+																		Command="{Binding $parent[UserControl].((vm:DictionariesPageViewModel)DataContext).OpenEditExpenseRuleTagDialogCommand}"
+																		CommandParameter="{Binding}"
+																		ToolTip.Tip="Edit this rule dictionary entry" />
 
-															<Button Content="🗑️ Delete"
-																	HorizontalAlignment="Right"
-																	Padding="8,4"
-																	FontSize="11"
-																	CornerRadius="4"
-																	Background="#D32F2F"
-																	Foreground="White"
-																	Command="{Binding DeleteExpenseRuleTagCommand}"
-																	ToolTip.Tip="Delete this rule dictionary entry" />
-														</StackPanel>
-													</Grid>
-												</Border>
-											</DataTemplate>
-										</ItemsControl.ItemTemplate>
-									</ItemsControl>
+																<Button Content="🗑️ Delete"
+																		HorizontalAlignment="Right"
+																		Padding="8,4"
+																		FontSize="11"
+																		CornerRadius="4"
+																		Background="#D32F2F"
+																		Foreground="White"
+																		Command="{Binding DeleteExpenseRuleTagCommand}"
+																		ToolTip.Tip="Delete this rule dictionary entry" />
+															</StackPanel>
+														</Grid>
+													</Border>
+												</DataTemplate>
+											</ItemsControl.ItemTemplate>
+										</ItemsControl>
+										
+										<!-- Load More Button -->
+										<Button Content="📥 Load More"
+												Command="{Binding LoadMoreExpenseRuleTagsCommand}"
+												IsVisible="{Binding HasMoreExpenseRuleTags}"
+												HorizontalAlignment="Center"
+												Padding="20,10"
+												FontSize="13"
+												CornerRadius="6"
+												Margin="0,10,0,0"
+												Background="{DynamicResource AccentFillColorDefaultBrush}"
+												Foreground="White"
+												ToolTip.Tip="Load more rule tags" />
+									</StackPanel>
 								</ScrollViewer>
 							</Grid>
 						</Border>

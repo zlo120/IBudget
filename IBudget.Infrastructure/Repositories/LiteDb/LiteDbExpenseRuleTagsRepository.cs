@@ -128,12 +128,30 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
             return expenseRuleTag;
         }
 
-        public async Task<List<ExpenseRuleTag>> Search(string searchString)
+        public async Task<PaginatedResponse<ExpenseRuleTag>> Search(string searchString, int pageNumber)
         {
+            var pageSize = 10;
+            var skip = (pageNumber - 1) * pageSize;
+
             // Search for ExpenseRuleTags where either the rule contains the search string OR any tag contains it
-            return [.. await _expenseRuleTagsCollection.FindAsync(e => 
+            var allResults = (await _expenseRuleTagsCollection.FindAsync(e => 
                 e.Rule.Contains(searchString, StringComparison.CurrentCultureIgnoreCase) || 
-                e.Tags.Any(tag => tag.Contains(searchString, StringComparison.CurrentCultureIgnoreCase)))];
+                e.Tags.Any(tag => tag.Contains(searchString, StringComparison.CurrentCultureIgnoreCase)))).ToList();
+            
+            var totalDataCount = allResults.Count();
+            var totalPageCount = (int)Math.Ceiling((double)totalDataCount / pageSize);
+            var data = allResults
+                .OrderByDescending(e => e.CreatedAt)
+                .Skip(skip)
+                .Take(pageSize)
+                .ToList();
+
+            var hasMoreData = pageNumber < totalPageCount;
+            return new PaginatedResponse<ExpenseRuleTag>
+            {
+                HasMoreData = hasMoreData,
+                Data = data
+            };
         }
     }
 }

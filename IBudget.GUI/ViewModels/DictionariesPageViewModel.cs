@@ -9,6 +9,7 @@ using System.Timers;
 using Avalonia.Data.Converters;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using IBudget.Core.DatabaseModel;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
 using IBudget.GUI.Services;
@@ -89,6 +90,18 @@ namespace IBudget.GUI.ViewModels
         [ObservableProperty]
         private bool _isSearchActive = false;
 
+        [ObservableProperty]
+        private bool _hasMoreExpenseTags = false;
+
+        [ObservableProperty]
+        private bool _hasMoreExpenseRuleTags = false;
+
+        [ObservableProperty]
+        private int _expenseTagsCurrentPage = 1;
+
+        [ObservableProperty]
+        private int _expenseRuleTagsCurrentPage = 1;
+
         public ObservableCollection<string> AvailableTags { get; } = new();
 
         private readonly IExpenseTagService _expenseTagService;
@@ -143,19 +156,28 @@ namespace IBudget.GUI.ViewModels
                 return;
             }
 
+            // Reset pagination when performing new search
+            ExpenseTagsCurrentPage = 1;
+            ExpenseRuleTagsCurrentPage = 1;
+
             IsLoadingED = true;
             IsLoadingRD = true;
             IsSearchActive = true;
 
             try
             {
-                var expenseTagsTask = _expenseTagService.Search(currentSearchText);
-                var expenseRuleTagsTask = _expenseRuleTagService.Search(currentSearchText);
+                var expenseTagsTask = _expenseTagService.Search(currentSearchText, ExpenseTagsCurrentPage);
+                var expenseRuleTagsTask = _expenseRuleTagService.Search(currentSearchText, ExpenseRuleTagsCurrentPage);
 
                 await Task.WhenAll(expenseTagsTask, expenseRuleTagsTask);
 
-                ExpenseTags = await expenseTagsTask;
-                ExpenseRuleTags = await expenseRuleTagsTask;
+                var expenseTagsResult = await expenseTagsTask;
+                var expenseRuleTagsResult = await expenseRuleTagsTask;
+
+                ExpenseTags = expenseTagsResult.Data.ToList();
+                ExpenseRuleTags = expenseRuleTagsResult.Data.ToList();
+                HasMoreExpenseTags = expenseTagsResult.HasMoreData;
+                HasMoreExpenseRuleTags = expenseRuleTagsResult.HasMoreData;
 
                 UpdateExpenseTagsCollection();
                 UpdateExpenseRuleTagsCollection();
@@ -173,24 +195,115 @@ namespace IBudget.GUI.ViewModels
         }
 
         [RelayCommand]
+        private async Task LoadMoreExpenseTags()
+        {
+            if (!HasMoreExpenseTags || IsLoadingED) return;
+
+            IsLoadingED = true;
+            ExpenseTagsCurrentPage++;
+
+            try
+            {
+                PaginatedResponse<ExpenseTag> result;
+                if (IsSearchActive)
+                {
+                    result = await _expenseTagService.Search(SearchText, ExpenseTagsCurrentPage);
+                }
+                else
+                {
+                    result = await _expenseTagService.GetExpenseTagByPage(ExpenseTagsCurrentPage);
+                }
+
+                foreach (var tag in result.Data)
+                {
+                    ExpenseTags.Add(tag);
+                    var container = new InfoContainer() { Key = tag.Title, Value = tag.Tags.First(), IsIgnored = tag.IsIgnored };
+                    container.SetExpenseTagData(tag, _expenseTagService, _messageService, RemoveExpenseTagFromCollection);
+                    ExpenseTagsInfo.Add(container);
+                }
+
+                HasMoreExpenseTags = result.HasMoreData;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error loading more expense tags: {ex.Message}");
+                await _messageService.ShowErrorAsync($"Error loading more expense tags: {ex.Message}");
+            }
+            finally
+            {
+                IsLoadingED = false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task LoadMoreExpenseRuleTags()
+        {
+            if (!HasMoreExpenseRuleTags || IsLoadingRD) return;
+
+            IsLoadingRD = true;
+            ExpenseRuleTagsCurrentPage++;
+
+            try
+            {
+                PaginatedResponse<ExpenseRuleTag> result;
+                if (IsSearchActive)
+                {
+                    result = await _expenseRuleTagService.Search(SearchText, ExpenseRuleTagsCurrentPage);
+                }
+                else
+                {
+                    result = await _expenseRuleTagService.GetExpenseRuleTagByPage(ExpenseRuleTagsCurrentPage);
+                }
+
+                foreach (var tag in result.Data)
+                {
+                    ExpenseRuleTags.Add(tag);
+                    var container = new InfoContainer() { Key = tag.Rule, Value = tag.Tags.First(), IsIgnored = tag.IsIgnored };
+                    container.SetExpenseRuleTagData(tag, _expenseRuleTagService, _messageService, RemoveExpenseRuleTagFromCollection);
+                    ExpenseRuleTagsInfo.Add(container);
+                }
+
+                HasMoreExpenseRuleTags = result.HasMoreData;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error loading more expense rule tags: {ex.Message}");
+                await _messageService.ShowErrorAsync($"Error loading more expense rule tags: {ex.Message}");
+            }
+            finally
+            {
+                IsLoadingRD = false;
+            }
+        }
+
+        [RelayCommand]
         private async Task ResetSearch()
         {
             SearchText = string.Empty;
             IsSearchActive = false;
             _searchDebounceTimer.Stop();
 
+            // Reset pagination
+            ExpenseTagsCurrentPage = 1;
+            ExpenseRuleTagsCurrentPage = 1;
+
             IsLoadingED = true;
             IsLoadingRD = true;
 
             try
             {
-                var expenseTagsTask = GetExpenseTagsAsync();
-                var expenseRuleTagsTask = GetExpenseRuleTagsAsync();
+                var expenseTagsTask = _expenseTagService.GetExpenseTagByPage(ExpenseTagsCurrentPage);
+                var expenseRuleTagsTask = _expenseRuleTagService.GetExpenseRuleTagByPage(ExpenseRuleTagsCurrentPage);
 
                 await Task.WhenAll(expenseTagsTask, expenseRuleTagsTask);
 
-                ExpenseTags = await expenseTagsTask;
-                ExpenseRuleTags = await expenseRuleTagsTask;
+                var expenseTagsResult = await expenseTagsTask;
+                var expenseRuleTagsResult = await expenseRuleTagsTask;
+
+                ExpenseTags = expenseTagsResult.Data.ToList();
+                ExpenseRuleTags = expenseRuleTagsResult.Data.ToList();
+                HasMoreExpenseTags = expenseTagsResult.HasMoreData;
+                HasMoreExpenseRuleTags = expenseRuleTagsResult.HasMoreData;
 
                 UpdateExpenseTagsCollection();
                 UpdateExpenseRuleTagsCollection();
@@ -238,16 +351,26 @@ namespace IBudget.GUI.ViewModels
         {
             ExpenseTagsInfo.Clear();
             ExpenseRuleTagsInfo.Clear();
+
+            // Reset pagination
+            ExpenseTagsCurrentPage = 1;
+            ExpenseRuleTagsCurrentPage = 1;
+
             try
             {
-                var expenseTagsTask = GetExpenseTagsAsync();
-                var expenseRuleTagsTask = GetExpenseRuleTagsAsync();
+                var expenseTagsTask = _expenseTagService.GetExpenseTagByPage(ExpenseTagsCurrentPage);
+                var expenseRuleTagsTask = _expenseRuleTagService.GetExpenseRuleTagByPage(ExpenseRuleTagsCurrentPage);
                 var allTagsTask = GetAllTagsAsync();
 
                 await Task.WhenAll(expenseTagsTask, expenseRuleTagsTask, allTagsTask);
 
-                ExpenseTags = await expenseTagsTask;
-                ExpenseRuleTags = await expenseRuleTagsTask;
+                var expenseTagsResult = await expenseTagsTask;
+                var expenseRuleTagsResult = await expenseRuleTagsTask;
+
+                ExpenseTags = expenseTagsResult.Data.ToList();
+                ExpenseRuleTags = expenseRuleTagsResult.Data.ToList();
+                HasMoreExpenseTags = expenseTagsResult.HasMoreData;
+                HasMoreExpenseRuleTags = expenseRuleTagsResult.HasMoreData;
                 AllTags = await allTagsTask;
 
                 LoadAvailableTags();
@@ -268,16 +391,6 @@ namespace IBudget.GUI.ViewModels
         public void RefreshView()
         {
             _ = InitializeDbSearchAsync(); // Use the async version
-        }
-
-        private async Task<List<ExpenseTag>> GetExpenseTagsAsync()
-        {
-            return await _expenseTagService.GetAllExpenseTags();
-        }
-
-        private async Task<List<ExpenseRuleTag>> GetExpenseRuleTagsAsync()
-        {
-            return await _expenseRuleTagService.GetAllExpenseRuleTags();
         }
 
         private async Task<List<Tag>> GetAllTagsAsync()

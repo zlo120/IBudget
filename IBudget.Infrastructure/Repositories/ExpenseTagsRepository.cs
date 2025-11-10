@@ -119,17 +119,31 @@ namespace IBudget.Infrastructure.Repositories
             return (int)result.ModifiedCount;
         }
 
-        public async Task<List<ExpenseTag>> Search(string searchString)
+        public async Task<PaginatedResponse<ExpenseTag>> Search(string searchString, int pageNumber)
         {
+            var pageSize = 10;
+            var skip = (pageNumber - 1) * pageSize;
+            
             var titleFilter = Builders<ExpenseTag>.Filter.Where(e => e.Title.Contains(searchString, StringComparison.CurrentCultureIgnoreCase));
             var tagsFilter = Builders<ExpenseTag>.Filter.AnyIn(e => e.Tags, new[] { searchString });
             
             // Combine filters with OR - returns ExpenseTag if either title contains search string OR any tag contains it
             var combinedFilter = Builders<ExpenseTag>.Filter.Or(titleFilter, tagsFilter);
             
-            return await _expenseTagsCollection.Find(combinedFilter)
+            var totalDataCount = _expenseTagsCollection.CountDocuments(combinedFilter);
+            var totalPageCount = (int)Math.Ceiling((double)totalDataCount / pageSize);
+            var data = await _expenseTagsCollection.Find(combinedFilter)
                 .SortByDescending(e => e.CreatedAt)
+                .Skip(skip)
+                .Limit(pageSize)
                 .ToListAsync();
+
+            var hasMoreData = pageNumber < totalPageCount;
+            return new PaginatedResponse<ExpenseTag>
+            {
+                HasMoreData = hasMoreData,
+                Data = data
+            };
         }
     }
 }
