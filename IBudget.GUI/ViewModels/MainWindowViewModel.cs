@@ -22,6 +22,7 @@ namespace IBudget.GUI.ViewModels
         private readonly FinancialGoalsPageViewModel _financialGoalsPageViewModel;
         private readonly DataTableViewModel _dataTableViewModel;
         private readonly SettingsPageViewModel _settingsPageViewModel;
+        private readonly ManualEntryPageViewModel _manualEntryPageViewModel;
         private readonly ISettingsService _settingsService;
 
         public bool DebugMode { get; }
@@ -41,6 +42,7 @@ namespace IBudget.GUI.ViewModels
             FinancialGoalsPageViewModel financialGoalsPageViewModel,
             DataTableViewModel dataTableViewModel,
             SettingsPageViewModel settingsPageViewModel,
+            ManualEntryPageViewModel manualEntryPageViewModel,
             ISettingsService settingsService
         )
         {
@@ -52,6 +54,7 @@ namespace IBudget.GUI.ViewModels
             _financialGoalsPageViewModel = financialGoalsPageViewModel;
             _dataTableViewModel = dataTableViewModel;
             _settingsPageViewModel = settingsPageViewModel;
+            _manualEntryPageViewModel = manualEntryPageViewModel;
             _settingsService = settingsService;
 
             CurrentPage = _homePageViewModel;
@@ -111,6 +114,8 @@ namespace IBudget.GUI.ViewModels
                 instance = _dataTableViewModel;
             if (value.ModelType == typeof(SettingsPageViewModel))
                 instance = _settingsPageViewModel;
+            if (value.ModelType == typeof(ManualEntryPageViewModel))
+                instance = _manualEntryPageViewModel;
 
             if (instance is null) return;
             CurrentPage = instance;
@@ -130,6 +135,7 @@ namespace IBudget.GUI.ViewModels
         {
             new ListItemTemplate(typeof(HomePageViewModel), "HomeRegular"),
             new ListItemTemplate(typeof(UploadCsvPageViewModel), "DocumentRegular"),
+            new ListItemTemplate(typeof(ManualEntryPageViewModel), "AddRegular"),
             new ListItemTemplate(typeof(DataPageViewModel), "DataRegular"),
             new ListItemTemplate(typeof(DataTableViewModel), "FolderRegular"),
             new ListItemTemplate(typeof(DictionariesPageViewModel), "BookDbRegular"),
@@ -165,6 +171,10 @@ namespace IBudget.GUI.ViewModels
             else if (type == typeof(SettingsPageViewModel))
             {
                 Label = "Settings";
+            }
+            else if (type == typeof(ManualEntryPageViewModel))
+            {
+                Label = "Manual Entry";
             }
             else
             {
