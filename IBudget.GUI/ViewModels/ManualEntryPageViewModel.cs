@@ -24,7 +24,7 @@ namespace IBudget.GUI.ViewModels
         private bool _isExpenseSelected = true;
 
         [ObservableProperty]
-        private DateTime? _selectedDate = DateTime.Today;
+        private DateTimeOffset? _selectedDate = DateTimeOffset.Now.Date;
 
         [ObservableProperty]
         private double _amount;
@@ -203,7 +203,7 @@ namespace IBudget.GUI.ViewModels
             var expense = new Expense
             {
                 Id = ObjectId.GenerateNewId(),
-                Date = SelectedDate!.Value,
+                Date = SelectedDate!.Value.Date,
                 Amount = Amount,
                 Tags = SelectedTags.ToList(),
                 Notes = Notes,
@@ -221,7 +221,7 @@ namespace IBudget.GUI.ViewModels
             var income = new Income
             {
                 Id = ObjectId.GenerateNewId(),
-                Date = SelectedDate!.Value,
+                Date = SelectedDate!.Value.Date,
                 Amount = Amount,
                 Tags = SelectedTags.ToList(),
                 Source = Source,
@@ -234,6 +234,7 @@ namespace IBudget.GUI.ViewModels
             await _incomeService.AddIncome(income);
         }
 
+        [RelayCommand]
         private void ClearForm()
         {
             Amount = 0;
@@ -242,13 +243,7 @@ namespace IBudget.GUI.ViewModels
             SelectedTags.Clear();
             CurrentTag = string.Empty;
             StatusMessage = string.Empty;
-            SelectedDate = DateTime.Today;
-        }
-
-        [RelayCommand]
-        private void ClearFormCommand()
-        {
-            ClearForm();
+            SelectedDate = DateTimeOffset.Now.Date;
         }
     }
 }
