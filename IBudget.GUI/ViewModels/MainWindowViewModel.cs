@@ -135,7 +135,7 @@ namespace IBudget.GUI.ViewModels
         {
             new ListItemTemplate(typeof(HomePageViewModel), "HomeRegular"),
             new ListItemTemplate(typeof(UploadCsvPageViewModel), "DocumentRegular"),
-            new ListItemTemplate(typeof(ManualEntryPageViewModel), "AddRegular"),
+            new ListItemTemplate(typeof(ManualEntryPageViewModel), "AddSquareRegular"),
             new ListItemTemplate(typeof(DataPageViewModel), "DataRegular"),
             new ListItemTemplate(typeof(DataTableViewModel), "FolderRegular"),
             new ListItemTemplate(typeof(DictionariesPageViewModel), "BookDbRegular"),

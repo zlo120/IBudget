@@ -240,7 +240,7 @@
                                Command="{Binding SubmitEntryCommand}"
                                IsEnabled="{Binding !IsLoading}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Data="{StaticResource CheckmarkRegular}" 
+                                <PathIcon Data="{StaticResource SaveRegular}" 
                                          Width="18" Height="18"
                                          IsVisible="{Binding !IsLoading}" />
                                 <TextBlock Text="{Binding SubmitButtonText}" />
