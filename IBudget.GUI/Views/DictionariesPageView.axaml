@@ -364,7 +364,7 @@
 
 						<Grid ColumnDefinitions="1*, 1*">
 							<StackPanel Grid.Column="0" Spacing="5" HorizontalAlignment="Center">
-								<TextBlock Text="{Binding ExpenseTagsInfo.Count, StringFormat='{}{0} items'}"
+								<TextBlock Text="{Binding TotalExpenseTagsCount, StringFormat='{}{0} items'}"
                                           FontSize="20"
                                           FontWeight="Bold"
                                           HorizontalAlignment="Center"
@@ -376,7 +376,7 @@
 							</StackPanel>
 
 							<StackPanel Grid.Column="1" Spacing="5" HorizontalAlignment="Center">
-								<TextBlock Text="{Binding ExpenseRuleTagsInfo.Count, StringFormat='{}{0} rules'}"
+								<TextBlock Text="{Binding TotalExpenseRuleTagsCount, StringFormat='{}{0} rules'}"
                                           FontSize="20"
                                           FontWeight="Bold"
                                           HorizontalAlignment="Center"

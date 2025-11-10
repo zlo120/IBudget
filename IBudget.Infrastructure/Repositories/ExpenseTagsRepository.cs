@@ -71,7 +71,8 @@ namespace IBudget.Infrastructure.Repositories
             return new PaginatedResponse<ExpenseTag>
             {
                 HasMoreData = hasMoreData,
-                Data = data
+                Data = data,
+                TotalCount = totalDataCount
             };
         }
 
@@ -142,7 +143,8 @@ namespace IBudget.Infrastructure.Repositories
             return new PaginatedResponse<ExpenseTag>
             {
                 HasMoreData = hasMoreData,
-                Data = data
+                Data = data,
+                TotalCount = totalDataCount
             };
         }
     }

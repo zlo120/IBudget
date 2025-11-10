@@ -102,6 +102,12 @@ namespace IBudget.GUI.ViewModels
         [ObservableProperty]
         private int _expenseRuleTagsCurrentPage = 1;
 
+        [ObservableProperty]
+        private long _totalExpenseTagsCount = 0;
+
+        [ObservableProperty]
+        private long _totalExpenseRuleTagsCount = 0;
+
         public ObservableCollection<string> AvailableTags { get; } = new();
 
         private readonly IExpenseTagService _expenseTagService;
@@ -178,6 +184,8 @@ namespace IBudget.GUI.ViewModels
                 ExpenseRuleTags = expenseRuleTagsResult.Data.ToList();
                 HasMoreExpenseTags = expenseTagsResult.HasMoreData;
                 HasMoreExpenseRuleTags = expenseRuleTagsResult.HasMoreData;
+                TotalExpenseTagsCount = expenseTagsResult.TotalCount;
+                TotalExpenseRuleTagsCount = expenseRuleTagsResult.TotalCount;
 
                 UpdateExpenseTagsCollection();
                 UpdateExpenseRuleTagsCollection();
@@ -304,6 +312,8 @@ namespace IBudget.GUI.ViewModels
                 ExpenseRuleTags = expenseRuleTagsResult.Data.ToList();
                 HasMoreExpenseTags = expenseTagsResult.HasMoreData;
                 HasMoreExpenseRuleTags = expenseRuleTagsResult.HasMoreData;
+                TotalExpenseTagsCount = expenseTagsResult.TotalCount;
+                TotalExpenseRuleTagsCount = expenseRuleTagsResult.TotalCount;
 
                 UpdateExpenseTagsCollection();
                 UpdateExpenseRuleTagsCollection();
@@ -371,6 +381,8 @@ namespace IBudget.GUI.ViewModels
                 ExpenseRuleTags = expenseRuleTagsResult.Data.ToList();
                 HasMoreExpenseTags = expenseTagsResult.HasMoreData;
                 HasMoreExpenseRuleTags = expenseRuleTagsResult.HasMoreData;
+                TotalExpenseTagsCount = expenseTagsResult.TotalCount;
+                TotalExpenseRuleTagsCount = expenseRuleTagsResult.TotalCount;
                 AllTags = await allTagsTask;
 
                 LoadAvailableTags();

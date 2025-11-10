@@ -84,7 +84,8 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
                 return new PaginatedResponse<ExpenseRuleTag>
                 {
                     HasMoreData = hasMoreData,
-                    Data = data
+                    Data = data,
+                    TotalCount = totalDataCount
                 };
             });
         }
@@ -150,7 +151,8 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
             return new PaginatedResponse<ExpenseRuleTag>
             {
                 HasMoreData = hasMoreData,
-                Data = data
+                Data = data,
+                TotalCount = totalDataCount
             };
         }
     }

@@ -4,5 +4,6 @@
     {
         public required bool HasMoreData { get; set; }
         public required IReadOnlyList<T> Data { get; set; }
+        public required long TotalCount { get; set; }
     }
 }
