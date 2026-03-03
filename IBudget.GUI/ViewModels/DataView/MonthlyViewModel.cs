@@ -115,7 +115,7 @@ namespace IBudget.GUI.ViewModels.DataView
                 var financialGoalNames = financialGoals?.Select(g => g.Name.ToLower()).ToHashSet() ?? new HashSet<string>();
 
                 // Get month data
-                var monthsData = await _summaryService.ReadMonth(monthNumber);
+                var monthsData = await _summaryService.ReadMonth(monthNumber, true);
                 var allExpenses = monthsData?.AllExpenses.Where(e => !e.IsIgnored).ToList();
                 var allIncome = monthsData?.AllIncome.Where(i => !i.IsIgnored).ToList();
                 
