@@ -103,7 +103,7 @@ for RUNTIME in "${PLATFORMS[@]}"; do
     
     # Step 2: Publish the application
     echo -e "${CYAN}Publishing application for $RUNTIME...${NC}"
-    dotnet publish "$PROJECT_PATH" -c Release -r "$RUNTIME" --self-contained true -o "$PUBLISH_PATH"
+    dotnet publish "$PROJECT_PATH" -c Release -r "$RUNTIME" --self-contained true -o "$PUBLISH_PATH" /p:Version="$VERSION" /p:InformationalVersion="$VERSION"
     
     if [ $? -ne 0 ]; then
         echo -e "${RED}Build failed for $RUNTIME!${NC}"

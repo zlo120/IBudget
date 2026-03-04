@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Velopack;
@@ -94,12 +95,29 @@ namespace IBudget.GUI.Services.Impl
         {
             try
             {
-                return _updateManager?.CurrentVersion?.ToString() ?? "Unknown";
+                // Velopack knows the version on Windows (vpk-managed install)
+                var veloVersion = _updateManager?.CurrentVersion?.ToString();
+                if (!string.IsNullOrEmpty(veloVersion))
+                    return $"v{veloVersion}";
+
+                // Fallback: read version embedded in the assembly (works on macOS .pkg installs)
+                var assembly = Assembly.GetEntryAssembly();
+                var infoVersion = assembly?
+                    .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+                    ?.InformationalVersion;
+                if (!string.IsNullOrEmpty(infoVersion))
+                    return $"v{infoVersion} (assembly version)";
+
+                var asmVersion = assembly?.GetName().Version?.ToString();
+                if (!string.IsNullOrEmpty(asmVersion))
+                    return $"v{asmVersion} (assembly version)";
             }
             catch
             {
-                return "Unknown";
+                return "An error occurred while retrieving the version.";
             }
+
+            return "Unknown";
         }
     }
 }
