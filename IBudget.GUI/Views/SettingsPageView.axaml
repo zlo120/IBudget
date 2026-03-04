@@ -94,7 +94,7 @@
                      Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
           
           <StackPanel Spacing="8">
-            <TextBlock Text="{Binding CurrentVersion, StringFormat='Current Version: v{0}'}" 
+            <TextBlock Text="{Binding CurrentVersion, StringFormat='Current Version: {0}'}" 
                        FontWeight="Medium"
                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
             
