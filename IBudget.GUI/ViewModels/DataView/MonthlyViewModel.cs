@@ -122,6 +122,9 @@ namespace IBudget.GUI.ViewModels.DataView
                 if (allExpenses is null || !allExpenses.Any())
                 {
                     // No data available for this month
+                    TotalSpending = 0.0;
+                    TotalIncome = 0.0;
+                    Difference = 0.0;
                     return;
                 }
 
