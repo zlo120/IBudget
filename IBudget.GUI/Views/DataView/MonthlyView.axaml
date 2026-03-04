@@ -361,20 +361,19 @@
 							</Border>
 
 							<!-- Total Content -->
-							<StackPanel HorizontalAlignment="Center" Spacing="4">
+							<StackPanel Spacing="4">
 								<TextBlock Text="Total Monthly Spending"
 										  FontSize="15"
 										  FontWeight="Medium"
 										  Foreground="White"
 										  Opacity="0.9"
-										  HorizontalAlignment="Center"
 										  TextWrapping="Wrap"
 										  TextAlignment="Center"/>
 								<TextBlock Text="{Binding TotalSpending, StringFormat='${0:F2}'}"
 										  FontSize="28"
 										  FontWeight="Bold"
 										  Foreground="White"
-										  HorizontalAlignment="Center"/>
+										  TextAlignment="Center"/>
 							</StackPanel>
 						</StackPanel>
 					</Border>
@@ -397,20 +396,19 @@
 							</Border>
 
 							<!-- Income Content -->
-							<StackPanel HorizontalAlignment="Center" Spacing="4">
+							<StackPanel Spacing="4">
 								<TextBlock Text="Total Monthly Income"
 										  FontSize="15"
 										  FontWeight="Medium"
 										  Foreground="White"
 										  Opacity="0.9"
-										  HorizontalAlignment="Center"
 										  TextWrapping="Wrap"
 										  TextAlignment="Center"/>
 								<TextBlock Text="{Binding TotalIncome, StringFormat='${0:F2}'}"
 										  FontSize="28"
 										  FontWeight="Bold"
 										  Foreground="White"
-										  HorizontalAlignment="Center"/>
+										  TextAlignment="Center"/>
 							</StackPanel>
 						</StackPanel>
 					</Border>
@@ -435,19 +433,18 @@
 							</Border>
 
 							<!-- Difference Content -->
-							<StackPanel HorizontalAlignment="Center" Spacing="4">
+							<StackPanel Spacing="4">
 								<TextBlock Text="Net Monthly Difference"
 										  FontSize="15"
 										  FontWeight="Medium"
 										  Foreground="#333333"
-										  HorizontalAlignment="Center"
 										  TextWrapping="Wrap"
 										  TextAlignment="Center"/>
 								<TextBlock Text="{Binding Difference, StringFormat='${0:F2}'}"
 										  FontSize="28"
 										  FontWeight="Bold"
 										  Foreground="#333333"
-										  HorizontalAlignment="Center"/>
+										  TextAlignment="Center"/>
 							</StackPanel>
 						</StackPanel>
 					</Border>
@@ -470,19 +467,18 @@
 							</Border>
 
 							<!-- Difference Content -->
-							<StackPanel HorizontalAlignment="Center" Spacing="4">
+							<StackPanel Spacing="4">
 								<TextBlock Text="Net Monthly Difference"
 										  FontSize="15"
 										  FontWeight="Medium"
 										  Foreground="#333333"
-										  HorizontalAlignment="Center"
 										  TextWrapping="Wrap"
 										  TextAlignment="Center"/>
 								<TextBlock Text="{Binding Difference, StringFormat='${0:F2}'}"
 										  FontSize="28"
 										  FontWeight="Bold"
 										  Foreground="#333333"
-										  HorizontalAlignment="Center"/>
+										  TextAlignment="Center"/>
 							</StackPanel>
 						</StackPanel>
 					</Border>
