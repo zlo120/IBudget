@@ -403,5 +403,4 @@ FodyWeavers.xsd
 
 /IBudget.GUI/appsettings.json
 .env
-build-*.*
 PATCHNOTES.md
