@@ -170,6 +170,8 @@ for RUNTIME in "${PLATFORMS[@]}"; do
 <dict>
     <key>CFBundleExecutable</key>
     <string>IBudget.GUI</string>
+    <key>CFBundleIconFile</key>
+    <string>stacks-logo</string>
     <key>CFBundleIdentifier</key>
     <string>$APP_IDENTIFIER</string>
     <key>CFBundleName</key>
@@ -194,6 +196,17 @@ for RUNTIME in "${PLATFORMS[@]}"; do
 </plist>
 EOF
         
+        # Copy .icns icon to Resources
+        if [ -f "$APP_BUNDLE/Contents/MacOS/Assets/stacks-logo.icns" ]; then
+            cp "$APP_BUNDLE/Contents/MacOS/Assets/stacks-logo.icns" "$APP_BUNDLE/Contents/Resources/stacks-logo.icns"
+            echo -e "${GREEN}Copied stacks-logo.icns to Resources${NC}"
+        elif [ -f "IBudget.GUI/Assets/stacks-logo.icns" ]; then
+            cp "IBudget.GUI/Assets/stacks-logo.icns" "$APP_BUNDLE/Contents/Resources/stacks-logo.icns"
+            echo -e "${GREEN}Copied stacks-logo.icns to Resources from source${NC}"
+        else
+            echo -e "${YELLOW}Warning: stacks-logo.icns not found${NC}"
+        fi
+
         # Make executable
         chmod +x "$APP_BUNDLE/Contents/MacOS/IBudget.GUI"
         
