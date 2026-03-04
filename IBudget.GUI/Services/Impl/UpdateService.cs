@@ -106,7 +106,7 @@ namespace IBudget.GUI.Services.Impl
                     .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
                     ?.InformationalVersion;
                 if (!string.IsNullOrEmpty(infoVersion))
-                    return $"v{infoVersion} (assembly version)";
+                    return $"v{infoVersion} (velo version)";
 
                 var asmVersion = assembly?.GetName().Version?.ToString();
                 if (!string.IsNullOrEmpty(asmVersion))
