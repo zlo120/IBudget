@@ -29,7 +29,6 @@
 			<Setter Property="BorderThickness" Value="1"/>
 			<Setter Property="BoxShadow" Value="0 2 8 0 #0D000000"/>
 			<Setter Property="Margin" Value="8"/>
-			<Setter Property="MinWidth" Value="280"/>
 		</Style>
 
 		<!-- Goal Card Style - Over Budget (Yellow) -->
@@ -40,7 +39,6 @@
 			<Setter Property="BorderThickness" Value="0"/>
 			<Setter Property="BoxShadow" Value="0 2 8 0 #0D000000"/>
 			<Setter Property="Margin" Value="8"/>
-			<Setter Property="MinWidth" Value="280"/>
 		</Style>
 
 		<!-- Tracked Tag Card Style -->
@@ -52,7 +50,6 @@
 			<Setter Property="BorderThickness" Value="1"/>
 			<Setter Property="BoxShadow" Value="0 2 8 0 #0D000000"/>
 			<Setter Property="Margin" Value="8"/>
-			<Setter Property="MinWidth" Value="200"/>
 		</Style>
 
 		<!-- Other Card Style -->
@@ -63,7 +60,6 @@
 			<Setter Property="BorderThickness" Value="0"/>
 			<Setter Property="BoxShadow" Value="0 2 8 0 #0D000000"/>
 			<Setter Property="Margin" Value="8"/>
-			<Setter Property="MinWidth" Value="200"/>
 		</Style>
 
 		<!-- Total Spending Card Style -->
@@ -73,7 +69,6 @@
 			<Setter Property="Padding" Value="20"/>
 			<Setter Property="BorderThickness" Value="0"/>
 			<Setter Property="BoxShadow" Value="0 4 12 0 #1A000000"/>
-			<Setter Property="MinWidth" Value="250"/>
 		</Style>
 
 		<!-- Total Income Card Style -->
@@ -83,7 +78,6 @@
 			<Setter Property="Padding" Value="20"/>
 			<Setter Property="BorderThickness" Value="0"/>
 			<Setter Property="BoxShadow" Value="0 4 12 0 #1A000000"/>
-			<Setter Property="MinWidth" Value="250"/>
 		</Style>
 
 		<!-- Difference Card Style - Surplus (White) -->
@@ -94,7 +88,6 @@
 			<Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}"/>
 			<Setter Property="BorderThickness" Value="1"/>
 			<Setter Property="BoxShadow" Value="0 4 12 0 #1A000000"/>
-			<Setter Property="MinWidth" Value="250"/>
 		</Style>
 
 		<!-- Difference Card Style - Deficit (Yellow) -->
@@ -104,7 +97,6 @@
 			<Setter Property="Padding" Value="20"/>
 			<Setter Property="BorderThickness" Value="0"/>
 			<Setter Property="BoxShadow" Value="0 4 12 0 #1A000000"/>
-			<Setter Property="MinWidth" Value="250"/>
 		</Style>
 
 		<!-- Section Header Style -->
@@ -125,8 +117,8 @@
 		</Style>
 	</UserControl.Styles>
 
-	<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-		<Grid RowDefinitions="Auto,*" Margin="24" MinWidth="600">
+	<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+		<Grid RowDefinitions="Auto,*" Margin="24">
 
 			<!-- Header Section -->
 			<Border Classes="header-card" Grid.Row="0">
