@@ -27,14 +27,14 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
 
         public async Task ClearCollection()
         {
-            await Task.Run(() => _expenseRuleTagsCollection.DeleteAllAsync());
+            await _expenseRuleTagsCollection.DeleteAllAsync();
         }
 
         public async Task<ExpenseRuleTag> CreateExpenseRuleTag(ExpenseRuleTag expenseRuleTag)
         {
             try
             {
-                await Task.Run(() => _expenseRuleTagsCollection.InsertAsync(expenseRuleTag));
+                await _expenseRuleTagsCollection.InsertAsync(expenseRuleTag);
             }
             catch (LiteException ex) when (ex.ErrorCode == LiteException.INDEX_DUPLICATE_KEY)
             {
@@ -45,12 +45,12 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
 
         public async Task DeleteExpenseRuleTagById(MongoDB.Bson.ObjectId id)
         {
-            await Task.Run(() => _expenseRuleTagsCollection.DeleteAsync(new LiteDB.BsonValue(id.ToString())));
+            await _expenseRuleTagsCollection.DeleteManyAsync(e => e.Id == id);
         }
 
         public async Task DeleteExpenseRuleTagByRule(string rule)
         {
-            await Task.Run(() => _expenseRuleTagsCollection.DeleteManyAsync(e => e.Rule == rule));
+            await _expenseRuleTagsCollection.DeleteManyAsync(e => e.Rule == rule);
         }
 
         public async Task<List<ExpenseRuleTag>> GetAllExpenseRuleTags()
@@ -62,7 +62,7 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
 
         public async Task<ExpenseRuleTag> GetExpenseRuleTagById(MongoDB.Bson.ObjectId id)
         {
-            return await Task.Run(() => _expenseRuleTagsCollection.FindByIdAsync(new LiteDB.BsonValue(id.ToString())));
+            return await _expenseRuleTagsCollection.FindOneAsync(e => e.Id == id);
         }
 
         public async Task<PaginatedResponse<ExpenseRuleTag>> GetExpenseRuleTagByPage(int pageNumber)
@@ -70,24 +70,21 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
             var pageSize = 10;
             var skip = (pageNumber - 1) * pageSize;
 
-            return await Task.Run(async () =>
-            {
-                var totalDataCount = await _expenseRuleTagsCollection.CountAsync();
-                var totalPageCount = (int)Math.Ceiling((double)totalDataCount / pageSize);
-                var data = await _expenseRuleTagsCollection.Query()
-                    .OrderByDescending(e => e.CreatedAt)
-                    .Offset(skip)
-                    .Limit(pageSize)
-                    .ToListAsync();
+            var totalDataCount = await _expenseRuleTagsCollection.CountAsync();
+            var totalPageCount = (int)Math.Ceiling((double)totalDataCount / pageSize);
+            var data = await _expenseRuleTagsCollection.Query()
+                .OrderByDescending(e => e.CreatedAt)
+                .Offset(skip)
+                .Limit(pageSize)
+                .ToListAsync();
 
-                var hasMoreData = pageNumber < totalPageCount;
-                return new PaginatedResponse<ExpenseRuleTag>
-                {
-                    HasMoreData = hasMoreData,
-                    Data = data,
-                    TotalCount = totalDataCount
-                };
-            });
+            var hasMoreData = pageNumber < totalPageCount;
+            return new PaginatedResponse<ExpenseRuleTag>
+            {
+                HasMoreData = hasMoreData,
+                Data = data,
+                TotalCount = totalDataCount
+            };
         }
 
         public async Task<ExpenseRuleTag?> GetExpenseRuleTagByDescription(string description)

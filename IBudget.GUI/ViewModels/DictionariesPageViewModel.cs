@@ -13,7 +13,6 @@ using IBudget.Core.DatabaseModel;
 using IBudget.Core.Interfaces;
 using IBudget.Core.Model;
 using IBudget.GUI.Services;
-using MongoDB.Bson;
 
 namespace IBudget.GUI.ViewModels
 {
@@ -543,10 +542,6 @@ namespace IBudget.GUI.ViewModels
         public required bool IsIgnored { get; set; }
 
         // Store references for deletion
-        private ExpenseTag? _expenseTag;
-        private ObjectId _expenseTagId;
-        private ExpenseRuleTag? _expenseRuleTag;
-        private ObjectId _expenseRuleTagId;
         private IExpenseTagService? _expenseTagService;
         private IExpenseRuleTagService? _expenseRuleTagService;
         private IMessageService? _messageService;
@@ -554,20 +549,16 @@ namespace IBudget.GUI.ViewModels
 
         public void SetExpenseTagData(ExpenseTag expenseTag, IExpenseTagService expenseTagService, IMessageService messageService, Action<InfoContainer> removeFromCollection)
         {
-            _expenseTag = expenseTag;
             _expenseTagService = expenseTagService;
             _messageService = messageService;
             _removeFromCollection = removeFromCollection;
-            _expenseTagId = (ObjectId)expenseTag.Id!;
         }
 
         public void SetExpenseRuleTagData(ExpenseRuleTag expenseRuleTag, IExpenseRuleTagService expenseRuleTagService, IMessageService messageService, Action<InfoContainer> removeFromCollection)
         {
-            _expenseRuleTag = expenseRuleTag;
             _expenseRuleTagService = expenseRuleTagService;
             _messageService = messageService;
             _removeFromCollection = removeFromCollection;
-            _expenseRuleTagId = (ObjectId)expenseRuleTag.Id!;
         }
 
         [RelayCommand]
@@ -583,7 +574,7 @@ namespace IBudget.GUI.ViewModels
             {
                 try
                 {
-                    await _expenseTagService.DeleteExpenseTagById(_expenseTagId);
+                    await _expenseTagService.DeleteExpenseTagByTitle(Key);
                     _removeFromCollection?.Invoke(this);
                 }
                 catch (Exception ex)
@@ -606,7 +597,7 @@ namespace IBudget.GUI.ViewModels
             {
                 try
                 {
-                    await _expenseRuleTagService.DeleteExpenseRuleTagById(_expenseRuleTagId);
+                    await _expenseRuleTagService.DeleteExpenseRuleTagByRule(Key);
                     _removeFromCollection?.Invoke(this);
                 }
                 catch (Exception ex)
