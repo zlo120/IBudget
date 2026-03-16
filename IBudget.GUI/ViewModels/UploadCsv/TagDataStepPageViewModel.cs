@@ -157,6 +157,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
         }
         private void HandleCreateRule(string rule, string tag, bool isIgnored)
         {
+            if (string.IsNullOrEmpty(rule)) return;
             var removeFromCollection = UntaggedItems.Where(item => item.Label.Contains(rule, StringComparison.InvariantCultureIgnoreCase)).ToList();
             foreach (var removeItem in removeFromCollection)
             {
