@@ -45,7 +45,7 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
 
         public async Task DeleteExpenseTagById(MongoDB.Bson.ObjectId id)
         {
-            await _expenseTagsCollection.DeleteAsync(new LiteDB.BsonValue(id.ToString()));
+            await _expenseTagsCollection.DeleteManyAsync(e => e.Id == id);
         }
 
         public async Task DeleteExpenseTagByTitle(string title)
@@ -60,7 +60,7 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
 
         public async Task<ExpenseTag> GetExpenseTagById(MongoDB.Bson.ObjectId id)
         {
-            return await _expenseTagsCollection.FindByIdAsync(new LiteDB.BsonValue(id.ToString()));
+            return await _expenseTagsCollection.FindOneAsync(e => e.Id == id);
         }
 
         public async Task<PaginatedResponse<ExpenseTag>> GetExpenseTagByPage(int pageNumber)

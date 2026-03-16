@@ -45,7 +45,7 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
 
         public async Task<Expense> GetExpense(MongoDB.Bson.ObjectId id)
         {
-            return await _expensesCollection.FindByIdAsync(new LiteDB.BsonValue(id.ToString()));
+            return await _expensesCollection.FindOneAsync(e => e.Id == id);
         }
 
         public async Task<List<Expense>> GetExpenseByWeek(DateTime startDate)

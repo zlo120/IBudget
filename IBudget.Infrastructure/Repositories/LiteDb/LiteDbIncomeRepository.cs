@@ -20,7 +20,7 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
         {
             try
             {
-                await Task.Run(() => _incomeCollection.InsertAsync(income));
+                await _incomeCollection.InsertAsync(income);
             }
             catch (LiteException ex) when (ex.ErrorCode == LiteException.INDEX_DUPLICATE_KEY)
             {
@@ -45,7 +45,7 @@ namespace IBudget.Infrastructure.Repositories.LiteDb
 
         public async Task<Income> GetIncome(MongoDB.Bson.ObjectId id)
         {
-            return await _incomeCollection.FindByIdAsync(new LiteDB.BsonValue(id.ToString()));
+            return await _incomeCollection.FindOneAsync(i => i.Id == id);
         }
 
         public async Task<List<Income>> GetIncomeByMonth(int month)
