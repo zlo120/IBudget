@@ -39,6 +39,36 @@
     <Style Selector="Button.NavItem:pressed /template/ Border#PART_ContentBorder">
         <Setter Property="Background" Value="{DynamicResource Surface3Brush}"/>
     </Style>
+    
+    <Style Selector="Button.NavItemSelected">
+        <Setter Property="Background"             Value="{DynamicResource SelectedBrush}"/>
+        <Setter Property="BorderBrush"            Value="Transparent"/>
+        <Setter Property="BorderThickness"        Value="0"/>
+        <Setter Property="Foreground"             Value="{DynamicResource AccentLightBrush}"/>
+        <Setter Property="FontSize"               Value="13"/>
+        <Setter Property="Padding"                Value="10,8"/>
+        <Setter Property="Margin"                 Value="6,1,6,1"/>
+        <Setter Property="CornerRadius"           Value="6"/>
+        <Setter Property="HorizontalAlignment"    Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="Cursor"                 Value="Hand"/>
+        <Setter Property="Transitions">
+            <Transitions/>
+        </Setter>
+    </Style>
+    <Style Selector="Button.NavItemSelected /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SelectedBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource AccentLightBrush}"/>
+        <Setter Property="Transitions">
+            <Transitions/>
+        </Setter>
+    </Style>
+    <Style Selector="Button.NavItemSelected:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SelectedBrush}"/>
+    </Style>
+    <Style Selector="Button.NavItemSelected:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SelectedBrush}"/>
+    </Style>
 
     <!-- ── Alert nav item (Review Queue) ── -->
     <Style Selector="Button.NavItemAlert">

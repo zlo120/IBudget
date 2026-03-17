@@ -36,6 +36,22 @@ namespace IBudget.GUI.ViewModels
 
         [ObservableProperty]
         private bool _isMongoDbMode;
+        [ObservableProperty]
+        private bool _isDashboardView = false;
+        [ObservableProperty]
+        private bool _isRecordsView = false;
+        [ObservableProperty]
+        private bool _isGoalsProgressView = false;
+        [ObservableProperty]
+        private bool _isImportCsvView = false;
+        [ObservableProperty]
+        private bool _isRulesView = false;
+        [ObservableProperty]
+        private bool _isGoalsView = false;
+        [ObservableProperty]
+        private bool _isTagsView = false;
+        [ObservableProperty]
+        private bool _isSettingsView = false;
 
         public MainWindowViewModel(
             HomePageViewModel homePageViewModel,
@@ -67,6 +83,7 @@ namespace IBudget.GUI.ViewModels
             ThemeService = themeService;
 
             CurrentPage = _dashboardViewModel;
+            IsDashboardView = true;
 
 #if DEBUG
             DebugMode = true;
@@ -162,38 +179,58 @@ namespace IBudget.GUI.ViewModels
             IsPaneOpen = !IsPaneOpen;
         }
 
+        private void ResetNavs()
+        {
+            IsDashboardView = false;
+            IsRecordsView = false;
+            IsGoalsProgressView = false;
+            IsImportCsvView = false;
+            IsRulesView = false;
+            IsGoalsView = false;
+            IsTagsView = false;
+            IsSettingsView = false;
+        }
         [RelayCommand]
         private void Navigate(string target)
         {
             ViewModelBase? instance = null;
+            ResetNavs();
             switch (target)
             {
                 case "Dashboard":
                     instance = _dashboardViewModel;
+                    IsDashboardView = true;
                     break;
                 case "ReviewQueue": // TO DO
                     // instance = _reviewQueueViewModel;
                     break;
                 case "Records":
                     instance = _dataTableViewModel;
+                    IsRecordsView = true;
                     break;
                 case "Goals Progress":
                     instance = _dataPageViewModel;
+                    IsGoalsProgressView = true;
                     break;
                 case "Import":
                     instance = _uploadCsvPageViewModel;
+                    IsImportCsvView = true;
                     break;
                 case "Rules":
                     instance = _dictionariesPageViewModel;
+                    IsRulesView = true;
                     break;
                 case "Goals":
                     instance = _financialGoalsPageViewModel;
+                    IsGoalsView = true;
                     break;
                 case "Tags":
                     instance = _tagsPageViewModel;
+                    IsTagsView = true;
                     break;
                 case "Settings":
                     instance = _settingsPageViewModel;
+                    IsSettingsView = true;
                     break;
                 default:
                     break;

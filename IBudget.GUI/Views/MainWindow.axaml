@@ -80,11 +80,72 @@
 				<!-- Nav groups -->
 				<ScrollViewer VerticalScrollBarVisibility="Hidden">
 				<StackPanel Margin="0,4,0,4">
+					<StackPanel.Styles>
+						<Style Selector="Button.isInactive">
+							<Setter Property="Background"             Value="Transparent"/>
+							<Setter Property="BorderBrush"            Value="Transparent"/>
+							<Setter Property="BorderThickness"        Value="0"/>
+							<Setter Property="Foreground"             Value="{DynamicResource TextPrimary}"/>
+							<Setter Property="FontSize"               Value="13"/>
+							<Setter Property="Padding"                Value="10,8"/>
+							<Setter Property="Margin"                 Value="6,1,6,1"/>
+							<Setter Property="CornerRadius"           Value="6"/>
+							<Setter Property="HorizontalAlignment"    Value="Stretch"/>
+							<Setter Property="HorizontalContentAlignment" Value="Left"/>
+							<Setter Property="Cursor"                 Value="Hand"/>
+							<Setter Property="Transitions">
+								<Transitions/>
+							</Setter>
+						</Style>
+						<Style Selector="Button.isInactive /template/ Border#PART_ContentBorder">
+							<Setter Property="Background" Value="Transparent"/>
+							<Setter Property="Transitions">
+								<Transitions/>
+							</Setter>
+						</Style>
+						<Style Selector="Button.isInactive:pointerover /template/ Border#PART_ContentBorder">
+							<Setter Property="Background" Value="{DynamicResource Surface2Brush}"/>
+						</Style>
+						<Style Selector="Button.isInactive:pressed /template/ Border#PART_ContentBorder">
+							<Setter Property="Background" Value="{DynamicResource Surface3Brush}"/>
+						</Style>
+						
+						<Style Selector="Button.isActive">
+							<Setter Property="Background"             Value="{DynamicResource SelectedBrush}"/>
+							<Setter Property="BorderBrush"            Value="Transparent"/>
+							<Setter Property="BorderThickness"        Value="0"/>
+							<Setter Property="Foreground"             Value="{DynamicResource AccentLightBrush}"/>
+							<Setter Property="FontSize"               Value="13"/>
+							<Setter Property="Padding"                Value="10,8"/>
+							<Setter Property="Margin"                 Value="6,1,6,1"/>
+							<Setter Property="CornerRadius"           Value="6"/>
+							<Setter Property="HorizontalAlignment"    Value="Stretch"/>
+							<Setter Property="HorizontalContentAlignment" Value="Left"/>
+							<Setter Property="Cursor"                 Value="Hand"/>
+							<Setter Property="Transitions">
+								<Transitions/>
+							</Setter>
+						</Style>
+						<Style Selector="Button.isActive /template/ ContentPresenter">
+							<Setter Property="Background" Value="{DynamicResource SelectedBrush}"/>
+							<Setter Property="Foreground" Value="{DynamicResource AccentLightBrush}"/>
+							<Setter Property="Transitions">
+								<Transitions/>
+							</Setter>
+						</Style>
+						<Style Selector="Button.isActive:pointerover /template/ ContentPresenter">
+							<Setter Property="Background" Value="{DynamicResource SelectedBrush}"/>
+						</Style>
+						<Style Selector="Button.isActive:pressed /template/ ContentPresenter">
+							<Setter Property="Background" Value="{DynamicResource SelectedBrush}"/>
+						</Style>
+					</StackPanel.Styles>
 					<TextBlock Text="OVERVIEW" Classes="NavLabel"/>
-					<Button Classes="NavItem"
+					<Button Classes.isActive="{Binding IsDashboardView}"
+							Classes.isInactive="{Binding !IsDashboardView}"
 							Command="{Binding NavigateCommand}"
 							CommandParameter="Dashboard"
-							Content="Home"/>
+							Content="Dashboard"/>
 					<Button Classes="NavItem NavItemAlert"
 							Command="{Binding NavigateCommand}"
 							CommandParameter="ReviewQueue"
@@ -92,14 +153,26 @@
 							Content="{Binding ReviewQueueCount,
 										StringFormat='Review Queue ({0})'}"/>
 					<TextBlock Text="MONEY" Classes="NavLabel"/>
-					<Button Classes="NavItem" Command="{Binding NavigateCommand}" CommandParameter="Records"     Content="Records"/>
-					<Button Classes="NavItem" Command="{Binding NavigateCommand}" CommandParameter="Goals Progress"       Content="Goals Progress"/>
-					<Button Classes="NavItem" Command="{Binding NavigateCommand}" CommandParameter="Import"      Content="Import CSV"/>
+					<Button Classes.isActive="{Binding IsRecordsView}"
+							Classes.isInactive="{Binding !IsRecordsView}"
+							Command="{Binding NavigateCommand}"
+							CommandParameter="Records"
+							Content="Records"/>
+					<Button Classes.isActive="{Binding IsGoalsProgressView}"
+							Classes.isInactive="{Binding !IsGoalsProgressView}"
+							Command="{Binding NavigateCommand}"
+							CommandParameter="Goals Progress"
+							Content="Goals Progress"/>
+					<Button Classes.isActive="{Binding IsImportCsvView}"
+							Classes.isInactive="{Binding !IsImportCsvView}"
+							Command="{Binding NavigateCommand}"
+							CommandParameter="Import"
+							Content="Import CSV"/>
 					<TextBlock Text="CONFIG" Classes="NavLabel"/>
-					<Button Classes="NavItem" Command="{Binding NavigateCommand}" CommandParameter="Rules"       Content="Rules"/>
-					<Button Classes="NavItem" Command="{Binding NavigateCommand}" CommandParameter="Goals"       Content="Goals"/>
-					<Button Classes="NavItem" Command="{Binding NavigateCommand}" CommandParameter="Tags"        Content="Tags"/>
-					<Button Classes="NavItem" Command="{Binding NavigateCommand}" CommandParameter="Settings"        Content="Settings"/>
+					<Button Classes.isActive="{Binding IsRulesView}" Classes.isInactive="{Binding !IsRulesView}" Command="{Binding NavigateCommand}" CommandParameter="Rules"       Content="Rules"/>
+					<Button Classes.isActive="{Binding IsGoalsView}" Classes.isInactive="{Binding !IsGoalsView}" Command="{Binding NavigateCommand}" CommandParameter="Goals"       Content="Goals"/>
+					<Button Classes.isActive="{Binding IsTagsView}" Classes.isInactive="{Binding !IsTagsView}" Command="{Binding NavigateCommand}" CommandParameter="Tags"        Content="Tags"/>
+					<Button Classes.isActive="{Binding IsSettingsView}" Classes.isInactive="{Binding !IsSettingsView}" Command="{Binding NavigateCommand}" CommandParameter="Settings"        Content="Settings"/>
 				</StackPanel>
 				</ScrollViewer>
 			</DockPanel>
