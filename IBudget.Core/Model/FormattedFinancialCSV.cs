@@ -4,7 +4,7 @@
     {
         public DateOnly Date { get; set; }
         public double Amount { get; set; }
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
         public List<string> Tags { get; set; } = new List<string>();
     }
 }

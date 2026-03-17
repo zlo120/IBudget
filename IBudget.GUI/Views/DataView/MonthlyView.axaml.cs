@@ -12,7 +12,7 @@ public partial class MonthlyView : UserControl
         Loaded += MonthlyView_Loaded;
     }
 
-    private void MonthlyView_Loaded(object sender, RoutedEventArgs e)
+    private void MonthlyView_Loaded(object? sender, RoutedEventArgs e)
     {
         if (DataContext is MonthlyViewModel viewModel)
         {

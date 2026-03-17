@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using IBudget.Core.Enums;
 using IBudget.Core.Interfaces;
+using IBudget.GUI.Services;
 using IBudget.GUI.Utils;
 using IBudget.GUI.ViewModels.DataView;
 using System;
@@ -25,6 +26,8 @@ namespace IBudget.GUI.ViewModels
         private readonly ManualEntryPageViewModel _manualEntryPageViewModel;
         private readonly ISettingsService _settingsService;
 
+        public IThemeService ThemeService { get; }
+
         public bool DebugMode { get; }
 
         [ObservableProperty]
@@ -43,7 +46,8 @@ namespace IBudget.GUI.ViewModels
             DataTableViewModel dataTableViewModel,
             SettingsPageViewModel settingsPageViewModel,
             ManualEntryPageViewModel manualEntryPageViewModel,
-            ISettingsService settingsService
+            ISettingsService settingsService,
+            IThemeService themeService
         )
         {
             _homePageViewModel = homePageViewModel;
@@ -56,6 +60,7 @@ namespace IBudget.GUI.ViewModels
             _settingsPageViewModel = settingsPageViewModel;
             _manualEntryPageViewModel = manualEntryPageViewModel;
             _settingsService = settingsService;
+            ThemeService = themeService;
 
             CurrentPage = _homePageViewModel;
 
@@ -86,6 +91,9 @@ namespace IBudget.GUI.ViewModels
 
         [ObservableProperty]
         private bool _isPaneOpen = true;
+
+        [ObservableProperty]
+        private int? _reviewQueueCount = null;
 
     [ObservableProperty]
     private ViewModelBase? _currentPage = null;
@@ -148,6 +156,43 @@ namespace IBudget.GUI.ViewModels
         private void TogglePane()
         {
             IsPaneOpen = !IsPaneOpen;
+        }
+
+        [RelayCommand]
+        private void Navigate(string target)
+        {
+            ViewModelBase? instance = null;
+            switch (target)
+            {
+                case "Dashboard":
+                    instance = _homePageViewModel;
+                    break;
+                case "ReviewQueue": // TO DO
+                    // instance = _reviewQueueViewModel;
+                    break;
+                case "Records":
+                    instance = _dataPageViewModel;
+                    break;
+                case "Goals":
+                    instance = _financialGoalsPageViewModel;
+                    break;
+                case "Import":
+                    instance = _uploadCsvPageViewModel;
+                    break;
+                case "Rules":
+                    instance = _dictionariesPageViewModel;
+                    break;
+                case "Tags":
+                    instance = _tagsPageViewModel;
+                    break;
+                case "Settings":
+                    instance = _settingsPageViewModel;
+                    break;
+                default:
+                    break;
+            }
+            if (instance is null) return;
+            CurrentPage = instance;
         }
     }
     public class ListItemTemplate

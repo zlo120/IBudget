@@ -168,7 +168,7 @@ namespace IBudget.GUI.ViewModels
         }
 
         [RelayCommand]
-        private async void ConfigureSettings()
+        private async Task ConfigureSettings()
         {
             var settingsService = _serviceProvider.GetService(typeof(ISettingsService)) as ISettingsService
                 ?? throw new InvalidOperationException("Settings service not available.");
@@ -186,7 +186,8 @@ namespace IBudget.GUI.ViewModels
             };
 
             // Use ShowDialog to make it modal - this keeps the parent window visible
-            await configurationWindow.ShowDialog(_parentWindow);
+            if (_parentWindow is not null)
+                await configurationWindow.ShowDialog(_parentWindow);
         }
 
         [RelayCommand]

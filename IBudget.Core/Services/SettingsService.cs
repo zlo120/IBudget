@@ -49,7 +49,7 @@ namespace IBudget.Core.Services
             }
 
             // Add or update the key-value pair
-            settings[key] = value ?? null;
+            settings[key] = value;
 
             // Serialize and write back to file
             var updatedJson = JsonSerializer.Serialize(settings, new JsonSerializerOptions

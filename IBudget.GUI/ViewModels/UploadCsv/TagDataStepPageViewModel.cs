@@ -20,8 +20,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
         private readonly ITagService _tagsService;
         private readonly IExpenseTagService _expenseTagService;
         private readonly IExpenseRuleTagService _expenseRuleTagService;
-        private static int USER_ID = -1;
-        public Uri FileUriFromService
+        public Uri? FileUriFromService
         {
             get { return _csvService.FileUri; }
         }
@@ -75,7 +74,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
         public ObservableCollection<string> ExistingTags { get; } = new();
 
         [ObservableProperty]
-        private string _selectedUntaggedItemName;
+        private string _selectedUntaggedItemName = string.Empty;
 
         [ObservableProperty]
         private bool _isLoading = false;

@@ -13,7 +13,7 @@ public partial class DictionariesPageView : UserControl
         Loaded += DictionariesPage_Loaded;
     }
 
-    private void DictionariesPage_Loaded(object sender, RoutedEventArgs e)
+    private void DictionariesPage_Loaded(object? sender, RoutedEventArgs e)
     {
         if (DataContext is DictionariesPageViewModel viewModel)
         {

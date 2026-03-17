@@ -46,8 +46,8 @@ namespace IBudget.GUI.ViewModels
         public ObservableCollection<InfoContainer> ExpenseTagsInfo { get; } = new();
         public ObservableCollection<InfoContainer> ExpenseRuleTagsInfo { get; } = new();
 
-        public List<ExpenseTag> ExpenseTags { get; set; }
-        public List<ExpenseRuleTag> ExpenseRuleTags { get; set; }
+        public List<ExpenseTag> ExpenseTags { get; set; } = new();
+        public List<ExpenseRuleTag> ExpenseRuleTags { get; set; } = new();
         public List<Tag> AllTags { get; set; } = new();
 
         [ObservableProperty]

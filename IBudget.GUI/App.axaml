@@ -14,13 +14,14 @@
 		<sty:FluentAvaloniaTheme PreferUserAccentColor="True"/>
 		<StyleInclude Source="avares://IBudget.GUI/Assets/Icons.axaml"/>
 		<StyleInclude Source="avares://CalendarControl/Themes/Default.axaml" />
+		<StyleInclude Source="avares://IBudget.GUI/Assets/Styles/Controls.axaml"/>
 	</Application.Styles>
 
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="avares://IBudget.GUI/Assets/Styles/Tokens.axaml"/>
-                <ResourceInclude Source="avares://IBudget.GUI/Assets/Styles/Controls.axaml"/>
+
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

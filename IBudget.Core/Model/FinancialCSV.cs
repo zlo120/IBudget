@@ -5,10 +5,10 @@ namespace IBudget.Core.Model
     public class FinancialCSV
     {
         [Index(0)]
-        public string Date { get; set; }
+        public string Date { get; set; } = string.Empty;
         [Index(1)]
         public double Amount { get; set; }
         [Index(2)]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
     }
 }

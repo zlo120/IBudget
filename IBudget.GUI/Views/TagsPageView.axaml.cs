@@ -13,7 +13,7 @@ public partial class TagsPageView : UserControl
         Loaded += TagsPage_Loaded;
     }
 
-    private void TagsPage_Loaded(object sender, RoutedEventArgs e)
+    private void TagsPage_Loaded(object? sender, RoutedEventArgs e)
     {
         if (DataContext is TagsPageViewModel viewModel)
         {

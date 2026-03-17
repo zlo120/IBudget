@@ -126,7 +126,7 @@ namespace IBudget.GUI.ViewModels.DataView
             }
         }
 
-        partial void OnSelectedWeekIndexChanged(int newValue)
+        partial void OnSelectedWeekIndexChanged(int value)
         {
             if (_summaryService is null || _messageService is null) return;
             _ = InitializeDataAsync();

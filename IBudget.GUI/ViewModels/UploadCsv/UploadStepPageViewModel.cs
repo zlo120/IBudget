@@ -67,7 +67,7 @@ namespace IBudget.GUI.ViewModels.UploadCsv
             OnSteppingOver();
         }
         [ObservableProperty]
-        private Uri _droppedFilePath;
+        private Uri? _droppedFilePath;
 
         [RelayCommand]
         private void FileProvided(Uri filePath)

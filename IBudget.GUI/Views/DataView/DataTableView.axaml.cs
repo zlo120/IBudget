@@ -12,7 +12,7 @@ public partial class DataTableView : UserControl
         Loaded += DataTableView_Loaded;
     }
 
-    private void DataTableView_Loaded(object sender, RoutedEventArgs e)
+    private void DataTableView_Loaded(object? sender, RoutedEventArgs e)
     {
         if (DataContext is DataTableViewModel viewModel)
         {

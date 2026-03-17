@@ -51,7 +51,7 @@ namespace IBudget.GUI.ViewModels
         }
 
         [RelayCommand]
-        private async void CreateTag()
+        private async Task CreateTag()
         {
             if (TagName == string.Empty) return;
             var tagName = TagName.ToLower();
@@ -176,7 +176,7 @@ namespace IBudget.GUI.ViewModels
         private string _tagName;
 
         [RelayCommand]
-        private async void UpdateIsTracked()
+        private async Task UpdateIsTracked()
         {
             // Check if we're trying to untrack a tag that has a financial goal
             if (!IsTracked)
@@ -264,5 +264,7 @@ namespace IBudget.GUI.ViewModels
             if (other.TagName != TagName) return false;
             return true;
         }
+
+        public override int GetHashCode() => TagName?.GetHashCode() ?? 0;
     }
 }

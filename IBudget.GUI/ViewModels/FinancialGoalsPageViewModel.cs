@@ -132,8 +132,8 @@ namespace IBudget.GUI.ViewModels
         private readonly Action _removeFromCollection = removeFromCollection;
         private readonly IFinancialGoalService _financialGoalService = financialGoalService;
         private readonly IMessageService _messageService = messageService;
-        public string Key { get; set; }
-        public string Value { get; set; }
+        public string Key { get; set; } = string.Empty;
+        public string Value { get; set; } = string.Empty;
         [RelayCommand]
         public async Task DeleteGoal(string goalName)
         {

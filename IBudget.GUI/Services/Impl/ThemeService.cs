@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Platform;
 using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using IBudget.Core.Interfaces;
 
 namespace IBudget.GUI.Services.Impl
@@ -12,6 +13,7 @@ namespace IBudget.GUI.Services.Impl
         private readonly ISettingsService _settingsService;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ThemeIcon), nameof(ThemeLabel))]
         private bool _isDarkMode;
 
         public ThemeService(ISettingsService settingsService)
@@ -28,12 +30,16 @@ namespace IBudget.GUI.Services.Impl
             Apply();
         }
 
+        [RelayCommand]
         public void Toggle()
         {
             IsDarkMode = !IsDarkMode;
             Apply();
             _settingsService.SetTheme(IsDarkMode ? "dark" : "light");
         }
+
+        public string ThemeIcon => IsDarkMode ? "🌙" : "☀️";
+        public string ThemeLabel => IsDarkMode ? "Dark" : "Light";
 
         private void Apply()
         {

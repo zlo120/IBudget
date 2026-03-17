@@ -11,7 +11,7 @@ namespace IBudget.Core.Model
         public required DateTime CreatedAt { get; set; }
         public static bool operator ==(ExpenseRuleTag rD1, ExpenseRuleTag rD2) => rD1.Equals(rD2);
         public static bool operator !=(ExpenseRuleTag rD1, ExpenseRuleTag rD2) => !rD1.Equals(rD2);
-        public override bool Equals(object obj) => Equals(obj as ExpenseRuleTag);
+        public override bool Equals(object? obj) => Equals(obj as ExpenseRuleTag);
         public bool Equals(ExpenseRuleTag? other)
         {
             if (other is null) return false;
