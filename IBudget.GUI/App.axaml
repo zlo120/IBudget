@@ -21,8 +21,8 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="avares://IBudget.GUI/Assets/Styles/Tokens.axaml"/>
-
             </ResourceDictionary.MergedDictionaries>
+            <FontFamily x:Key="PlayfairDisplayFont">avares://IBudget.GUI/Assets/#Playfair Display</FontFamily>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

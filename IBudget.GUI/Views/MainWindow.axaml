@@ -45,8 +45,8 @@
 				<Border DockPanel.Dock="Top" Margin="12,0,12,16"
 						Background="{DynamicResource AccentBrush}"
 						CornerRadius="7" Padding="12,8">
-				<TextBlock Text="Stacks" Foreground="White"
-							FontSize="15" FontWeight="Bold"/>
+				<TextBlock Text="Stacks" Foreground="White" FontFamily="{StaticResource PlayfairDisplayFont}"
+							FontSize="18" FontWeight="Bold"/>
 				</Border>
 
 				<!-- Theme toggle at bottom -->
