@@ -8,8 +8,7 @@ namespace IBudget.Core.Services
     {
         private static readonly string _directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Stacks");
         private static readonly string _path = Path.Combine(_directory, "appsettings.json");
-
-        public string GetDbConnectionString()
+        private string GetValueFromSettings(string key)
         {
             if (!File.Exists(_path))
             {
@@ -23,56 +22,14 @@ namespace IBudget.Core.Services
                 WriteIndented = true
             }) ?? throw new InvalidOperationException("Failed to deserialize settings.");
 
-            if (settings.TryGetValue("ConnectionString", out var connectionString))
+            if (settings.TryGetValue(key, out var value))
             {
-                return connectionString;
+                return value;
             }
 
-            throw new KeyNotFoundException("The key 'ConnectionString' was not found in the settings.");
+            throw new KeyNotFoundException($"The key '{key}' was not found in the settings.");
         }
-
-        public void SetDbConnectionString(string connectionString)
-        {
-            var setting = JsonSerializer.Serialize(new Dictionary<string, string>
-            {
-                { "ConnectionString", connectionString }
-            }, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-                WriteIndented = true
-            });
-
-            if (!Directory.Exists(_directory))
-            {
-                Directory.CreateDirectory(_directory);
-            }
-
-            File.WriteAllText(_path, setting);
-
-            SetDatabaseType(DatabaseType.CustomMongoDbInstance);
-        }
-
-        public void ResetDbConnectionString()
-        {
-            var setting = JsonSerializer.Serialize(new Dictionary<string, string>
-            {
-                { "ConnectionString", null }
-            }, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-                WriteIndented = true
-            });
-
-            if (!Directory.Exists(_directory))
-            {
-                Directory.CreateDirectory(_directory);
-            }
-
-            File.WriteAllText(_path, setting);
-            SetDatabaseType(DatabaseType.CustomMongoDbInstance);
-        }
-
-        public void SetDatabaseType(DatabaseType? databaseType)
+        private void SetValueInSettings(string key, string? value)
         {
             Dictionary<string, string> settings;
 
@@ -91,8 +48,8 @@ namespace IBudget.Core.Services
                 settings = new Dictionary<string, string>();
             }
 
-            // Add or update the DatabaseType
-            settings["DatabaseType"] = databaseType.ToString() ?? DatabaseType.None.ToString();
+            // Add or update the key-value pair
+            settings[key] = value ?? null;
 
             // Serialize and write back to file
             var updatedJson = JsonSerializer.Serialize(settings, new JsonSerializerOptions
@@ -107,33 +64,54 @@ namespace IBudget.Core.Services
             }
 
             File.WriteAllText(_path, updatedJson);
+        }    
+        public string GetDbConnectionString()
+        {
+            return GetValueFromSettings("ConnectionString");
+        }
+
+        public void SetDbConnectionString(string connectionString)
+        {
+            SetValueInSettings("ConnectionString", connectionString);
+            SetDatabaseType(DatabaseType.CustomMongoDbInstance);
+        }
+
+        public void ResetDbConnectionString()
+        {
+            SetValueInSettings("ConnectionString", null);
+            SetDatabaseType(DatabaseType.CustomMongoDbInstance);
+        }
+
+        public void SetDatabaseType(DatabaseType? databaseType)
+        {
+            SetValueInSettings("DatabaseType", databaseType?.ToString() ?? DatabaseType.None.ToString());
         }
 
         public DatabaseType? GetDatabaseType()
         {
-            if (!File.Exists(_path))
+            var value = GetValueFromSettings("DatabaseType");
+            if (Enum.TryParse<DatabaseType>(value, out var dbType))
             {
-                throw new FileNotFoundException($"The file {_path} does not exist.");
+                return dbType == DatabaseType.None ? null : dbType;
             }
-
-            var file = File.ReadAllText(_path);
-            var settings = JsonSerializer.Deserialize<Dictionary<string, string>>(file, new JsonSerializerOptions
+            return null;
+        }
+    
+        public string? GetTheme()
+        {
+            try
             {
-                PropertyNameCaseInsensitive = true,
-                WriteIndented = true
-            }) ?? throw new InvalidOperationException("Failed to deserialize settings.");
-
-            if (settings.TryGetValue("DatabaseType", out var databaseType))
-            {
-                var dbType = (DatabaseType)Enum.Parse(typeof(DatabaseType), databaseType);
-                if (dbType == DatabaseType.None)
-                {
-                    return null;
-                }
-                return dbType;
+                return GetValueFromSettings("Theme");
             }
+            catch
+            {
+                return null;
+            }
+        }
 
-            throw new KeyNotFoundException("The key 'DatabaseType' was not found in the settings.");
+        public void SetTheme(string theme)
+        {
+            SetValueInSettings("Theme", theme);
         }
     }
 }

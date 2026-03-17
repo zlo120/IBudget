@@ -67,6 +67,7 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddSingleton<IUpdateService, UpdateService>();
             collection.AddSingleton<LiteDbContext>();
             collection.AddSingleton<MongoDbContext>();
+            collection.AddSingleton<IThemeService, ThemeService>();
 
 #if DEBUG
             collection.AddSingleton<IPatchNotesService, TestPatchNotesService>();

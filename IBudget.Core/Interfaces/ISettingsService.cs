@@ -9,5 +9,7 @@ namespace IBudget.Core.Interfaces
         void ResetDbConnectionString();
         void SetDatabaseType(DatabaseType? databaseType);
         DatabaseType? GetDatabaseType();
+        string? GetTheme();
+        void SetTheme(string theme);
     }
 }

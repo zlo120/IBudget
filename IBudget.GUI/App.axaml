@@ -5,7 +5,6 @@
              xmlns:local="using:IBudget.GUI"
              Name="Stacks"
              RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.DataTemplates>
         <local:ViewLocator/>
@@ -16,4 +15,13 @@
 		<StyleInclude Source="avares://IBudget.GUI/Assets/Icons.axaml"/>
 		<StyleInclude Source="avares://CalendarControl/Themes/Default.axaml" />
 	</Application.Styles>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://IBudget.GUI/Assets/Styles/Tokens.axaml"/>
+                <ResourceInclude Source="avares://IBudget.GUI/Assets/Styles/Controls.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>
