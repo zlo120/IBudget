@@ -171,16 +171,19 @@ namespace IBudget.GUI.ViewModels
                     // instance = _reviewQueueViewModel;
                     break;
                 case "Records":
-                    instance = _dataPageViewModel;
+                    instance = _dataTableViewModel;
                     break;
-                case "Goals":
-                    instance = _financialGoalsPageViewModel;
+                case "Goals Progress":
+                    instance = _dataPageViewModel;
                     break;
                 case "Import":
                     instance = _uploadCsvPageViewModel;
                     break;
                 case "Rules":
                     instance = _dictionariesPageViewModel;
+                    break;
+                case "Goals":
+                    instance = _financialGoalsPageViewModel;
                     break;
                 case "Tags":
                     instance = _tagsPageViewModel;

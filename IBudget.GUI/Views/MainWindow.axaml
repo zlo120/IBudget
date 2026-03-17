@@ -76,7 +76,7 @@
 					<Button Classes="NavItem"
 							Command="{Binding NavigateCommand}"
 							CommandParameter="Dashboard"
-							Content="Dashboard"/>
+							Content="Home"/>
 					<Button Classes="NavItem NavItemAlert"
 							Command="{Binding NavigateCommand}"
 							CommandParameter="ReviewQueue"
@@ -85,10 +85,11 @@
 										StringFormat='Review Queue ({0})'}"/>
 					<TextBlock Text="MONEY" Classes="NavLabel"/>
 					<Button Classes="NavItem" Command="{Binding NavigateCommand}" CommandParameter="Records"     Content="Records"/>
-					<Button Classes="NavItem" Command="{Binding NavigateCommand}" CommandParameter="Goals"       Content="Goals"/>
+					<Button Classes="NavItem" Command="{Binding NavigateCommand}" CommandParameter="Goals Progress"       Content="Goals Progress"/>
 					<Button Classes="NavItem" Command="{Binding NavigateCommand}" CommandParameter="Import"      Content="Import CSV"/>
 					<TextBlock Text="CONFIG" Classes="NavLabel"/>
 					<Button Classes="NavItem" Command="{Binding NavigateCommand}" CommandParameter="Rules"       Content="Rules"/>
+					<Button Classes="NavItem" Command="{Binding NavigateCommand}" CommandParameter="Goals"       Content="Goals"/>
 					<Button Classes="NavItem" Command="{Binding NavigateCommand}" CommandParameter="Tags"        Content="Tags"/>
 					<Button Classes="NavItem" Command="{Binding NavigateCommand}" CommandParameter="Settings"        Content="Settings"/>
 				</StackPanel>
