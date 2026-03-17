@@ -1,0 +1,108 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:views="using:IBudget.GUI.SharedComponents"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="IBudget.GUI.Views.DashboardView"
+             xmlns:vm="using:IBudget.GUI.ViewModels"
+             x:DataType="vm:DashboardViewModel"
+			 xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
+             x:CompileBindings="True">
+
+	<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Background="{DynamicResource SurfaceBrush}">
+		<Grid RowDefinitions="Auto,Auto,Auto" Margin="24">
+			<!-- Header with nav buttons -->
+			<Grid ColumnDefinitions="*,Auto" Grid.Row="0">
+				<StackPanel Orientation="Vertical" Grid.Column="0">
+					<TextBlock Text="{Binding ThisMonthString}" FontSize="24" FontFamily="{StaticResource PlayfairDisplayFont}" FontWeight="Bold" Margin="0,0,0,4"/>
+					<TextBlock Text="Monthly overview" FontSize="14" Foreground="{DynamicResource TextSecondary}"/>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" Grid.Column="1" Margin="0,12,0,24" Spacing="6">
+					<Button Classes="Outlined" Content="{Binding LastMonthLabel}" Command="{Binding NavigateToPreviousMonthCommand}"/>	
+					<Button Classes="Outlined" Content="{Binding NextMonthLabel}" Command="{Binding NavigateToNextMonthCommand}"/>	
+					<Button Classes="Primary">+ Add Record</Button>
+				</StackPanel>
+			</Grid>
+			
+			<!-- Summary grid -->
+			<Grid ColumnDefinitions="*,12,*,12,*,12,*" Grid.Row="1" Margin="0,10">
+				<views:Card Grid.Column="0" Label="TOTAL INCOME" Value="$1000" Variant="Positive" HelperText="↑ $320 vs last month"/>
+				<views:Card Grid.Column="2" Label="TOTAL LOSS" Value="$200" Variant="Negative" HelperText="↓ $50 vs last month"/>
+				<views:Card Grid.Column="4" Label="TOTAL" Value="$11000" Variant="Warning" HelperText="→ $0 vs last month"/>
+			</Grid>
+
+			<Grid Grid.Row="2" ColumnDefinitions="*,12,Auto">
+				
+				<Border Name="GraphBorder"
+						Background="{DynamicResource Surface2Brush}" 
+						CornerRadius="8" 
+						BorderThickness="2"
+						BorderBrush="{DynamicResource BorderBrush}"
+						Padding="13"
+						Grid.Column="0">
+					<StackPanel Spacing="5">
+						<TextBlock Text="6-MONTH SPENDING" 
+								FontSize="14"
+								FontFamily="{StaticResource JetBrainsMonoFont}"
+								FontWeight="Regular"
+								Opacity="0.7"/>
+						<lvc:CartesianChart Grid.Column="0" Height="250" LegendPosition="Hidden">
+							<lvc:CartesianChart.Series>
+								<lvc:XamlColumnSeries
+									SeriesName="Month"
+									Values="{Binding PreviousMonthsValues}"
+									Fill="{lvc:SolidColorPaint Color='#4B4894'}"
+									Rx="3"
+									Ry="3"/>
+							</lvc:CartesianChart.Series>
+							<lvc:CartesianChart.XAxes>
+								<lvc:XamlAxis
+									Labels="{Binding Labels}"
+									SeparatorsPaint="{x:Null}"
+									TicksPaint="{x:Null}"
+									LabelsPaint="{x:Null}"/>
+							</lvc:CartesianChart.XAxes>
+							<lvc:CartesianChart.YAxes>
+								<lvc:XamlAxis
+									SeparatorsPaint="{x:Null}"
+									LabelsPaint="{x:Null}"
+									TicksPaint="{x:Null}"/>
+							</lvc:CartesianChart.YAxes>
+						</lvc:CartesianChart>
+					</StackPanel>
+				</Border>
+				
+				<Border Name="GoalHealthBorder"
+						Background="{DynamicResource Surface2Brush}" 
+						CornerRadius="8" 
+						BorderThickness="2"
+						BorderBrush="{DynamicResource BorderBrush}"
+						Padding="13"
+						Grid.Column="2">
+					<StackPanel Spacing="10">
+						<TextBlock Text="GOAL HEALTH" 
+									FontSize="11"
+									FontFamily="{StaticResource JetBrainsMonoFont}"
+									FontWeight="Regular"
+									Opacity="0.7"
+									LetterSpacing="1.5"/>
+						<StackPanel Orientation="Horizontal" Spacing="30" VerticalAlignment="Center">
+							<TextBlock Text="Food"/>
+							<TextBlock Text="$300/$500" Foreground="{DynamicResource PositiveBrush}"/>
+						</StackPanel>
+						<ProgressBar Margin="0 0"
+									 Height="12"
+									 Minimum="0" 
+									 Maximum="100" 
+									 Value="60"
+									 Foreground="{DynamicResource PositiveBrush}"
+									 Background="Transparent"
+									 CornerRadius="6">
+						</ProgressBar>
+					</StackPanel>
+				</Border>
+			</Grid>			
+		</Grid>
+	</ScrollViewer>
+</UserControl>

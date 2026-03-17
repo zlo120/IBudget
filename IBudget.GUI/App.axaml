@@ -11,7 +11,7 @@
     </Application.DataTemplates>
   
     <Application.Styles>
-		<sty:FluentAvaloniaTheme PreferUserAccentColor="True"/>
+		<sty:FluentAvaloniaTheme />
 		<StyleInclude Source="avares://IBudget.GUI/Assets/Icons.axaml"/>
 		<StyleInclude Source="avares://CalendarControl/Themes/Default.axaml" />
 		<StyleInclude Source="avares://IBudget.GUI/Assets/Styles/Controls.axaml"/>
@@ -23,6 +23,7 @@
                 <ResourceInclude Source="avares://IBudget.GUI/Assets/Styles/Tokens.axaml"/>
             </ResourceDictionary.MergedDictionaries>
             <FontFamily x:Key="PlayfairDisplayFont">avares://IBudget.GUI/Assets/#Playfair Display</FontFamily>
+            <FontFamily x:Key="JetBrainsMonoFont">avares://IBudget.GUI/Assets/#JetBrains Mono</FontFamily>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

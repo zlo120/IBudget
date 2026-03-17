@@ -23,6 +23,7 @@ namespace IBudget.GUI.ViewModels
         private readonly FinancialGoalsPageViewModel _financialGoalsPageViewModel;
         private readonly DataTableViewModel _dataTableViewModel;
         private readonly SettingsPageViewModel _settingsPageViewModel;
+        private readonly DashboardViewModel _dashboardViewModel;
         private readonly ManualEntryPageViewModel _manualEntryPageViewModel;
         private readonly ISettingsService _settingsService;
 
@@ -46,6 +47,7 @@ namespace IBudget.GUI.ViewModels
             DataTableViewModel dataTableViewModel,
             SettingsPageViewModel settingsPageViewModel,
             ManualEntryPageViewModel manualEntryPageViewModel,
+            DashboardViewModel dashboardViewModel,
             ISettingsService settingsService,
             IThemeService themeService
         )
@@ -59,10 +61,12 @@ namespace IBudget.GUI.ViewModels
             _dataTableViewModel = dataTableViewModel;
             _settingsPageViewModel = settingsPageViewModel;
             _manualEntryPageViewModel = manualEntryPageViewModel;
+            _dashboardViewModel = dashboardViewModel;
+
             _settingsService = settingsService;
             ThemeService = themeService;
 
-            CurrentPage = _homePageViewModel;
+            CurrentPage = _dashboardViewModel;
 
 #if DEBUG
             DebugMode = true;
@@ -165,7 +169,7 @@ namespace IBudget.GUI.ViewModels
             switch (target)
             {
                 case "Dashboard":
-                    instance = _homePageViewModel;
+                    instance = _dashboardViewModel;
                     break;
                 case "ReviewQueue": // TO DO
                     // instance = _reviewQueueViewModel;

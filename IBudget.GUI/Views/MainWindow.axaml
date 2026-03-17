@@ -36,37 +36,45 @@
 		<Border Grid.Column="0" 
 			Grid.Row="1"
 			Width="200"
-			Background="{DynamicResource SurfaceBrush}"
+			Background="{DynamicResource SideBarBg}"
 			BorderBrush="{DynamicResource BorderBrush}"
 			BorderThickness="0,0,1,0">
 			<DockPanel Margin="0,16,0,0">
 
 				<!-- Logo -->
-				<Border DockPanel.Dock="Top" Margin="12,0,12,16"
-						Background="{DynamicResource AccentBrush}"
-						CornerRadius="7" Padding="12,8">
-				<TextBlock Text="Stacks" Foreground="White" FontFamily="{StaticResource PlayfairDisplayFont}"
-							FontSize="18" FontWeight="Bold"/>
+				<Border DockPanel.Dock="Top" 
+					Margin="12,0,12,16"
+					Background="{DynamicResource AccentBrush}"
+					CornerRadius="7" 
+					Padding="12,8">
+				<TextBlock Text="Stacks" 
+					Foreground="White" 
+					FontFamily="{StaticResource PlayfairDisplayFont}"
+					FontSize="18" 
+					FontWeight="Bold"/>
 				</Border>
 
 				<!-- Theme toggle at bottom -->
-				<Button DockPanel.Dock="Bottom" Margin="8,8,8,12"
-						Background="{DynamicResource Surface2Brush}"
-						BorderBrush="{DynamicResource BorderBrush}"
-						BorderThickness="1" CornerRadius="7" Padding="10,8"
-						Cursor="Hand"
-						HorizontalAlignment="Stretch"
-						HorizontalContentAlignment="Stretch"
-						Command="{Binding ThemeService.ToggleCommand}">
+				<Button DockPanel.Dock="Bottom" 
+					Margin="8,8,8,12"
+					Background="{DynamicResource Surface2Brush}"
+					BorderBrush="{DynamicResource BorderBrush}"
+					BorderThickness="1" 
+					CornerRadius="7" 
+					Padding="10,8"
+					Cursor="Hand"
+					HorizontalAlignment="Stretch"
+					HorizontalContentAlignment="Stretch"
+					Command="{Binding ThemeService.ToggleCommand}">
 				<DockPanel LastChildFill="True">
 					<TextBlock DockPanel.Dock="Right"
-							Text="{Binding ThemeService.ThemeIcon}"
-							VerticalAlignment="Center"
-							FontSize="14"/>
+						Text="{Binding ThemeService.ThemeIcon}"
+						VerticalAlignment="Center"
+						FontSize="14"/>
 					<TextBlock Text="{Binding ThemeService.ThemeLabel}"
-							Foreground="{DynamicResource TextSecondary}"
-							VerticalAlignment="Center"
-							FontSize="12"/>
+						Foreground="{DynamicResource TextSecondary}"
+						VerticalAlignment="Center"
+						FontSize="12"/>
 				</DockPanel>
 				</Button>
 				<!-- Nav groups -->

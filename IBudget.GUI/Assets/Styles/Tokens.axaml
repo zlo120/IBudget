@@ -18,6 +18,7 @@
       <SolidColorBrush x:Key="TextPrimary"      Color="#EEEEF6"/>
       <SolidColorBrush x:Key="TextSecondary"    Color="#9898B8"/>
       <SolidColorBrush x:Key="TextMuted"        Color="#55556E"/>
+      <SolidColorBrush x:Key="SideBarBg"        Color="#1B1B22"/>
     </ResourceDictionary>
 
     <!-- ── LIGHT THEME ── -->
@@ -35,6 +36,7 @@
       <SolidColorBrush x:Key="TextPrimary"      Color="#1A1A2E"/>
       <SolidColorBrush x:Key="TextSecondary"    Color="#4A4A6A"/>
       <SolidColorBrush x:Key="TextMuted"        Color="#8888A8"/>
+      <SolidColorBrush x:Key="SideBarBg"        Color="#FFFFFF"/>
     </ResourceDictionary>
 
   </ResourceDictionary.ThemeDictionaries>
