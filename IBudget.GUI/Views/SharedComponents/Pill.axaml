@@ -1,0 +1,43 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:IBudget.GUI.SharedComponents"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="IBudget.GUI.SharedComponents.Pill"
+             x:DataType="local:Pill">
+
+  <UserControl.Styles>
+    <Style Selector="Border.Positive">
+        <Setter Property="BorderBrush" Value="{DynamicResource PositiveBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource PositiveBackgroundBrush}"/>
+    </Style>
+    <Style Selector="Border.Negative">
+        <Setter Property="BorderBrush" Value="{DynamicResource NegativeBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource NegativeBackgroundBrush}"/>
+    </Style>
+    <Style Selector="Border.Warning">
+        <Setter Property="BorderBrush" Value="{DynamicResource WarningBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource WarningBackgroundBrush}"/>
+    </Style>
+    <Style Selector="TextBlock.Positive">
+        <Setter Property="Foreground" Value="white"/>
+    </Style>
+    <Style Selector="TextBlock.Negative">
+        <Setter Property="Foreground" Value="white"/>
+    </Style>
+    <Style Selector="TextBlock.Warning">
+        <Setter Property="Foreground" Value="white"/>
+    </Style>
+  </UserControl.Styles>
+
+  <Border Name="Border"
+          BorderThickness="2" 
+          CornerRadius="10" 
+          Padding="7,2" 
+          HorizontalAlignment="Left">
+    <TextBlock Name="Text"
+               FontFamily="{StaticResource JetBrainsMonoFont}"
+               FontSize="10"/>
+  </Border>
+</UserControl>

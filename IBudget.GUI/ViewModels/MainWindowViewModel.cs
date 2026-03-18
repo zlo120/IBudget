@@ -24,6 +24,7 @@ namespace IBudget.GUI.ViewModels
         private readonly DataTableViewModel _dataTableViewModel;
         private readonly SettingsPageViewModel _settingsPageViewModel;
         private readonly DashboardViewModel _dashboardViewModel;
+        private readonly RecordsViewModel _recordsViewModel;
         private readonly ManualEntryPageViewModel _manualEntryPageViewModel;
         private readonly ISettingsService _settingsService;
 
@@ -64,6 +65,7 @@ namespace IBudget.GUI.ViewModels
             SettingsPageViewModel settingsPageViewModel,
             ManualEntryPageViewModel manualEntryPageViewModel,
             DashboardViewModel dashboardViewModel,
+            RecordsViewModel recordsViewModel,
             ISettingsService settingsService,
             IThemeService themeService
         )
@@ -78,7 +80,7 @@ namespace IBudget.GUI.ViewModels
             _settingsPageViewModel = settingsPageViewModel;
             _manualEntryPageViewModel = manualEntryPageViewModel;
             _dashboardViewModel = dashboardViewModel;
-
+            _recordsViewModel = recordsViewModel;
             _settingsService = settingsService;
             ThemeService = themeService;
 
@@ -205,7 +207,7 @@ namespace IBudget.GUI.ViewModels
                     // instance = _reviewQueueViewModel;
                     break;
                 case "Records":
-                    instance = _dataTableViewModel;
+                    instance = _recordsViewModel;
                     IsRecordsView = true;
                     break;
                 case "Goals Progress":

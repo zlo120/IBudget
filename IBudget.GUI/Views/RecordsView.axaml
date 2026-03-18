@@ -1,0 +1,157 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:views="using:IBudget.GUI.SharedComponents"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="IBudget.GUI.Views.RecordsView"             
+             xmlns:vm="using:IBudget.GUI.ViewModels"
+             x:DataType="vm:RecordsViewModel">
+        
+  <UserControl.Styles>
+    <Style Selector="TextBlock.Positive">
+        <Setter Property="Foreground" Value="{DynamicResource PositiveBrush}"/>
+    </Style>
+    <Style Selector="TextBlock.Warning">
+        <Setter Property="Foreground" Value="{DynamicResource WarningBrush}"/>
+    </Style>
+    <Style Selector="TextBlock.Negative">
+        <Setter Property="Foreground" Value="{DynamicResource NegativeBrush}"/>
+    </Style>
+
+  <!-- Table Style -->
+		<Style Selector="Border.table-container">
+			<Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}"/>
+			<Setter Property="CornerRadius" Value="12"/>
+			<Setter Property="Padding" Value="0"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="BoxShadow" Value="0 2 8 0 #0D000000"/>
+		</Style>
+
+		<!-- Table Header Style -->
+		<Style Selector="Border.table-header">
+			<Setter Property="Background" Value="{DynamicResource LayerFillColorDefaultBrush}"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource DividerStrokeColorDefaultBrush}"/>
+			<Setter Property="BorderThickness" Value="0,0,0,1"/>
+			<Setter Property="Padding" Value="16,12"/>
+		</Style>
+
+		<!-- Table Cell Style -->
+		<Style Selector="Border.table-cell">
+			<Setter Property="BorderBrush" Value="{DynamicResource DividerStrokeColorDefaultBrush}"/>
+			<Setter Property="BorderThickness" Value="0,0,0,1"/>
+			<Setter Property="Padding" Value="16,12"/>
+			<Setter Property="Background" Value="Transparent"/>
+		</Style>
+
+		<!-- Table Row Style -->
+		<Style Selector="Border.table-row">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="Transitions">
+				<Transitions>
+					<BrushTransition Property="Background" Duration="0:0:0.1"/>
+				</Transitions>
+			</Setter>
+		</Style>
+  </UserControl.Styles>
+
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Background="{DynamicResource SurfaceBrush}">
+      <Grid RowDefinitions="Auto,Auto,*" Margin="24, 28" Background="{DynamicResource SurfaceBrush}">
+        <!-- Header with nav buttons -->
+        <Grid ColumnDefinitions="*,Auto" Grid.Row="0">
+          <StackPanel Orientation="Vertical" Grid.Column="0">
+            <TextBlock Text="Records" FontSize="24" FontFamily="{StaticResource PlayfairDisplayFont}" FontWeight="Bold" Margin="0,0,0,4"/>
+            <TextBlock Text="{Binding MonthText}" FontSize="14" Foreground="{DynamicResource TextSecondary}"/>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Grid.Column="1" Margin="0,12,0,24" Spacing="6">
+            <Button Classes="Outlined" Content="&lt;"/>	
+            <Button Classes="Outlined" Content="{Binding ThisMonth}"/>	
+            <Button Classes="Outlined" Content=">"/>	
+            <Button Classes="Primary">+ Add</Button>
+          </StackPanel>
+        </Grid>
+
+        <!-- Searching -->
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,12,0,24" Spacing="6">
+          <TextBox Grid.Column="0"
+                  Text="{Binding SearchText}"
+                  Watermark="Search..."
+                  FontSize="13"
+                  Padding="12,8"
+                  MinWidth="300"
+                  CornerRadius="6"
+                  Margin="0,0,10,0" />
+          <Button Classes="Outlined" Content="Tag ▼"/>
+          <Button Classes="Outlined" Content="Type ▼"/>
+        </StackPanel>
+
+        <!-- Data Table -->
+        <Border Classes="table-container" Grid.Row="2">
+          <Grid RowDefinitions="Auto,*">
+            <!-- Table Header -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,3*,*,*,*,*">
+              <Border Classes="table-header" Grid.Column="0" CornerRadius="12, 0, 0, 0">
+                <TextBlock Classes="header-text" Text="Date" />
+              </Border>
+              <Border Classes="table-header" Grid.Column="1">
+                <TextBlock Classes="header-text" Text="Description" />
+              </Border>
+              <Border Classes="table-header" Grid.Column="2">
+                <TextBlock Classes="header-text" Text="Tag" />
+              </Border>
+              <Border Classes="table-header" Grid.Column="3">
+                <TextBlock Classes="header-text" Text="Amount"/>
+              </Border>
+              <Border Classes="table-header" Grid.Column="4">
+                <TextBlock Classes="header-text" Text="State" />
+              </Border>
+              <Border Classes="table-header" Grid.Column="5" CornerRadius="0, 12, 0, 0">
+                <TextBlock Classes="header-text" />
+              </Border>
+            </Grid>
+
+            <!-- Table Data -->
+            <ScrollViewer Grid.Row="1" 
+                               HorizontalScrollBarVisibility="Auto"
+                               VerticalScrollBarVisibility="Auto">
+              <ItemsControl ItemsSource="{Binding TableData}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <Border Classes="table-row">
+                      <Grid ColumnDefinitions="*,3*,*,*,*,*">
+                        <Border Classes="table-cell" Grid.Column="0">
+                          <TextBlock Classes="cell-text" Text="{Binding Date, StringFormat='{}{0:dd/MM/yyyy}'}" />
+                        </Border>
+                        <Border Classes="table-cell" Grid.Column="1">
+                          <TextBlock Classes="cell-text" Text="{Binding Description}" TextTrimming="CharacterEllipsis" />
+                        </Border>
+                        <Border Classes="table-cell" Grid.Column="2">
+                          <views:Pill PillText="{Binding Tag}" Variant="{Binding TagVariant}" />                          
+                        </Border>
+                        <Border Classes="table-cell" Grid.Column="3">
+                          <TextBlock Classes="amount-text"
+                                     Classes.Positive="{Binding IsPositiveAmount}"
+                                     Classes.Negative="{Binding IsNegativeAmount}"
+                                     Text="{Binding FormattedAmount}" />
+                        </Border>
+                        <Border Classes="table-cell" Grid.Column="4">
+                          <TextBlock Classes="cell-text"
+                                     Classes.Positive="{Binding IsAutoState}"
+                                     Classes.Warning="{Binding IsPendingState}"
+                                     Text="{Binding State}" Name="State"/>
+                        </Border>
+                        <Border Classes="table-cell" Grid.Column="5">
+                          <TextBlock Classes="cell-text" />
+                        </Border>
+                      </Grid>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </ScrollViewer>
+          </Grid>
+        </Border>
+    </Grid>
+  </ScrollViewer>
+</UserControl>

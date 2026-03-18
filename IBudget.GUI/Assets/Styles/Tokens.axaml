@@ -13,8 +13,11 @@
       <SolidColorBrush x:Key="AccentBrush"      Color="#7B6CFF"/>
       <SolidColorBrush x:Key="AccentLightBrush" Color="#A99FFF"/>
       <SolidColorBrush x:Key="PositiveBrush"    Color="#2ECC8A"/>
+      <SolidColorBrush x:Key="PositiveBackgroundBrush" Color="#902ECC8A"/>
       <SolidColorBrush x:Key="NegativeBrush"    Color="#FF5F5F"/>
+      <SolidColorBrush x:Key="NegativeBackgroundBrush"    Color="#90FF5F5F"/>
       <SolidColorBrush x:Key="WarningBrush"     Color="#F5A623"/>
+      <SolidColorBrush x:Key="WarningBackgroundBrush"     Color="#90F5A623"/>
       <SolidColorBrush x:Key="TextPrimary"      Color="#EEEEF6"/>
       <SolidColorBrush x:Key="TextSecondary"    Color="#9898B8"/>
       <SolidColorBrush x:Key="TextMuted"        Color="#55556E"/>
@@ -32,8 +35,11 @@
       <SolidColorBrush x:Key="AccentBrush"      Color="#5B4DDD"/>
       <SolidColorBrush x:Key="AccentLightBrush" Color="#7B6CFF"/>
       <SolidColorBrush x:Key="PositiveBrush"    Color="#1A9E6A"/>
+      <SolidColorBrush x:Key="PositiveBackgroundBrush" Color="#901A9E6A"/>
       <SolidColorBrush x:Key="NegativeBrush"    Color="#D94040"/>
+      <SolidColorBrush x:Key="NegativeBackgroundBrush" Color="#90D94040"/>
       <SolidColorBrush x:Key="WarningBrush"     Color="#C07800"/>
+      <SolidColorBrush x:Key="WarningBackgroundBrush"     Color="#90C07800"/>
       <SolidColorBrush x:Key="TextPrimary"      Color="#1A1A2E"/>
       <SolidColorBrush x:Key="TextSecondary"    Color="#4A4A6A"/>
       <SolidColorBrush x:Key="TextMuted"        Color="#8888A8"/>

@@ -44,6 +44,7 @@ namespace IBudget.GUI.ExtensionMethods
             collection.AddTransient<PatchNotesViewModel>();
             collection.AddTransient<ManualEntryPageViewModel>();
             collection.AddTransient<DashboardViewModel>();
+            collection.AddTransient<RecordsViewModel>();
 
             // Core Services (database-agnostic)
             collection.AddTransient<ICSVParserService, CSVParserService>();

@@ -11,7 +11,7 @@
              x:CompileBindings="True">
 
 	<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Background="{DynamicResource SurfaceBrush}">
-		<Grid RowDefinitions="Auto,Auto,Auto" Margin="24">
+		<Grid RowDefinitions="Auto,Auto,Auto" Margin="24, 28">
 			<!-- Header with nav buttons -->
 			<Grid ColumnDefinitions="*,Auto" Grid.Row="0">
 				<StackPanel Orientation="Vertical" Grid.Column="0">
