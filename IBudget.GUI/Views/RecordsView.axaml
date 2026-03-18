@@ -21,7 +21,7 @@
 
   <!-- Table Style -->
 		<Style Selector="Border.table-container">
-			<Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}"/>
+			<Setter Property="Background" Value="{DynamicResource Surface2Brush}"/>
 			<Setter Property="CornerRadius" Value="12"/>
 			<Setter Property="Padding" Value="0"/>
 			<Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}"/>
@@ -31,7 +31,7 @@
 
 		<!-- Table Header Style -->
 		<Style Selector="Border.table-header">
-			<Setter Property="Background" Value="{DynamicResource LayerFillColorDefaultBrush}"/>
+			<Setter Property="Background" Value="{DynamicResource Surface3Brush}"/>
 			<Setter Property="BorderBrush" Value="{DynamicResource DividerStrokeColorDefaultBrush}"/>
 			<Setter Property="BorderThickness" Value="0,0,0,1"/>
 			<Setter Property="Padding" Value="16,12"/>
@@ -81,7 +81,8 @@
                   Padding="12,8"
                   MinWidth="300"
                   CornerRadius="6"
-                  Margin="0,0,10,0" />
+                  Margin="0,0,10,0"
+                  Background="{DynamicResource Surface2Brush}"/>
           <Button Classes="Outlined" Content="Tag ▼"/>
           <Button Classes="Outlined" Content="Type ▼"/>
         </StackPanel>
